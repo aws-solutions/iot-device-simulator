@@ -1,0 +1,163 @@
+<!-- ============================================================== -->
+<!-- Bread crumb and right sidebar toggle -->
+<!-- ============================================================== -->
+<div class="row page-titles">
+    <div class="col-md-5 col-8 align-self-center">
+        <h3 id="view-title">{{title}}</h3>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/securehome">Home</a></li>
+            <li class="breadcrumb-item"><a href="/securehome/automotive">Automotive</a></li>
+            <li class="breadcrumb-item active">Configuration</li>
+        </ol>
+    </div>
+    <div class="col-md-7 col-4 align-self-center">
+        <div class="d-flex m-t-10 justify-content-end">
+            <div class="d-flex m-r-20 m-l-10 hidden-md-down">
+                <div class="chart-text m-r-10">
+                    <h6 class="m-b-0"><small>Devices</small></h6>
+                    <h4 class="m-t-0 text-success">{{deviceStats.total}} total</h4></div>
+            </div>
+            <div class="d-flex m-r-20 m-l-10 hidden-md-down">
+                <div class="chart-text m-r-10">
+                    <h6 class="m-b-0"><small>Simulations</small></h6>
+                    <h4 class="m-t-0 text-success-alt">{{deviceStats.simulations}} running</h4></div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- ============================================================== -->
+<!-- End Bread crumb and right sidebar toggle -->
+<!-- ============================================================== -->
+<!-- Row -->
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="switch pull-right">
+                    <label>Disabled<input type="checkbox" checked [(ngModel)]="config.spec.sendTelemetryData" [ngModelOptions]="{standalone: true}"><span class="lever"></span>Enabled</label>
+                </div>
+                <h4 class="card-title">Individual Telemetry Sensor Data</h4>
+                <h6 class="card-subtitle">Customize how individual simulated telemetry sensor data is sent to AWS IoT.</h6>
+                <form class="fm-t-40">
+                    <div class="form-group">
+                        <label>Telemetry Data Topic</label>
+                        <input type="text" class="form-control form-control-line" [disabled]="!config.spec.sendTelemetryData" name="dataTopic" id="dataTopic" required ngModel #dataTopic="ngModel" [(ngModel)]="config.spec.dataTopic"/>
+                        <div class="form-control-feedback">
+                            <small>The topic where individual sensor data is sent.</small>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Sensor Data Transmision Interval</label>
+                        <input type="text" class="form-control form-control-line" [disabled]="!config.spec.sendTelemetryData" name="measurementPollerInterval" id="measurementPollerInterval" required ngModel #measurementPollerInterval="ngModel" [(ngModel)]="config.spec.measurementPollerInterval"/>
+                        <div class="form-control-feedback">
+                            <small>How often the individual sensor data is sent (milliseconds).</small>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Message Schema</label>
+                        <div class="row m-t-10" *ngFor="let item of config.spec.telemetrySchema">
+                            <div class="col-lg-5">
+                                <input type="text" class="form-control" [disabled]="true" [(ngModel)]="item.attribute" name="{{'attr_' + item.attribute}}" ngModel/>
+                            </div>
+                            <div class="col-lg-5">
+                                <select class="custom-select col-12" [disabled]="true" [(ngModel)]="item.value" name="{{'attr_' + item.attribute + '_val'}}" ngModel>
+                                    <option value="measurement_name">Measurement Name</option>
+                                    <option value="measurement_value">Measurement Value</option>
+                                    <option value="vin">VIN</option>
+                                    <option value="trip_id">Trip Id</option>
+                                    <option value="timestamp">UTC Timestamp</option>
+                                </select>
+                            </div>
+                            <div class="col-lg-2">
+                                <button type="button" class="btn btn-danger btn-sm m-r-15" (click)="removeSchemaAttribute(item.attribute, sensor)" *ngIf="false">Remove</button>
+                            </div>
+                        </div>
+                        <button type="button" class="btn btn-success btn-sm m-t-20" (click)="addSchemaAttribute(sensor)" *ngIf="false">Add Attribute</button>
+                    </div>
+                    <div>
+                        <label>Sample Message Payload</label>
+                    </div>
+                    <pre style="font-size:14px;">{{getDataSample('sensor')}}</pre>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Row -->
+<!-- Row -->
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="switch pull-right">
+                    <label>Disabled<input type="checkbox" checked [(ngModel)]="config.spec.sendAggregatedData" [ngModelOptions]="{standalone: true}"><span class="lever"></span>Enabled</label>
+                </div>
+                <h4 class="card-title">Aggregated Telemetry Data</h4>
+                <h6 class="card-subtitle">Customize how aggregated simulated telemetry sensor data is sent to AWS IoT.</h6>
+                <form class="fm-t-40">
+                    <div class="form-group">
+                        <label>Aggregated Telemetry Data Topic</label>
+                        <input type="text" class="form-control form-control-line" [disabled]="!config.spec.sendAggregatedData" name="dataAggregatedTopic" id="dataAggregatedTopic" required ngModel #dataAggregatedTopic="ngModel" [(ngModel)]="config.spec.dataAggregatedTopic"/>
+                        <div class="form-control-feedback">
+                            <small>The topic where aggregated telemetry data is sent.</small>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Aggregated Telemetry Transmision Interval</label>
+                        <input type="text" class="form-control form-control-line" [disabled]="!config.spec.sendAggregatedData" name="aggregationTransmissionTime" id="aggregationTransmissionTime" required ngModel #aggregationTransmissionTime="ngModel" [(ngModel)]="config.spec.aggregationTransmissionTime"/>
+                        <div class="form-control-feedback">
+                            <small>How often the aggregated telemetry data is sent (milliseconds).</small>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Row -->
+<!-- Row -->
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="switch pull-right">
+                    <label>Disabled<input type="checkbox" checked [(ngModel)]="config.spec.sendErrorData" [ngModelOptions]="{standalone: true}"><span class="lever"></span>Enabled</label>
+                </div>
+                <h4 class="card-title">Error Data</h4>
+                <h6 class="card-subtitle">Customize how diagnostic trouble codes are sent to AWS IoT.</h6>
+                <form class="fm-t-40">
+                    <div class="form-group">
+                        <label>Error (DTC) Topic</label>
+                        <input type="text" class="form-control form-control-line" [disabled]="!config.spec.sendErrorData" name="errorTopic" id="errorTopic" required ngModel #errorTopic="ngModel" [(ngModel)]="config.spec.errorTopic"/>
+                        <div class="form-control-feedback">
+                            <small>The topic where diagnostic trouble code data is sent.</small>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Row -->
+<!-- Row -->
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-body">
+                <div>
+                    <button type="button" class="btn btn-success-alt btn-rounded m-r-15" (click)="save()">Save</button>
+                    <button type="button" class="btn btn-secondary btn-rounded" (click)="cancel()">Cancel</button>
+                    <div class="alert alert-danger m-t-20" *ngIf="errors.length > 0">
+                        <h3 class="text-danger"><i class="fa fa-exclamation-circle"></i> Oops! Problem with your configuration.</h3>
+                        <ul>
+                            <li *ngFor="let err of errors">
+                                {{err}}
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Row -->

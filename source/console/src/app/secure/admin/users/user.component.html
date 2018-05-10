@@ -1,0 +1,83 @@
+<!-- ============================================================== -->
+<!-- Bread crumb and right sidebar toggle -->
+<!-- ============================================================== -->
+<div class="row page-titles">
+    <div class="col-md-5 col-8 align-self-center">
+        <h3 id="view-title">{{title}}</h3>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/securehome">Home</a></li>
+            <li class="breadcrumb-item"><a href="/securehome/admin/users">Users</a></li>
+            <li class="breadcrumb-item active">User</li>
+        </ol>
+    </div>
+    <div class="col-md-7 col-4 align-self-center">
+        <div class="d-flex m-t-10 justify-content-end">
+            <div class="d-flex m-r-20 m-l-10 hidden-md-down">
+                <div class="chart-text m-r-10">
+                    <h6 class="m-b-0"><small>Devices</small></h6>
+                    <h4 class="m-t-0 text-success">{{deviceStats.total}} total</h4></div>
+            </div>
+            <div class="d-flex m-r-20 m-l-10 hidden-md-down">
+                <div class="chart-text m-r-10">
+                    <h6 class="m-b-0"><small>Simulations</small></h6>
+                    <h4 class="m-t-0 text-success-alt">{{deviceStats.simulations}} running</h4></div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- ============================================================== -->
+<!-- End Bread crumb and right sidebar toggle -->
+<!-- ============================================================== -->
+<div class="row" *ngIf="isAdminUser">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="card-title">General Information</h4>
+                <h6 class="card-subtitle">The system information about the application user. You can disabled, enable and delete the user.</h6>
+                <div *ngIf="user.user_id">
+                    <button type="button" class="btn btn-outline-danger btn-rounded" *ngIf="user.enabled" (click)="disableUser()">Disable User</button>
+                    <button type="button" class="btn btn-outline-success btn-rounded m-r-15" *ngIf="!user.enabled" (click)="enableUser()">Enable User</button>
+                    <button type="button" class="btn btn-outline-danger btn-rounded" *ngIf="!user.enabled" (click)="deleteUser()">Delete User</button>
+                </div>
+                <form class="form-material m-t-40">
+                    <div class="form-group">
+                        <label>User Id</label>
+                        <input type="text" class="form-control form-control-line" value="{{user.user_id}}" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label>User Name</label>
+                        <input type="text" class="form-control form-control-line" value="{{user.name}}" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label>User Email</label>
+                        <input type="text" class="form-control form-control-line" value="{{user.email}}" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label>Created</label>
+                        <input type="text" class="form-control form-control-line" value="{{formatDate(user.created_at)}}" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label>Last Updated</label>
+                        <input type="text" class="form-control form-control-line" value="{{formatDate(user.updated_at)}}" readonly>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-body">
+                <h4 class="card-title">Group Assignments</h4>
+                <h6 class="card-subtitle">The user's assigned groups determine what permissions they have in the application.</h6>
+                <form class="form-material m-t-40">
+                    <div class="form-group" *ngFor="let group of groups">
+                        <input type="checkbox" id="chk_{{group.name.replace(' ', '')}}" [(ngModel)]="group.isMember" [ngModelOptions]="{standalone: true}" (change)="setGroup(group)" checked [disabled]="!user.enabled" />
+                        <label for="chk_{{group.name.replace(' ', '')}}">{{group.name}}</label>
+                    </div>
+                    <div *ngIf="user.user_id">
+                        <button type="button" class="btn btn-success btn-rounded m-r-15" *ngIf="user.enabled" (click)="saveUser()">Save User</button>
+                        <button type="button" class="btn btn-secondary btn-rounded" *ngIf="user.enabled" (click)="cancel()">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

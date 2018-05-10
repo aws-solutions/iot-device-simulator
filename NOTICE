@@ -1,2 +1,60 @@
-Iot Device Simulator
-Copyright 2018 Amazon.com, Inc. or its affiliates. All Rights Reserved. 
+IoT Device Simulator
+Copyright 2016 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+Licensed under the Amazon Software License (the "License"). You may not use this file except
+in compliance with the License. A copy of the License is located at http://aws.amazon.com/asl/
+or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+**********************
+THIRD PARTY COMPONENTS
+**********************
+This software includes third party software subject to the following copyrights:
+
+AWS SDK under the Apache License Version 2.0
+Underscore.js under the Massachusetts Institute of Technology (MIT) license
+Moment.js under the Massachusetts Institute of Technology (MIT) license
+shortid under the Massachusetts Institute of Technology (MIT) license
+randomstring under the Massachusetts Institute of Technology (MIT) license
+js-base64 under the Massachusetts Institute of Technology (MIT) license
+jsonwebtoken under the Massachusetts Institute of Technology (MIT) license
+jwk-to-pem under the Apache License Version 2.0
+AngularJS under the Massachusetts Institute of Technology (MIT) license
+Bootstrap v4.0.0-beta.2 under the Massachusetts Institute of Technology (MIT) license
+jasny-bootstrap under the Apache License, Version 2.0
+jquery.blockUI under the Massachusetts Institute of Technology (MIT) license
+jquery under the Massachusetts Institute of Technology (MIT) license
+jquery.slimscroll under the Massachusetts Institute of Technology (MIT) license
+metismenu under the Massachusetts Institute of Technology (MIT) license
+owl carousel under the Massachusetts Institute of Technology (MIT) license
+propper under the Massachusetts Institute of Technology (MIT) license
+waves under the Massachusetts Institute of Technology (MIT) license
+font-awesome under the Massachusetts Institute of Technology (MIT) license
+Material Design icons under the Apache License Version 2.0
+simple line icons under the Massachusetts Institute of Technology (MIT) license
+themify icons under the Massachusetts Institute of Technology (MIT) license
+c3 under the Massachusetts Institute of Technology (MIT) license
+chartist.js under the Massachusetts Institute of Technology (MIT) license
+d3 under the BSD 3-Clause license
+gauge.js under the Massachusetts Institute of Technology (MIT) license
+iCheck under the Massachusetts Institute of Technology (MIT) license
+jquery sparkline under the New BSD license
+sticky-kit under the Massachusetts Institute of Technology (MIT) license
+sweetalert2 under the Massachusetts Institute of Technology (MIT) license
+amazon-cognito-identity-js under the Amazon Software License
+angular-async-local-storage under the Massachusetts Institute of Technology (MIT) license
+core-js under the Massachusetts Institute of Technology (MIT) license
+debug under the Massachusetts Institute of Technology (MIT) license
+ejs under the Apache License Version 2.0
+enhanced-resolve under the Massachusetts Institute of Technology (MIT) license
+rxjs under the Apache License Version 2.0
+ts-helpers under the Massachusetts Institute of Technology (MIT) license
+zone.js under the Massachusetts Institute of Technology (MIT) license
+glob under the ISC license
+lodash under the Massachusetts Institute of Technology (MIT) license
+mapbox-gl-js under the BSD 3-Clause license
+uuid under the Massachusetts Institute of Technology (MIT) license
+generate-random-data under the Massachusetts Institute of Technology (MIT) license
+password-generator under the Massachusetts Institute of Technology (MIT) license
+
+The licenses for these third party components are included in LICENSE.txt

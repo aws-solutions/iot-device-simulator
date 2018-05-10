@@ -1,0 +1,48 @@
+{
+    "name": "iot-sim-admin-service",
+    "description": "The administration microservice for the iot device simulator",
+    "main": "index.js",
+    "license": "Amazon Software License (ASL)",
+    "version": "0.0.1",
+    "private": "true",
+    "dependencies": {
+        "moment": "*",
+        "randomstring": "*",
+        "underscore": "*",
+        "password-generator": "*",
+        "authorizer": "file:../../resources/authorizer/",
+        "logger": "file:../../resources/logger/"
+    },
+    "devDependencies": {
+        "aws-sdk": "*",
+        "chai": "*",
+        "sinon": "*",
+        "sinon-chai": "*",
+        "mocha": "*",
+        "aws-sdk-mock": "*",
+        "proxyquire": "*"
+    },
+    "scripts": {
+        "pretest": "npm install",
+        "test": "mocha lib/*.spec.js",
+        "prestart": "npm install",
+        "start": "node index.js",
+        "build:init": "rm -rf dist && rm -rf node_modules",
+        "build:zip": "zip -rq iot-sim-admin-service.zip . -x template.yml",
+        "build:dist": "mkdir dist && mv iot-sim-admin-service.zip dist/",
+        "build": "npm run build:init && npm install --production && npm run build:zip && npm run build:dist",
+        "local:test": "sam local invoke 'AdminService' -e ../tests/admin/get-user-event.json --env-vars ../tests/env-vars.json",
+        "local:api": "sam local start-api --env-vars ../tests/env-vars.json"
+    },
+    "bundledDependencies": [
+        "aws-sdk",
+        "moment",
+        "underscore",
+        "colors",
+        "jsonwebtoken",
+        "jwk-to-pem",
+        "request",
+        "password-generator",
+        "js-base64"
+    ]
+}

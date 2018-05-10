@@ -1,0 +1,60 @@
+<header class="login-page-header d-flex">
+    <div class="mr-auto">
+        <a href="#" class="d-flex align-items-center">
+            <img src="../assets/img/aws_smile.png" height="25px;" />
+            <h5 class="text-white m-0" style="margin-left: 5px !important; margin-top: -10px !important;">IoT Device Simulator</h5>
+        </a>
+    </div>
+    <div id="form-switch-btns" class="btn-group switch-btns">
+        <button data-target="#signin-form-wrap" class="btn" (click)="this.router.navigate(['/home/login']);">Sign in</button>
+    </div>
+</header>
+<div class="login-page-wrap">
+    <div class="side first-side">
+        <div class="side-content text-center">
+            <i class="mdi mdi-lock-pattern" style="font-size:200px;"></i>
+            <!-- <img class="mb-5" src="../assets/img/simulation.png" height="200" alt=""> -->
+            <div id="login-page-slider" data-plugin="owlCarousel" class="owl-carousel owl-theme">
+                <div class="item">
+                    <h3 class="mb-3 text-white">Device Simulation Console</h3>
+                    <p>Create, monitor, and manage your connected devices with a few simple clicks in the simulation console.</p>
+                </div>
+                <div class="item">
+                    <h3 class="mb-3 text-white">Customize your device collection</h3>
+                    <p>Leverage existing industry modules, such as Automotive, or customize your own device payloads for your device collections.</p>
+                </div>
+                <div class="item">
+                    <h3 class="mb-3 text-white">Real-time Performance Data</h3>
+                    <p>View real-time performance and telemetry data for console displays of each device in your collection.</p>
+                </div>
+            </div>
+            <!-- /#login-page-slider -->
+        </div>
+    </div>
+    <!-- /.first-side -->
+    <div class="side second-side">
+        <div class="side-content">
+            <div *ngIf="errorMessage!=null" class="alert alert-danger">
+                {{ errorMessage }}
+            </div>
+            <div id="signup-form-wrap" class="form-wrap show">
+                <h4 class="my-5 text-uppercase" style="font-weight:300; color:#fff;">Sign Up for an account</h4>
+                <form id="signup-form" class="form" action="#">
+                    <div class="form-group">
+                        <input type="name" class="form-control" placeholder="Name" style="" [(ngModel)]="registrationUser.name" [ngModelOptions]="{standalone: true}">
+                    </div>
+                    <div class="form-group">
+                        <input type="email" class="form-control" placeholder="Email" style="" [(ngModel)]="registrationUser.email" [ngModelOptions]="{standalone: true}">
+                    </div>
+                    <div class="form-group">
+                        <input type="password" class="form-control" placeholder="Password" style=""[(ngModel)]="registrationUser.password" [ngModelOptions]="{standalone: true}">
+                    </div>
+                    <input (click)="onRegister()" type="submit" class="btn btn-outline-success py-2 mt-5" style="width: 200px" value="Sign up">
+                </form>
+            </div>
+            <!-- /#signup-form-wrap -->
+        </div>
+        <!-- /.side-content -->
+    </div>
+    <!-- /.second-side -->
+</div>

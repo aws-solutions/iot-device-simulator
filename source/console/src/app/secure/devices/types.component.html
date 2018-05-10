@@ -1,0 +1,90 @@
+<!-- ============================================================== -->
+<!-- Bread crumb and right sidebar toggle -->
+<!-- ============================================================== -->
+<div class="row page-titles">
+    <div class="col-md-5 col-8 align-self-center">
+        <h3 id="view-title">{{title}}</h3>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/securehome">Home</a></li>
+            <li class="breadcrumb-item">Device Types</li>
+        </ol>
+    </div>
+    <div class="col-md-7 col-4 align-self-center">
+        <div class="d-flex m-t-10 justify-content-end">
+            <div class="d-flex m-r-20 m-l-10 hidden-md-down">
+                <div class="chart-text m-r-10">
+                    <h6 class="m-b-0"><small>Devices</small></h6>
+                    <h4 class="m-t-0 text-success">{{deviceStats.total}} total</h4></div>
+            </div>
+            <div class="d-flex m-r-20 m-l-10 hidden-md-down">
+                <div class="chart-text m-r-10">
+                    <h6 class="m-b-0"><small>Simulations</small></h6>
+                    <h4 class="m-t-0 text-success-alt">{{deviceStats.simulations}} running</h4></div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- ============================================================== -->
+<!-- End Bread crumb and right sidebar toggle -->
+<!-- ============================================================== -->
+<!-- Row -->
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-body">
+                <button type="button" class="float-right btn btn-sm btn-success m-l-15" (click)="refreshData()"><i class="fa fa-refresh"></i> Refresh</button>
+                <button type="button" class="float-right btn btn-sm btn-success m-l-15" (click)="openDeviceType('new')"><i class="mdi mdi-plus"></i> Add Device Type</button>
+                <h4 class="card-title">Device Types ({{metrics.total}})</h4>
+                <div class="table-responsive m-t-20">
+                    <table id="types-pagination" class="table stylish-table" style="text-transform:uppercase;" data-paging-limit="10">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>Device Type</th>
+                                <th class="text-right">Created At</th>
+                                <th class="text-right">Last Updated At</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let type of deviceTypes">
+                                <td>
+                                    <!-- <span [class]="device.stage === 'running' ? 'round round-success-alt' : (device.stage === 'provisioning' ? 'round round-warning' : 'round round-danger')"> -->
+                                    <span class="round round-light-grey">
+                                        <i class="mdi mdi-chip text-normal"></i>
+                                    </span>
+                                </td>
+                                <td>
+                                    <h6>{{type.name}}</h6><small class="text-muted">{{type.typeId}}</small>
+                                </td>
+                                <!-- <td><span [class]="user.status === 'CONFIRMED' ? 'label label-light-info' : 'label label-light-danger'">{{user.status}}</span></td> -->
+                                <td class="text-right">{{formatDate(type.createdAt)}}</td>
+                                <td class="text-right">{{formatDate(type.updatedAt)}}</td>
+                                <td>
+                                    <!-- <button type="button" class="pull-right btn btn-sm btn-success btn-rounded" (click)="openDevice(device.deviceId)"><i class="mdi mdi-information-outline"></i> View</button> -->
+                                    <div class="pull-right" role="group">
+                                        <button type="button" class="btn btn-success btn-sm" data-toggle="tooltip" title="Edit Device Type" data-placement="top" (click)="openDeviceType(type.typeId)"><i class="mdi mdi-pencil"></i> Edit</button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="7">
+                                    <div class="text-right">
+                                        <div class="pull-right">
+                                            <button type="button" [class]="pages.current === 0 ? 'btn btn-sm btn-default disabled' : 'btn btn-sm btn-default'" (click)="previousPage()" [disabled]="pages.current === 1"><i class="mdi mdi-chevron-left"></i></button>
+                                            <span class="m-l-10 m-r-10">Page {{pages.current}} of {{pages.total}}</span>
+                                            <button type="button" [class]="pages.current === (pages.total - 1) ? 'btn btn-sm btn-default disabled' : 'btn btn-sm btn-default'" (click)="nextPage()" [disabled]="pages.current === pages.total"><i class="mdi mdi-chevron-right"></i></button>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Row -->

@@ -1,0 +1,22 @@
+# compiled output
+**/dist
+**/open-source
+**/.zip
+**/tmp
+**/out-tsc
+
+# dependencies
+**/node_modules
+
+# e2e
+**/e2e/*.js
+**/e2e/*.map
+
+# misc
+**/npm-debug.log
+**/testem.log
+**/package-lock.json
+
+# System Files
+**/.DS_Store
+**/.sonarlint

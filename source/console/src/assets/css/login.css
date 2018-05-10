@@ -1,0 +1,155 @@
+html {
+    height: 100%
+}
+
+div.page-login {
+    padding: 0;
+    min-height: 100%;
+    height: 100%;
+    width: 100%;
+    color: #fff
+}
+
+.login-page-header {
+    position: fixed;
+    top: 0;
+    right: 0;
+    left: 0;
+    padding: 1.5rem
+}
+
+.login-page-header .switch-btns .btn {
+    border: none;
+    outline: none;
+    box-shadow: none;
+    background: #60c84c;
+    border: 1px solid #60c84c;
+    color: #fff
+}
+
+.login-page-header .switch-btns .btn[disabled] {
+    background: none;
+    border-color: #444;
+    color: gray
+}
+
+.form-wrap {
+    display: none
+}
+
+.form-wrap.show {
+    display: block
+}
+
+.login-page-wrap {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    height: 100%
+}
+
+.login-page-wrap .side {
+    padding: 124px 1.5rem 1.5rem
+}
+
+.login-page-wrap .side:first-child {
+    display: none;
+    background: #60c84c
+}
+
+.login-page-wrap .side:last-child {
+    background: #202020
+}
+
+.login-page-wrap .side-content {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem
+}
+
+@media (min-width:768px) {
+    .login-page-wrap .side {
+        -webkit-box-flex: 0;
+        -ms-flex: 0 2 5000px;
+        flex: 0 2 5000px;
+        overflow: hidden
+    }
+    .login-page-wrap .side:first-child {
+        display: block
+    }
+}
+
+@media (min-width:992px) {
+    .login-page-wrap .side-content {
+        padding-left: 5rem;
+        padding-right: 5rem
+    }
+}
+
+.form-wrap .form .form-control {
+    border: none;
+    outline: none;
+    box-shadow: none;
+    padding: .75rem 0;
+    border-radius: 0;
+    background: none;
+    border-bottom: 1px solid #888;
+    -webkit-transition: border-bottom-color .5s;
+    transition: border-bottom-color .5s
+}
+
+.form-wrap .form .form-control {
+    color: #888;
+}
+
+.form-wrap .form .form-control:focus {
+    border-bottom-color: #60c84c;
+    color: #fff;
+    padding-top: .5rem;
+    padding-bottom: 1rem
+}
+
+.form-wrap .form input::-webkit-input-placeholder {
+    color: #888!important
+}
+
+.form-wrap .form input:-moz-placeholder, .form-wrap .form input::-moz-placeholder {
+    color: #888!important
+}
+
+.form-wrap .form input:-ms-input-placeholder {
+    color: #888!important
+}
+
+#login-page-slider .item img {
+    max-width: 100%;
+    height: 200px
+}
+
+#login-page-slider .item p {
+    font-size: 1rem
+}
+
+#login-page-slider .owl-controls {
+    width: 54px;
+    margin: 0 auto;
+    margin-top: 2rem
+}
+
+#login-page-slider .owl-controls .owl-page {
+    display: inline-block;
+    margin-right: 6px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: none;
+    border: 1px solid #fff;
+    cursor: pointer
+}
+
+#login-page-slider .owl-controls .owl-page.active {
+    background: #fff
+}
+
+.login-page-wrap .side.second-side {
+    width: 100%;
+}

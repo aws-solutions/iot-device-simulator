@@ -1,0 +1,53 @@
+{
+    "name": "connected-car-sim-engine",
+    "description": "The simulation engine for the connected car solutions",
+    "main": "index.js",
+    "license": "ASL",
+    "version": "0.0.1",
+    "private": "true",
+    "dependencies": {
+        "aws-sdk": "*",
+        "colors": "*",
+        "generate-random-data": "*",
+        "generate-random-points": "*",
+        "glob": "*",
+        "lodash": "*",
+        "moment": "*",
+        "randomstring": "*",
+        "shortid": "*",
+        "underscore": "*",
+        "usage-metrics": "file:./helpers/usage-metrics/",
+        "uuid": "*",
+        "validate.js": "*"
+    },
+    "devDependencies": {
+        "chai": "*",
+        "sinon": "*",
+        "sinon-chai": "*",
+        "mocha": "*",
+        "aws-sdk-mock": "*",
+        "npm-run-all": "*",
+        "proxyquire": "*"
+    },
+    "scripts": {
+        "pretest": "npm install",
+        "test": "mocha $(find lib -name '*.spec.js')",
+        "prestart": "npm install",
+        "start": "node index.js",
+        "build-init": "rm -rf dist && rm -f archive.zip && mkdir dist && mkdir dist/deploy && mkdir dist/engine && mkdir dist/engine/lib && mkdir dist/engine/certs ",
+        "build:copy": "cp appspec.yml dist/ && cp -r deploy/* dist/deploy && cp index.js dist/engine/ && cp certs/root-CA.crt dist/engine/certs && cp -r lib/* dist/engine/lib",
+        "build:install": "cp package.json dist/engine && cd dist/engine/ && npm install --production",
+        "build": "npm-run-all -s build-init build:copy build:install",
+        "zip": "cd dist && zip -rq fleet-simulator-build.zip ."
+    },
+    "bundledDependencies": [
+        "aws-sdk",
+        "aws-iot-device-sdk",
+        "moment",
+        "randomstring",
+        "shortid",
+        "underscore",
+        "uuid",
+        "generate-random-data"
+    ]
+}

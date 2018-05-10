@@ -1,0 +1,180 @@
+<!-- ============================================================== -->
+<!-- Bread crumb and right sidebar toggle -->
+<!-- ============================================================== -->
+<div class="row page-titles">
+    <div class="col-md-5 col-8 align-self-center">
+        <h3 id="view-title">{{title}}</h3>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/securehome">Home</a></li>
+            <li class="breadcrumb-item">Settings</li>
+        </ol>
+    </div>
+    <div class="col-md-7 col-4 align-self-center">
+        <div class="d-flex m-t-10 justify-content-end">
+            <div class="d-flex m-r-20 m-l-10 hidden-md-down">
+                <div class="chart-text m-r-10">
+                    <h6 class="m-b-0"><small>Devices</small></h6>
+                    <h4 class="m-t-0 text-success">{{deviceStats.total}} total</h4></div>
+            </div>
+            <div class="d-flex m-r-20 m-l-10 hidden-md-down">
+                <div class="chart-text m-r-10">
+                    <h6 class="m-b-0"><small>Simulations</small></h6>
+                    <h4 class="m-t-0 text-success-alt">{{deviceStats.simulations}} running</h4></div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- ============================================================== -->
+<!-- End Bread crumb and right sidebar toggle -->
+<!-- ============================================================== -->
+<!-- Row -->
+<div class="row" *ngIf="isAdminUser">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-body p-b-0">
+                <h4 class="card-title">Settings</h4>
+                <h6 class="card-subtitle">Configuraiton settings used for the general application, simulation engine and automotive module.</h6> </div>
+            <!-- Nav tabs -->
+            <ul class="nav nav-tabs customtab" role="tablist">
+                <li class="nav-item"> <a class="nav-link active" data-toggle="tab" href="#general" role="tab"><span class="hidden-sm-up"><i class="ti-home"></i></span> <span class="hidden-xs-down">General</span></a> </li>
+                <li class="nav-item"> <a class="nav-link" data-toggle="tab" href="#simengine" role="tab"><span class="hidden-sm-up"><i class="ti-user"></i></span> <span class="hidden-xs-down">Simulation Engine</span></a> </li>
+                <li class="nav-item"> <a class="nav-link" data-toggle="tab" href="#auto" role="tab"><span class="hidden-sm-up"><i class="ti-email"></i></span> <span class="hidden-xs-down">Automotive</span></a> </li>
+            </ul>
+            <!-- Tab panes -->
+            <div class="tab-content">
+                <div class="tab-pane p-20 active" id="general" role="tabpanel">
+                    <div class="alert alert-danger" *ngIf="appConfigError">
+                        <h3 class="text-danger"><i class="fa fa-exclamation-circle"></i> Oops!</h3> Unable to load the general application settings.
+                    </div>
+                    <form class="fm-t-40" *ngIf="!appConfigError">
+                        <div class="form-group">
+                            <label>Mapbox Token</label>
+                            <input type="text" class="form-control form-control-line" name="mapboxToken" id="mapboxToken" #mapboxToken="ngModel" [(ngModel)]="appConfig.setting.mapboxToken" required ngModel />
+                            <div class="form-control-feedback">
+                                <small>The Mapbox Token used to display maps for the Automotive module.</small>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>IoT Device Simulator API Endpoint</label>
+                            <input type="text" class="form-control form-control-line" name="apiEndpoint" id="apiEndpoint" #apiEndpoint="ngModel" [(ngModel)]="appConfig.setting.apiEndpoint" required ngModel readonly />
+                            <div class="form-control-feedback">
+                                <small>The secure endpoint for the IoT Device Simulator API.</small>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Congito User Pool Id</label>
+                            <input type="text" class="form-control form-control-line" name="idp" id="idp" #idp="ngModel" [(ngModel)]="appConfig.setting.idp" required ngModel readonly />
+                            <div class="form-control-feedback">
+                                <small>The unique identifier for the Amazon Cognito User Pool.</small>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Installation UUID</label>
+                            <input type="text" class="form-control form-control-line" name="uuid" id="uuid" #uuid="ngModel" [(ngModel)]="appConfig.setting.uuid" required ngModel readonly />
+                            <div class="form-control-feedback">
+                                <small>The unique identifier assigned to the installation.</small>
+                            </div>
+                        </div>
+                        <div>
+                            <button type="button" class="btn btn-success-alt btn-rounded m-r-15" (click)="save(appConfig)">Save</button>
+                            <button type="button" class="btn btn-secondary btn-rounded" (click)="cancel(appConfig)">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="tab-pane p-20" id="simengine" role="tabpanel">
+                    <div class="alert alert-danger" *ngIf="simEngineConfigError">
+                        <h3 class="text-danger"><i class="fa fa-exclamation-circle"></i> Oops!</h3> Unable to load the simulation engine settings.
+                    </div>
+                    <form class="fm-t-40" *ngIf="!simEngineConfigError">
+                        <div class="form-group">
+                            <label>Target IoT Region</label>
+                            <!-- <input type="text" class="form-control form-control-line" name="targetIotRegion" id="targetIotRegion" #targetIotRegion="ngModel" [(ngModel)]="simEngineConfig.setting.targetIotRegion" required ngModel readonly /> -->
+                            <select class="custom-select col-12" name="targetIotRegion" id="targetIotRegion" #targetIotRegion="ngModel" [(ngModel)]="simEngineConfig.setting.targetIotRegion" required ngModel disabled>
+                                <option value="us-east-1">US-EAST-1</option>
+                                <option value="us-east-2">US-EAST-2</option>
+                                <option value="us-west-1">US-WEST-1</option>
+                                <option value="us-west-2">US-WEST-2</option>
+                            </select>
+                            <div class="form-control-feedback">
+                                <small>The region which the simulation engine will publish generated data.</small>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Logging Level</label>
+                            <!-- <input type="text" class="form-control form-control-line" name="loggingLevel" id="loggingLevel" #loggingLevel="ngModel" [(ngModel)]="simEngineConfig.setting.loggingLevel" required ngModel readonly /> -->
+                            <select class="custom-select col-12" name="loggingLevel" id="loggingLevel" #loggingLevel="ngModel" [(ngModel)]="simEngineConfig.setting.loggingLevel" required ngModel>
+                                <option value="1">INFO</option>
+                                <option value="2">ROBUST</option>
+                                <option value="3">DEBUG</option>
+                            </select>
+                            <div class="form-control-feedback">
+                                <small>The current logging level of the simulation engine to Amazon CloudWatch.</small>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Device Queue URL</label>
+                            <input type="text" class="form-control form-control-line" name="deviceQueueUrl" id="deviceQueueUrl" #deviceQueueUrl="ngModel" [(ngModel)]="simEngineConfig.setting.deviceQueueUrl" required ngModel readonly />
+                            <div class="form-control-feedback">
+                                <small>The URL of the Amazon SQS queue used for device state requests.</small>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Device Table</label>
+                            <input type="text" class="form-control form-control-line" name="deviceTable" id="deviceTable" #deviceTable="ngModel" [(ngModel)]="simEngineConfig.setting.deviceTable" required ngModel readonly />
+                            <div class="form-control-feedback">
+                                <small>The Amazon DynamoDB table used for persistance of device state and metadata.</small>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Device Type Table</label>
+                            <input type="text" class="form-control form-control-line" name="deviceTypeTable" id="deviceTypeTable" #deviceTypeTable="ngModel" [(ngModel)]="simEngineConfig.setting.deviceTypeTable" required ngModel readonly />
+                            <div class="form-control-feedback">
+                                <small>The Amazon DynamoDB table used for persistance of device type definitions.</small>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Metrics Table</label>
+                            <input type="text" class="form-control form-control-line" name="metricsTable" id="metricsTable" #metricsTable="ngModel" [(ngModel)]="simEngineConfig.setting.metricsTable" required ngModel readonly />
+                            <div class="form-control-feedback">
+                                <small>The Amazon DynamoDB table used for persistance of user simulation metrics.</small>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Queue Poller Interval</label>
+                            <input type="text" class="form-control form-control-line" name="queuePollerInterval" id="queuePollerInterval" #queuePollerInterval="ngModel" [(ngModel)]="simEngineConfig.setting.queuePollerInterval" required ngModel readonly />
+                            <div class="form-control-feedback">
+                                <small>The polling interval (ms) for the simulation engine of the Amazon SQS Device Queue.</small>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Garbage Collection Interval</label>
+                            <input type="text" class="form-control form-control-line" name="garbageCollectionInterval" id="garbageCollectionInterval" #garbageCollectionInterval="ngModel" [(ngModel)]="simEngineConfig.setting.garbageCollectionInterval" required ngModel readonly />
+                            <div class="form-control-feedback">
+                                <small>The internval (ms) in which the simulation engine will purge 'stopped' devices from memory.</small>
+                            </div>
+                        </div>
+                        <div>
+                            <button type="button" class="btn btn-success-alt btn-rounded m-r-15" (click)="save(simEngineConfig)">Save</button>
+                            <button type="button" class="btn btn-secondary btn-rounded" (click)="cancel(simEngineConfig)">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="tab-pane p-20" id="auto" role="tabpanel">
+                    <div class="alert alert-danger" *ngIf="autoConfigError">
+                        <h3 class="text-danger"><i class="fa fa-exclamation-circle"></i> Oops!</h3> Unable to load the automotive module settings.
+                    </div>
+                    <form class="fm-t-40" *ngIf="!autoConfigError">
+                        <div class="form-group">
+                            <label>Route S3 Bucket</label>
+                            <input type="text" class="form-control form-control-line" name="routeBucket" id="routeBucket" #routeBucket="ngModel" [(ngModel)]="autoConfig.setting.routeBucket" required ngModel readonly />
+                            <div class="form-control-feedback">
+                                <small>The Amazon S3 bucket where pre-configured routes and completed simulation route GeoJSON is stored.</small>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Row -->

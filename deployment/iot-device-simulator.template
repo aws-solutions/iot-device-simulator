@@ -1,0 +1,2388 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: "(SO0041) - The AWS CloudFormation template for deployment of the IoT Device Simulator. Version 1.0"
+Parameters:
+    AdministratorName:
+        Type: String
+        Description: Name of the IoT Device Simulator administrator.
+    AdministratorEmail:
+        Type: String
+        Description: Email address for IoT Device Simulator administrator.
+        AllowedPattern: "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$"
+
+Metadata:
+    AWS::CloudFormation::Interface:
+        ParameterGroups:
+            -
+                Label:
+                    default: "Administator Configuration"
+                Parameters:
+                    - AdministratorName
+                    - AdministratorEmail
+        ParameterLabels:
+            AdministratorName:
+                default: "Administrator name"
+            AdministratorEmail:
+                default: "Administrator email address"
+
+Mappings:
+    Send:
+        AnonymousUsage:
+            Data: "Yes"
+    SourceCode:
+        General:
+            S3Bucket: "%%BUCKET_NAME%%"
+            KeyPrefix: "iot-device-simulator/%%VERSION%%"
+        App:
+            ShortName: "iotsimulator"
+            FullName: "IoT Device Simulator"
+
+Resources:
+
+    # Permissions & Policies [start]
+
+    IotDeviceSimEngineTaskExecutionRole:
+        Type: "AWS::IAM::Role"
+        Properties:
+            AssumeRolePolicyDocument:
+                Version: "2012-10-17"
+                Statement:
+                    -
+                        Effect: "Allow"
+                        Principal:
+                            Service:
+                                - "ecs-tasks.amazonaws.com"
+                        Action:
+                                - "sts:AssumeRole"
+            Path: "/"
+            ManagedPolicyArns:
+                - "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
+
+    IotDeviceSimApiLambdaExecRole:
+        Type: "AWS::IAM::Role"
+        Properties:
+            RoleName: !Join ["-", ["iot-device-sim-apig-role", Ref: "AWS::Region" ]]
+            AssumeRolePolicyDocument:
+                Version: "2012-10-17"
+                Statement:
+                    -
+                        Effect: "Allow"
+                        Principal:
+                            Service:
+                                - "apigateway.amazonaws.com"
+                        Action:
+                                - "sts:AssumeRole"
+            Path: "/"
+
+    IotDeviceSimApiLambdaExecPolicy:
+        Type: "AWS::IAM::ManagedPolicy"
+        Properties:
+            Description: "IoT Device Simulator policy for the simulator api to invoke Lambda microservices."
+            PolicyDocument:
+                Version: "2012-10-17"
+                Statement:
+                    -
+                        Effect: "Allow"
+                        Action:
+                            - "lambda:InvokeFunction"
+                        Resource:
+                            -
+                                !GetAtt IotDeviceSimAdminService.Arn
+                            -
+                                !GetAtt IotDeviceSimProfileService.Arn
+                            -
+                                !GetAtt IotDeviceSimDeviceService.Arn
+                            -
+                                !GetAtt IotDeviceSimMetricsService.Arn
+
+            Roles:
+                -
+                    Ref: "IotDeviceSimApiLambdaExecRole"
+
+    IotDeviceSimResourceHelperRole:
+        Type: "AWS::IAM::Role"
+        Properties:
+            AssumeRolePolicyDocument:
+                Version: "2012-10-17"
+                Statement:
+                    -
+                        Effect: "Allow"
+                        Principal:
+                            Service:
+                                - "lambda.amazonaws.com"
+                        Action:
+                                - "sts:AssumeRole"
+            Path: "/"
+            Policies:
+                -
+                    PolicyName: "IotDeviceSimResourceHelperPolicy"
+                    PolicyDocument:
+                        Version: "2012-10-17"
+                        Statement:
+                            -
+                                Effect: "Allow"
+                                Action:
+                                    - "logs:CreateLogGroup"
+                                    - "logs:CreateLogStream"
+                                    - "logs:PutLogEvents"
+                                Resource:
+                                    - !Join ["", ["arn:aws:logs:", Ref: "AWS::Region", ":", Ref: "AWS::AccountId", ":log-group:/aws/lambda/iot-device-sim-helper:*"]]
+                            -
+                                Effect: "Allow"
+                                Action:
+                                    - "dynamodb:PutItem"
+                                Resource:
+                                    - !Join ["", ["arn:aws:dynamodb:", Ref: "AWS::Region", ":", Ref: "AWS::AccountId", ":table/", !Ref SettingsTable]]
+                                    - !Join ["", ["arn:aws:dynamodb:", Ref: "AWS::Region", ":", Ref: "AWS::AccountId", ":table/", !Ref DeviceTypesTable]]
+                            -
+                                Effect: "Allow"
+                                Action:
+                                    - "cognito-idp:CreateUserPool"
+                                    - "cognito-idp:AddCustomAttributes"
+                                    - "cognito-idp:CreateUserPoolClient"
+                                    - "cognito-idp:AdminCreateUser"
+                                    - "cognito-idp:CreateGroup"
+                                    - "cognito-idp:AdminAddUserToGroup"
+
+                                Resource:
+                                    - "*"
+                            -
+                                Effect: "Allow"
+                                Action:
+                                    - "s3:GetObject"
+                                Resource:
+                                    - "arn:aws:s3:::*"
+                            -
+                                Effect: "Allow"
+                                Action:
+                                    - "s3:PutObject"
+                                Resource:
+                                    - !Join ["/", [!GetAtt IotSimWebsiteBucket.Arn, "*"]]
+                                    - !Join ["/", [!GetAtt IotSimDataBucket.Arn, "*"]]
+
+    IotDeviceSimProfileRole:
+        Type: "AWS::IAM::Role"
+        Properties:
+            AssumeRolePolicyDocument:
+                Version: "2012-10-17"
+                Statement:
+                    -
+                        Effect: "Allow"
+                        Principal:
+                            Service:
+                                - "lambda.amazonaws.com"
+                        Action:
+                                - "sts:AssumeRole"
+            Path: "/"
+
+    IotDeviceSimProfilePolicy:
+        Type: "AWS::IAM::ManagedPolicy"
+        Properties:
+            Description: "IoT Device Simulator policy for the profile microservice Lambda function."
+            PolicyDocument:
+                Version: "2012-10-17"
+                Statement:
+                    -
+                        Effect: "Allow"
+                        Action:
+                            - "logs:CreateLogGroup"
+                            - "logs:CreateLogStream"
+                            - "logs:PutLogEvents"
+                        Resource:
+                            !Join ["", ["arn:aws:logs:", Ref: "AWS::Region", ":", Ref: "AWS::AccountId", ":log-group:/aws/lambda/", !Ref IotDeviceSimProfileService,":*"]]
+                    -
+                        Effect: "Allow"
+                        Action:
+                            - "dynamodb:GetItem"
+                            - "dynamodb:Query"
+                            - "dynamodb:Scan"
+                        Resource:
+                            - !Join ["", ["arn:aws:dynamodb:", Ref: "AWS::Region", ":", Ref: "AWS::AccountId", ":table/", Ref: SettingsTable]]
+                    -
+                        Effect: "Allow"
+                        Action:
+                            - "cognito-idp:AdminGetUser"
+                            - "cognito-idp:AdminListGroupsForUser"
+                        Resource:
+                            !Join ["", ["arn:aws:cognito-idp:", Ref: "AWS::Region", ":", Ref: "AWS::AccountId", ":userpool/", !Ref IotDeviceSimUserPool]]
+            Roles:
+                -
+                    Ref: "IotDeviceSimProfileRole"
+
+    IotDeviceSimAdminRole:
+        Type: "AWS::IAM::Role"
+        Properties:
+            AssumeRolePolicyDocument:
+                Version: "2012-10-17"
+                Statement:
+                    -
+                        Effect: "Allow"
+                        Principal:
+                            Service:
+                                - "lambda.amazonaws.com"
+                        Action:
+                                - "sts:AssumeRole"
+            Path: "/"
+
+    IotDeviceSimAdminPolicy:
+        Type: "AWS::IAM::ManagedPolicy"
+        Properties:
+            Description: "IoT Device Simulator policy for the admin microservice Lambda function."
+            PolicyDocument:
+                Version: "2012-10-17"
+                Statement:
+                    -
+                        Effect: "Allow"
+                        Action:
+                            - "logs:CreateLogGroup"
+                            - "logs:CreateLogStream"
+                            - "logs:PutLogEvents"
+                        Resource:
+                            !Join ["", ["arn:aws:logs:", Ref: "AWS::Region", ":", Ref: "AWS::AccountId", ":log-group:/aws/lambda/", Ref: IotDeviceSimAdminService, ":*"]]
+                    -
+                        Effect: "Allow"
+                        Action:
+                            - "dynamodb:BatchGetItem"
+                            - "dynamodb:BatchWriteItem"
+                            - "dynamodb:DeleteItem"
+                            - "dynamodb:GetItem"
+                            - "dynamodb:PutItem"
+                            - "dynamodb:Query"
+                            - "dynamodb:Scan"
+                            - "dynamodb:UpdateItem"
+                        Resource:
+                            - !Join ["", ["arn:aws:dynamodb:", Ref: "AWS::Region", ":", Ref: "AWS::AccountId", ":table/", Ref: SettingsTable]]
+                    -
+                        Effect: "Allow"
+                        Action:
+                            - "cognito-idp:AdminGetUser"
+                            - "cognito-idp:AdminListGroupsForUser"
+                            - "cognito-idp:ListUsers"
+                            - "cognito-idp:ListGroups"
+                        Resource:
+                            !Join ["", ["arn:aws:cognito-idp:", Ref: "AWS::Region", ":", Ref: "AWS::AccountId", ":userpool/", !Ref IotDeviceSimUserPool]]
+
+            Roles:
+                -
+                    Ref: "IotDeviceSimAdminRole"
+
+    IotDeviceSimDeviceRole:
+        Type: "AWS::IAM::Role"
+        Properties:
+            AssumeRolePolicyDocument:
+                Version: "2012-10-17"
+                Statement:
+                    -
+                        Effect: "Allow"
+                        Principal:
+                            Service:
+                                - "lambda.amazonaws.com"
+                        Action:
+                                - "sts:AssumeRole"
+            Path: "/"
+
+    IotDeviceSimDevicePolicy:
+        Type: "AWS::IAM::ManagedPolicy"
+        Properties:
+            Description: "IoT Device Simulator policy for the device microservice Lambda function."
+            PolicyDocument:
+                Version: "2012-10-17"
+                Statement:
+                    -
+                        Effect: "Allow"
+                        Action:
+                            - "logs:CreateLogGroup"
+                            - "logs:CreateLogStream"
+                            - "logs:PutLogEvents"
+                        Resource:
+                            !Join ["", ["arn:aws:logs:", Ref: "AWS::Region", ":", Ref: "AWS::AccountId", ":log-group:/aws/lambda/", Ref: IotDeviceSimDeviceService, ":*"]]
+                    -
+                        Effect: "Allow"
+                        Action:
+                            - "dynamodb:GetItem"
+                            - "dynamodb:Query"
+                            - "dynamodb:Scan"
+                        Resource:
+                            - !Join ["", ["arn:aws:dynamodb:", Ref: "AWS::Region", ":", Ref: "AWS::AccountId", ":table/", Ref: SettingsTable]]
+                    -
+                        Effect: "Allow"
+                        Action:
+                            - "dynamodb:BatchGetItem"
+                            - "dynamodb:BatchWriteItem"
+                            - "dynamodb:DeleteItem"
+                            - "dynamodb:GetItem"
+                            - "dynamodb:PutItem"
+                            - "dynamodb:Query"
+                            - "dynamodb:Scan"
+                            - "dynamodb:UpdateItem"
+                        Resource:
+                            - !Join ["", ["arn:aws:dynamodb:", Ref: "AWS::Region", ":", Ref: "AWS::AccountId", ":table/", Ref: DeviceWidgetsTable]]
+                            - !Join ["", ["arn:aws:dynamodb:", Ref: "AWS::Region", ":", Ref: "AWS::AccountId", ":table/", Ref: DeviceWidgetsTable, "/index/userId-category-index"]]
+                            - !Join ["", ["arn:aws:dynamodb:", Ref: "AWS::Region", ":", Ref: "AWS::AccountId", ":table/", Ref: DeviceTypesTable]]
+                    -
+                        Effect: "Allow"
+                        Action:
+                            - "cognito-idp:AdminGetUser"
+                            - "cognito-idp:AdminListGroupsForUser"
+                        Resource:
+                            !Join ["", ["arn:aws:cognito-idp:", Ref: "AWS::Region", ":", Ref: "AWS::AccountId", ":userpool/", !Ref IotDeviceSimUserPool]]
+                    -
+                        Effect: "Allow"
+                        Action:
+                            - "sqs:sendMessage"
+                        Resource:
+                            - !GetAtt IotDeviceSimQueue.Arn
+            Roles:
+                -
+                    Ref: "IotDeviceSimDeviceRole"
+
+    IotDeviceSimMetricsRole:
+        Type: "AWS::IAM::Role"
+        Properties:
+            AssumeRolePolicyDocument:
+                Version: "2012-10-17"
+                Statement:
+                    -
+                        Effect: "Allow"
+                        Principal:
+                            Service:
+                                - "lambda.amazonaws.com"
+                        Action:
+                                - "sts:AssumeRole"
+            Path: "/"
+
+    IotDeviceSimMetricsPolicy:
+        Type: "AWS::IAM::ManagedPolicy"
+        Properties:
+            Description: "IoT Device Simulator policy for the metrics microservice Lambda function."
+            PolicyDocument:
+                Version: "2012-10-17"
+                Statement:
+                    -
+                        Effect: "Allow"
+                        Action:
+                            - "logs:CreateLogGroup"
+                            - "logs:CreateLogStream"
+                            - "logs:PutLogEvents"
+                        Resource:
+                            !Join ["", ["arn:aws:logs:", Ref: "AWS::Region", ":", Ref: "AWS::AccountId", ":log-group:/aws/lambda/", Ref: IotDeviceSimMetricsService, ":*"]]
+                    -
+                        Effect: "Allow"
+                        Action:
+                            - "dynamodb:GetItem"
+                            - "dynamodb:Query"
+                            - "dynamodb:Scan"
+                        Resource:
+                            - !Join ["", ["arn:aws:dynamodb:", Ref: "AWS::Region", ":", Ref: "AWS::AccountId", ":table/", Ref: SettingsTable]]
+                    -
+                        Effect: "Allow"
+                        Action:
+                            - "dynamodb:BatchGetItem"
+                            - "dynamodb:BatchWriteItem"
+                            - "dynamodb:DeleteItem"
+                            - "dynamodb:GetItem"
+                            - "dynamodb:PutItem"
+                            - "dynamodb:Query"
+                            - "dynamodb:Scan"
+                            - "dynamodb:UpdateItem"
+                        Resource:
+                            - !Join ["", ["arn:aws:dynamodb:", Ref: "AWS::Region", ":", Ref: "AWS::AccountId", ":table/", Ref: MetricsTable]]
+                    -
+                        Effect: "Allow"
+                        Action:
+                            - "cognito-idp:AdminGetUser"
+                            - "cognito-idp:AdminListGroupsForUser"
+                        Resource:
+                            !Join ["", ["arn:aws:cognito-idp:", Ref: "AWS::Region", ":", Ref: "AWS::AccountId", ":userpool/", !Ref IotDeviceSimUserPool]]
+            Roles:
+                -
+                    Ref: "IotDeviceSimMetricsRole"
+
+    IotDeviceSimEngineTaskRole:
+        Type: "AWS::IAM::Role"
+        Properties:
+            AssumeRolePolicyDocument:
+                Version: "2012-10-17"
+                Statement:
+                    -
+                        Effect: "Allow"
+                        Principal:
+                            Service:
+                                - "ecs-tasks.amazonaws.com"
+                        Action:
+                                - "sts:AssumeRole"
+            Path: "/"
+
+    IotDeviceSimEngineTaskPolicy:
+        Type: "AWS::IAM::ManagedPolicy"
+        Properties:
+            Description: "IoT Device Simulator engine policy to allow ECS tasks to call AWS services on your behalf."
+            PolicyDocument:
+                Version: "2012-10-17"
+                Statement:
+                    -
+                        Effect: "Allow"
+                        Action:
+                            - "sqs:DeleteMessage"
+                            - "sqs:GetQueueUrl"
+                            - "sqs:ChangeMessageVisibility"
+                            - "sqs:ListDeadLetterSourceQueues"
+                            - "sqs:DeleteMessageBatch"
+                            - "sqs:SendMessageBatch"
+                            - "sqs:PurgeQueue"
+                            - "sqs:ReceiveMessage"
+                            - "sqs:SendMessage"
+                            - "sqs:ListQueueTags"
+                        Resource:
+                            - !GetAtt IotDeviceSimQueue.Arn
+                    -
+                        Effect: "Allow"
+                        Action:
+                            - "dynamodb:BatchGetItem"
+                            - "dynamodb:BatchWriteItem"
+                            - "dynamodb:DeleteItem"
+                            - "dynamodb:GetItem"
+                            - "dynamodb:PutItem"
+                            - "dynamodb:Query"
+                            - "dynamodb:Scan"
+                            - "dynamodb:UpdateItem"
+                        Resource:
+                            - !Join ["", ["arn:aws:dynamodb:", Ref: "AWS::Region", ":", Ref: "AWS::AccountId", ":table/", Ref: MetricsTable]]
+                            - !Join ["", ["arn:aws:dynamodb:", Ref: "AWS::Region", ":", Ref: "AWS::AccountId", ":table/", Ref: DeviceWidgetsTable]]
+                            - !Join ["", ["arn:aws:dynamodb:", Ref: "AWS::Region", ":", Ref: "AWS::AccountId", ":table/", Ref: DeviceWidgetsTable, "/index/userId-category-index"]]
+                            - !Join ["", ["arn:aws:dynamodb:", Ref: "AWS::Region", ":", Ref: "AWS::AccountId", ":table/", Ref: DeviceTypesTable]]
+                            - !Join ["", ["arn:aws:dynamodb:", Ref: "AWS::Region", ":", Ref: "AWS::AccountId", ":table/", Ref: SettingsTable]]
+                    -
+                        Effect: "Allow"
+                        Action:
+                            - "s3:GetObject"
+                            - "s3:PutObject"
+                        Resource:
+                            - !Join ["/", [!GetAtt IotSimDataBucket.Arn, "*"]]
+                    -
+                        Effect: "Allow"
+                        Action:
+                            - "iot:publish"
+                            - "iot:describeEndpoint"
+                        Resource:
+                            - "*"
+
+            Roles:
+                -
+                    Ref: "IotDeviceSimEngineTaskRole"
+
+    IotDeviceSimIdentityPoolAuthRole:
+        Type: "AWS::IAM::Role"
+        Properties:
+            AssumeRolePolicyDocument:
+                Version: "2012-10-17"
+                Statement:
+                    -
+                        Effect: "Allow"
+                        Principal:
+                            Federated:
+                                - "cognito-identity.amazonaws.com"
+                        Action:
+                                - "sts:AssumeRoleWithWebIdentity"
+                        Condition:
+                            StringEquals:
+                                "cognito-identity.amazonaws.com:aud": !Sub "${IotDeviceSimIdentityPool}"
+                            "ForAnyValue:StringLike":
+                                "cognito-identity.amazonaws.com:amr": "authenticated"
+            Path: "/"
+
+    IotDeviceSimIdentityPoolAuthPolicy:
+        Type: "AWS::IAM::ManagedPolicy"
+        Properties:
+            Description: "Policy for the iot device simulator identity pool authorized identities."
+            PolicyDocument:
+                Version: "2012-10-17"
+                Statement:
+                    -
+                        Effect: "Allow"
+                        Action:
+                            - "mobileanalytics:PutEvents"
+                            - "cognito-identity:*"
+                        Resource: !Sub "arn:aws:cognito-identity:${AWS::Region}:${AWS::AccountId}:identitypool/${IotDeviceSimIdentityPool}"
+                    -
+                        Effect: "Allow"
+                        Action:
+                            - "iot:Connect"
+                            - "iot:Subscribe"
+                            - "iot:Receive"
+                        Resource:
+                            - "*"
+            Roles:
+                -
+                    Ref: "IotDeviceSimIdentityPoolAuthRole"
+
+    IotDeviceSimIdentityPoolUnauthRole:
+        Type: "AWS::IAM::Role"
+        Properties:
+            AssumeRolePolicyDocument:
+                Version: "2012-10-17"
+                Statement:
+                    -
+                        Effect: "Allow"
+                        Principal:
+                            Federated:
+                                - "cognito-identity.amazonaws.com"
+                        Action:
+                                - "sts:AssumeRoleWithWebIdentity"
+                        Condition:
+                            StringEquals:
+                                "cognito-identity.amazonaws.com:aud": !Sub "${IotDeviceSimIdentityPool}"
+                            "ForAnyValue:StringLike":
+                                "cognito-identity.amazonaws.com:amr": "unauthenticated"
+            Path: "/"
+
+    IotDeviceSimIdentityPoolUnauthPolicy:
+        Type: "AWS::IAM::ManagedPolicy"
+        Properties:
+            Description: "Policy for the iot device simulator identity pool unauthorized identities."
+            PolicyDocument:
+                Version: "2012-10-17"
+                Statement:
+                    -
+                        Effect: "Allow"
+                        Action:
+                            - "mobileanalytics:PutEvents"
+                        Resource: !Sub "arn:aws:cognito-identity:${AWS::Region}:${AWS::AccountId}:identitypool/${IotDeviceSimIdentityPool}"
+                    -
+                        Effect: "Allow"
+                        Action:
+                            - "iot:Connect"
+                            - "iot:Subscribe"
+                            - "iot:Receive"
+                        Resource:
+                            - "*"
+            Roles:
+                -
+                    Ref: "IotDeviceSimIdentityPoolUnauthRole"
+
+    # Permissions & Policies [end]
+
+    # API [start]
+
+    IotDeviceSimApi:
+        Type: AWS::ApiGateway::RestApi
+        Properties:
+            Body:
+                swagger: "2.0"
+                info:
+                  version: "2017-02-24T15:19:00Z"
+                  title:
+                      Ref: AWS::StackName
+                basePath: "/prod"
+                schemes:
+                - "https"
+                paths:
+                  "/admin/groups":
+                      options:
+                          consumes:
+                          - "application/json"
+                          produces:
+                          - "application/json"
+                          responses:
+                              "200":
+                                  description: "200 response"
+                                  schema:
+                                      $ref: "#/definitions/Empty"
+                                  headers:
+                                      Access-Control-Allow-Origin:
+                                          type: "string"
+                                      Access-Control-Allow-Methods:
+                                          type: "string"
+                                      Access-Control-Allow-Headers:
+                                          type: "string"
+                          x-amazon-apigateway-integration:
+                              responses:
+                                  default:
+                                      statusCode: "200"
+                                      responseParameters:
+                                          method.response.header.Access-Control-Allow-Methods: "'DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT'"
+                                          method.response.header.Access-Control-Allow-Headers: "'Content-Type,Authorization,X-Amz-Date,X-Api-Key,X-Amz-Security-Token'"
+                                          method.response.header.Access-Control-Allow-Origin: "'*'"
+                              requestTemplates:
+                                  application/json: "{\"statusCode\": 200}"
+                              passthroughBehavior: "when_no_match"
+                              type: "mock"
+                      x-amazon-apigateway-any-method:
+                          produces:
+                          - "application/json"
+                          responses:
+                              "200":
+                                  description: "200 response"
+                                  schema:
+                                      $ref: "#/definitions/Empty"
+                          security:
+                          - iot-sim-authorizer: []
+                          x-amazon-apigateway-integration:
+                              responses:
+                                  default:
+                                      statusCode: "200"
+                              uri:
+                                  Fn::Sub: "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${IotDeviceSimAdminService.Arn}/invocations"
+                              passthroughBehavior: "when_no_match"
+                              httpMethod: "POST"
+                              contentHandling: "CONVERT_TO_TEXT"
+                              type: "aws_proxy"
+                              credentials: !GetAtt IotDeviceSimApiLambdaExecRole.Arn
+                  "/admin/groups/{group_id}":
+                      options:
+                          consumes:
+                          - "application/json"
+                          produces:
+                          - "application/json"
+                          responses:
+                              "200":
+                                  description: "200 response"
+                                  schema:
+                                      $ref: "#/definitions/Empty"
+                                  headers:
+                                      Access-Control-Allow-Origin:
+                                          type: "string"
+                                      Access-Control-Allow-Methods:
+                                          type: "string"
+                                      Access-Control-Allow-Headers:
+                                          type: "string"
+                          x-amazon-apigateway-integration:
+                              responses:
+                                  default:
+                                      statusCode: "200"
+                                      responseParameters:
+                                          method.response.header.Access-Control-Allow-Methods: "'DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT'"
+                                          method.response.header.Access-Control-Allow-Headers: "'Content-Type,Authorization,X-Amz-Date,X-Api-Key,X-Amz-Security-Token'"
+                                          method.response.header.Access-Control-Allow-Origin: "'*'"
+                              requestTemplates:
+                                  application/json: "{\"statusCode\": 200}"
+                              passthroughBehavior: "when_no_match"
+                              type: "mock"
+                      x-amazon-apigateway-any-method:
+                          produces:
+                          - "application/json"
+                          parameters:
+                          - name: "group_id"
+                            in: "path"
+                            required: true
+                            type: "string"
+                          responses:
+                              "200":
+                                  description: "200 response"
+                                  schema:
+                                      $ref: "#/definitions/Empty"
+                          security:
+                          - iot-sim-authorizer: []
+                          x-amazon-apigateway-integration:
+                              responses:
+                                  default:
+                                      statusCode: "200"
+                              uri:
+                                  Fn::Sub: "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${IotDeviceSimAdminService.Arn}/invocations"
+                              passthroughBehavior: "when_no_match"
+                              httpMethod: "POST"
+                              contentHandling: "CONVERT_TO_TEXT"
+                              type: "aws_proxy"
+                              credentials: !GetAtt IotDeviceSimApiLambdaExecRole.Arn
+                  "/admin/invitations":
+                      options:
+                          consumes:
+                          - "application/json"
+                          produces:
+                          - "application/json"
+                          responses:
+                              "200":
+                                  description: "200 response"
+                                  schema:
+                                      $ref: "#/definitions/Empty"
+                                  headers:
+                                      Access-Control-Allow-Origin:
+                                          type: "string"
+                                      Access-Control-Allow-Methods:
+                                          type: "string"
+                                      Access-Control-Allow-Headers:
+                                          type: "string"
+                          x-amazon-apigateway-integration:
+                              responses:
+                                  default:
+                                      statusCode: "200"
+                                      responseParameters:
+                                          method.response.header.Access-Control-Allow-Methods: "'DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT'"
+                                          method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+                                          method.response.header.Access-Control-Allow-Origin: "'*'"
+                              requestTemplates:
+                                  application/json: "{\"statusCode\": 200}"
+                              passthroughBehavior: "when_no_match"
+                              type: "mock"
+                      x-amazon-apigateway-any-method:
+                          produces:
+                          - "application/json"
+                          responses:
+                              "200":
+                                  description: "200 response"
+                                  schema:
+                                      $ref: "#/definitions/Empty"
+                          security:
+                          - iot-sim-authorizer: []
+                          x-amazon-apigateway-integration:
+                              responses:
+                                  default:
+                                      statusCode: "200"
+                              uri:
+                                  Fn::Sub: "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${IotDeviceSimAdminService.Arn}/invocations"
+                              passthroughBehavior: "when_no_match"
+                              httpMethod: "POST"
+                              contentHandling: "CONVERT_TO_TEXT"
+                              type: "aws_proxy"
+                              credentials: !GetAtt IotDeviceSimApiLambdaExecRole.Arn
+                  "/admin/settings":
+                      options:
+                          consumes:
+                          - "application/json"
+                          produces:
+                          - "application/json"
+                          responses:
+                              "200":
+                                  description: "200 response"
+                                  schema:
+                                      $ref: "#/definitions/Empty"
+                                  headers:
+                                      Access-Control-Allow-Origin:
+                                          type: "string"
+                                      Access-Control-Allow-Methods:
+                                          type: "string"
+                                      Access-Control-Allow-Headers:
+                                          type: "string"
+                          x-amazon-apigateway-integration:
+                              responses:
+                                  default:
+                                      statusCode: "200"
+                                      responseParameters:
+                                          method.response.header.Access-Control-Allow-Methods: "'DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT'"
+                                          method.response.header.Access-Control-Allow-Headers: "'Content-Type,Authorization,X-Amz-Date,X-Api-Key,X-Amz-Security-Token'"
+                                          method.response.header.Access-Control-Allow-Origin: "'*'"
+                              requestTemplates:
+                                  application/json: "{\"statusCode\": 200}"
+                              passthroughBehavior: "when_no_match"
+                              type: "mock"
+                      x-amazon-apigateway-any-method:
+                          produces:
+                          - "application/json"
+                          responses:
+                              "200":
+                                  description: "200 response"
+                                  schema:
+                                      $ref: "#/definitions/Empty"
+                          security:
+                          - iot-sim-authorizer: []
+                          x-amazon-apigateway-integration:
+                              responses:
+                                  default:
+                                      statusCode: "200"
+                              uri:
+                                  Fn::Sub: "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${IotDeviceSimAdminService.Arn}/invocations"
+                              passthroughBehavior: "when_no_match"
+                              httpMethod: "POST"
+                              contentHandling: "CONVERT_TO_TEXT"
+                              type: "aws_proxy"
+                              credentials: !GetAtt IotDeviceSimApiLambdaExecRole.Arn
+                  "/admin/users":
+                      options:
+                          consumes:
+                          - "application/json"
+                          produces:
+                          - "application/json"
+                          responses:
+                              "200":
+                                  description: "200 response"
+                                  schema:
+                                      $ref: "#/definitions/Empty"
+                                  headers:
+                                      Access-Control-Allow-Origin:
+                                          type: "string"
+                                      Access-Control-Allow-Methods:
+                                          type: "string"
+                                      Access-Control-Allow-Headers:
+                                          type: "string"
+                          x-amazon-apigateway-integration:
+                              responses:
+                                  default:
+                                      statusCode: "200"
+                                      responseParameters:
+                                          method.response.header.Access-Control-Allow-Methods: "'DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT'"
+                                          method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+                                          method.response.header.Access-Control-Allow-Origin: "'*'"
+                              requestTemplates:
+                                  application/json: "{\"statusCode\": 200}"
+                              passthroughBehavior: "when_no_match"
+                              type: "mock"
+                      x-amazon-apigateway-any-method:
+                          produces:
+                          - "application/json"
+                          responses:
+                              "200":
+                                  description: "200 response"
+                                  schema:
+                                      $ref: "#/definitions/Empty"
+                          security:
+                          - iot-sim-authorizer: []
+                          x-amazon-apigateway-integration:
+                              responses:
+                                  default:
+                                      statusCode: "200"
+                              uri:
+                                  Fn::Sub: "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${IotDeviceSimAdminService.Arn}/invocations"
+                              passthroughBehavior: "when_no_match"
+                              httpMethod: "POST"
+                              contentHandling: "CONVERT_TO_TEXT"
+                              type: "aws_proxy"
+                              credentials: !GetAtt IotDeviceSimApiLambdaExecRole.Arn
+                  "/admin/users/{user_id}":
+                      options:
+                          consumes:
+                          - "application/json"
+                          produces:
+                          - "application/json"
+                          responses:
+                              "200":
+                                  description: "200 response"
+                                  schema:
+                                      $ref: "#/definitions/Empty"
+                                  headers:
+                                      Access-Control-Allow-Origin:
+                                          type: "string"
+                                      Access-Control-Allow-Methods:
+                                          type: "string"
+                                      Access-Control-Allow-Headers:
+                                          type: "string"
+                          x-amazon-apigateway-integration:
+                              responses:
+                                  default:
+                                      statusCode: "200"
+                                      responseParameters:
+                                          method.response.header.Access-Control-Allow-Methods: "'DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT'"
+                                          method.response.header.Access-Control-Allow-Headers: "'Content-Type,Authorization,X-Amz-Date,X-Api-Key,X-Amz-Security-Token'"
+                                          method.response.header.Access-Control-Allow-Origin: "'*'"
+                              requestTemplates:
+                                  application/json: "{\"statusCode\": 200}"
+                              passthroughBehavior: "when_no_match"
+                              type: "mock"
+                      x-amazon-apigateway-any-method:
+                          produces:
+                          - "application/json"
+                          parameters:
+                          - name: "user_id"
+                            in: "path"
+                            required: true
+                            type: "string"
+                          responses:
+                              "200":
+                                  description: "200 response"
+                                  schema:
+                                      $ref: "#/definitions/Empty"
+                          security:
+                          - iot-sim-authorizer: []
+                          x-amazon-apigateway-integration:
+                              responses:
+                                  default:
+                                      statusCode: "200"
+                              uri:
+                                  Fn::Sub: "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${IotDeviceSimAdminService.Arn}/invocations"
+                              passthroughBehavior: "when_no_match"
+                              httpMethod: "POST"
+                              contentHandling: "CONVERT_TO_TEXT"
+                              type: "aws_proxy"
+                              credentials: !GetAtt IotDeviceSimApiLambdaExecRole.Arn
+                  "/profile":
+                      options:
+                          consumes:
+                          - "application/json"
+                          produces:
+                          - "application/json"
+                          responses:
+                              "200":
+                                  description: "200 response"
+                                  schema:
+                                      $ref: "#/definitions/Empty"
+                                  headers:
+                                      Access-Control-Allow-Origin:
+                                          type: "string"
+                                      Access-Control-Allow-Methods:
+                                          type: "string"
+                                      Access-Control-Allow-Headers:
+                                          type: "string"
+                          x-amazon-apigateway-integration:
+                              responses:
+                                  default:
+                                      statusCode: "200"
+                                      responseParameters:
+                                          method.response.header.Access-Control-Allow-Methods: "'DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT'"
+                                          method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+                                          method.response.header.Access-Control-Allow-Origin: "'*'"
+                              requestTemplates:
+                                  application/json: "{\"statusCode\": 200}"
+                              passthroughBehavior: "when_no_match"
+                              type: "mock"
+                      x-amazon-apigateway-any-method:
+                          produces:
+                          - "application/json"
+                          responses:
+                              "200":
+                                  description: "200 response"
+                                  schema:
+                                      $ref: "#/definitions/Empty"
+                          security:
+                          - iot-sim-authorizer: []
+                          x-amazon-apigateway-integration:
+                              responses:
+                                  default:
+                                      statusCode: "200"
+                              uri:
+                                  Fn::Sub: "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${IotDeviceSimProfileService.Arn}/invocations"
+                              passthroughBehavior: "when_no_match"
+                              httpMethod: "POST"
+                              contentHandling: "CONVERT_TO_TEXT"
+                              type: "aws_proxy"
+                              credentials: !GetAtt IotDeviceSimApiLambdaExecRole.Arn
+                  "/metrics":
+                      options:
+                          consumes:
+                          - "application/json"
+                          produces:
+                          - "application/json"
+                          responses:
+                              "200":
+                                  description: "200 response"
+                                  schema:
+                                      $ref: "#/definitions/Empty"
+                                  headers:
+                                      Access-Control-Allow-Origin:
+                                          type: "string"
+                                      Access-Control-Allow-Methods:
+                                          type: "string"
+                                      Access-Control-Allow-Headers:
+                                          type: "string"
+                          x-amazon-apigateway-integration:
+                              responses:
+                                  default:
+                                      statusCode: "200"
+                                      responseParameters:
+                                          method.response.header.Access-Control-Allow-Methods: "'DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT'"
+                                          method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+                                          method.response.header.Access-Control-Allow-Origin: "'*'"
+                              requestTemplates:
+                                  application/json: "{\"statusCode\": 200}"
+                              passthroughBehavior: "when_no_match"
+                              type: "mock"
+                      x-amazon-apigateway-any-method:
+                          produces:
+                          - "application/json"
+                          responses:
+                              "200":
+                                  description: "200 response"
+                                  schema:
+                                      $ref: "#/definitions/Empty"
+                          security:
+                          - iot-sim-authorizer: []
+                          x-amazon-apigateway-integration:
+                              responses:
+                                  default:
+                                      statusCode: "200"
+                              uri:
+                                  Fn::Sub: "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${IotDeviceSimMetricsService.Arn}/invocations"
+                              passthroughBehavior: "when_no_match"
+                              httpMethod: "POST"
+                              contentHandling: "CONVERT_TO_TEXT"
+                              type: "aws_proxy"
+                              credentials: !GetAtt IotDeviceSimApiLambdaExecRole.Arn
+                  "/devices/types":
+                      options:
+                          consumes:
+                          - "application/json"
+                          produces:
+                          - "application/json"
+                          responses:
+                              "200":
+                                  description: "200 response"
+                                  schema:
+                                      $ref: "#/definitions/Empty"
+                                  headers:
+                                      Access-Control-Allow-Origin:
+                                          type: "string"
+                                      Access-Control-Allow-Methods:
+                                          type: "string"
+                                      Access-Control-Allow-Headers:
+                                          type: "string"
+                          x-amazon-apigateway-integration:
+                              responses:
+                                  default:
+                                      statusCode: "200"
+                                      responseParameters:
+                                          method.response.header.Access-Control-Allow-Methods: "'DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT'"
+                                          method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+                                          method.response.header.Access-Control-Allow-Origin: "'*'"
+                              requestTemplates:
+                                  application/json: "{\"statusCode\": 200}"
+                              passthroughBehavior: "when_no_match"
+                              type: "mock"
+                      x-amazon-apigateway-any-method:
+                          produces:
+                          - "application/json"
+                          responses:
+                              "200":
+                                  description: "200 response"
+                                  schema:
+                                      $ref: "#/definitions/Empty"
+                          security:
+                          - iot-sim-authorizer: []
+                          x-amazon-apigateway-integration:
+                              responses:
+                                  default:
+                                      statusCode: "200"
+                              uri:
+                                  Fn::Sub: "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${IotDeviceSimDeviceService.Arn}/invocations"
+                              passthroughBehavior: "when_no_match"
+                              httpMethod: "POST"
+                              contentHandling: "CONVERT_TO_TEXT"
+                              type: "aws_proxy"
+                              credentials: !GetAtt IotDeviceSimApiLambdaExecRole.Arn
+                  "/devices/types/{typeid}":
+                      options:
+                          consumes:
+                          - "application/json"
+                          produces:
+                          - "application/json"
+                          responses:
+                              "200":
+                                  description: "200 response"
+                                  schema:
+                                      $ref: "#/definitions/Empty"
+                                  headers:
+                                      Access-Control-Allow-Origin:
+                                          type: "string"
+                                      Access-Control-Allow-Methods:
+                                          type: "string"
+                                      Access-Control-Allow-Headers:
+                                          type: "string"
+                          x-amazon-apigateway-integration:
+                              responses:
+                                  default:
+                                      statusCode: "200"
+                                      responseParameters:
+                                          method.response.header.Access-Control-Allow-Methods: "'DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT'"
+                                          method.response.header.Access-Control-Allow-Headers: "'Content-Type,Authorization,X-Amz-Date,X-Api-Key,X-Amz-Security-Token'"
+                                          method.response.header.Access-Control-Allow-Origin: "'*'"
+                              requestTemplates:
+                                  application/json: "{\"statusCode\": 200}"
+                              passthroughBehavior: "when_no_match"
+                              type: "mock"
+                      x-amazon-apigateway-any-method:
+                          produces:
+                          - "application/json"
+                          parameters:
+                          - name: "typeid"
+                            in: "path"
+                            required: true
+                            type: "string"
+                          responses:
+                              "200":
+                                  description: "200 response"
+                                  schema:
+                                      $ref: "#/definitions/Empty"
+                          security:
+                          - iot-sim-authorizer: []
+                          x-amazon-apigateway-integration:
+                              responses:
+                                  default:
+                                      statusCode: "200"
+                              uri:
+                                  Fn::Sub: "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${IotDeviceSimDeviceService.Arn}/invocations"
+                              passthroughBehavior: "when_no_match"
+                              httpMethod: "POST"
+                              contentHandling: "CONVERT_TO_TEXT"
+                              type: "aws_proxy"
+                              credentials: !GetAtt IotDeviceSimApiLambdaExecRole.Arn
+                  "/devices/widgets":
+                      options:
+                          consumes:
+                          - "application/json"
+                          produces:
+                          - "application/json"
+                          responses:
+                              "200":
+                                  description: "200 response"
+                                  schema:
+                                      $ref: "#/definitions/Empty"
+                                  headers:
+                                      Access-Control-Allow-Origin:
+                                          type: "string"
+                                      Access-Control-Allow-Methods:
+                                          type: "string"
+                                      Access-Control-Allow-Headers:
+                                          type: "string"
+                          x-amazon-apigateway-integration:
+                              responses:
+                                  default:
+                                      statusCode: "200"
+                                      responseParameters:
+                                          method.response.header.Access-Control-Allow-Methods: "'DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT'"
+                                          method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+                                          method.response.header.Access-Control-Allow-Origin: "'*'"
+                              requestTemplates:
+                                  application/json: "{\"statusCode\": 200}"
+                              passthroughBehavior: "when_no_match"
+                              type: "mock"
+                      x-amazon-apigateway-any-method:
+                          produces:
+                          - "application/json"
+                          responses:
+                              "200":
+                                  description: "200 response"
+                                  schema:
+                                      $ref: "#/definitions/Empty"
+                          security:
+                          - iot-sim-authorizer: []
+                          x-amazon-apigateway-integration:
+                              responses:
+                                  default:
+                                      statusCode: "200"
+                              uri:
+                                  Fn::Sub: "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${IotDeviceSimDeviceService.Arn}/invocations"
+                              passthroughBehavior: "when_no_match"
+                              httpMethod: "POST"
+                              contentHandling: "CONVERT_TO_TEXT"
+                              type: "aws_proxy"
+                              credentials: !GetAtt IotDeviceSimApiLambdaExecRole.Arn
+                  "/devices/widgets/{deviceid}":
+                      options:
+                          consumes:
+                          - "application/json"
+                          produces:
+                          - "application/json"
+                          responses:
+                              "200":
+                                  description: "200 response"
+                                  schema:
+                                      $ref: "#/definitions/Empty"
+                                  headers:
+                                      Access-Control-Allow-Origin:
+                                          type: "string"
+                                      Access-Control-Allow-Methods:
+                                          type: "string"
+                                      Access-Control-Allow-Headers:
+                                          type: "string"
+                          x-amazon-apigateway-integration:
+                              responses:
+                                  default:
+                                      statusCode: "200"
+                                      responseParameters:
+                                          method.response.header.Access-Control-Allow-Methods: "'DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT'"
+                                          method.response.header.Access-Control-Allow-Headers: "'Content-Type,Authorization,X-Amz-Date,X-Api-Key,X-Amz-Security-Token'"
+                                          method.response.header.Access-Control-Allow-Origin: "'*'"
+                              requestTemplates:
+                                  application/json: "{\"statusCode\": 200}"
+                              passthroughBehavior: "when_no_match"
+                              type: "mock"
+                      x-amazon-apigateway-any-method:
+                          produces:
+                          - "application/json"
+                          parameters:
+                          - name: "deviceid"
+                            in: "path"
+                            required: true
+                            type: "string"
+                          responses:
+                              "200":
+                                  description: "200 response"
+                                  schema:
+                                      $ref: "#/definitions/Empty"
+                          security:
+                          - iot-sim-authorizer: []
+                          x-amazon-apigateway-integration:
+                              responses:
+                                  default:
+                                      statusCode: "200"
+                              uri:
+                                  Fn::Sub: "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${IotDeviceSimDeviceService.Arn}/invocations"
+                              passthroughBehavior: "when_no_match"
+                              httpMethod: "POST"
+                              contentHandling: "CONVERT_TO_TEXT"
+                              type: "aws_proxy"
+                              credentials: !GetAtt IotDeviceSimApiLambdaExecRole.Arn
+                securityDefinitions:
+                    iot-sim-authorizer:
+                        type: "apiKey"
+                        name: "Authorization"
+                        in: "header"
+                        x-amazon-apigateway-authtype: "cognito_user_pools"
+                        x-amazon-apigateway-authorizer:
+                            providerARNs:
+                            - !Join ["", ["arn:aws:cognito-idp:", Ref: "AWS::Region", ":", Ref: "AWS::AccountId", ":userpool/", !Ref IotDeviceSimUserPool]]
+                            type: "cognito_user_pools"
+                definitions:
+                    Empty:
+                        type: "object"
+                        title: "Empty Schema"
+
+
+    IotDeviceSimApiDeployment:
+        Type: "AWS::ApiGateway::Deployment"
+        Properties:
+            RestApiId: !Ref IotDeviceSimApi
+            Description: "Production"
+            StageName: "prod"
+
+    # API [end]
+
+    # Userpool [start]
+
+    IotDeviceSimUserPool:
+        Type: "AWS::Cognito::UserPool"
+        Properties:
+            UserPoolName: "iot-device-simulator-pool"
+            AdminCreateUserConfig:
+                AllowAdminCreateUserOnly: True
+                InviteMessageTemplate:
+                    EmailMessage:
+                        !Sub |
+                            <p>You are invited to join the IoT Device Simulator. Your temporary password is as follows:</p>
+                            <p>
+                            Password: <strong>{####}</strong><br />
+                            Email: <strong>${AdministratorEmail}</strong><br />
+                            id: {username}
+                            </p>
+                            <p>
+                            Please sign in to the IoT Device Simulator with your email address and temporary password provided above at: <br />
+                            ${IotSimWebsiteBucket.WebsiteURL}
+                            </p>
+                    EmailSubject: !Join [" ", ["Your", !FindInMap ["SourceCode", "App", "FullName"], "login."]]
+                    SMSMessage: "Your username is {username} and temporary password is {####}."
+                UnusedAccountValidityDays: 7
+            AliasAttributes:
+                - "email"
+            AutoVerifiedAttributes:
+                - "email"
+            EmailVerificationMessage: "Your IoT Device Simulator verification code is {####}."
+            EmailVerificationSubject: "Your IoT Device Simulator verification code"
+            Policies:
+                PasswordPolicy:
+                      MinimumLength: 8
+                      RequireLowercase: True
+                      RequireNumbers: True
+                      RequireSymbols: False
+                      RequireUppercase: True
+            Schema:
+                -
+                    AttributeDataType: "String"
+                    Name: "email"
+                    Required: True
+
+    IotDeviceSimConsoleClient:
+        Type: "AWS::Cognito::UserPoolClient"
+        Properties:
+            ClientName: "iot-device-simulator-console"
+            GenerateSecret: False
+            WriteAttributes:
+                - "address"
+                - "email"
+                - "phone_number"
+            ReadAttributes:
+                - "name"
+                - "family_name"
+                - "given_name"
+                - "middle_name"
+                - "nickname"
+                - "preferred_username"
+                - "updated_at"
+                - "email"
+                - "email_verified"
+                - "address"
+                - "phone_number"
+                - "phone_number_verified"
+            RefreshTokenValidity: 1
+            UserPoolId: !Ref IotDeviceSimUserPool
+
+    IotDeviceSimAdminCognitoGroup:
+        Type: "AWS::Cognito::UserPoolGroup"
+        Properties:
+            Description: "Administrator group for managing IoT Deivce Simulator web interface"
+            GroupName: "Administrators"
+            UserPoolId: !Ref IotDeviceSimUserPool
+
+    IotDeviceSimMemberCognitoGroup:
+        Type: "AWS::Cognito::UserPoolGroup"
+        Properties:
+            Description: "Member group for access to the IoT Deivce Simulator web interface"
+            GroupName: "Members"
+            UserPoolId: !Ref IotDeviceSimUserPool
+
+    IotDeviceSimAdminCognitoUser:
+        Type: "AWS::Cognito::UserPoolUser"
+        Properties:
+            DesiredDeliveryMediums:
+                - EMAIL
+            ForceAliasCreation: True
+            UserAttributes:
+                -
+                    Name: email
+                    Value: !Ref AdministratorEmail
+                -
+                    Name: nickname
+                    Value: !Ref AdministratorName
+                -
+                    Name: email_verified
+                    Value: True
+            Username: !Join ["_", !Split [".", !Join ["_", !Split ["@", !Ref AdministratorEmail]]]]
+            UserPoolId: !Ref IotDeviceSimUserPool
+
+    IotDeviceSimAdminGroupAssignment:
+        Type: "AWS::Cognito::UserPoolUserToGroupAttachment"
+        Properties:
+            GroupName: !Ref IotDeviceSimAdminCognitoGroup
+            Username: !Ref IotDeviceSimAdminCognitoUser
+            UserPoolId: !Ref IotDeviceSimUserPool
+
+    IotDeviceSimIdentityPool:
+        Type: "AWS::Cognito::IdentityPool"
+        Properties:
+            IdentityPoolName: "IoT_Device_Simulator_Pool"
+            CognitoIdentityProviders:
+              - ClientId: !Ref IotDeviceSimConsoleClient
+                ProviderName: !GetAtt IotDeviceSimUserPool.ProviderName
+            AllowUnauthenticatedIdentities: true
+
+
+    IotDeviceSimIdentityPoolRoleAttachment:
+        Type: "AWS::Cognito::IdentityPoolRoleAttachment"
+        Properties:
+            IdentityPoolId: !Sub "${IotDeviceSimIdentityPool}"
+            Roles:
+                unauthenticated: !GetAtt IotDeviceSimIdentityPoolUnauthRole.Arn
+                authenticated: !GetAtt IotDeviceSimIdentityPoolAuthRole.Arn
+
+    # Userpool [end]
+
+    # Simulation Engine - ECS [start]
+
+    IotDeviceSimEngineCluster:
+        Type: "AWS::ECS::Cluster"
+        Properties:
+            ClusterName: "iot-device-simulation"
+
+    IotDeviceSimEngineTaskDefinition:
+        Type: "AWS::ECS::TaskDefinition"
+        Properties:
+            ExecutionRoleArn: !GetAtt IotDeviceSimEngineTaskExecutionRole.Arn
+            Family: "iot-simulation-engine-task"
+            RequiresCompatibilities:
+                - "FARGATE"
+            Memory: "4096"
+            Cpu: "1024"
+            NetworkMode: "awsvpc"
+            TaskRoleArn: !GetAtt IotDeviceSimEngineTaskRole.Arn
+            ContainerDefinitions:
+                -
+                    LogConfiguration:
+                        LogDriver: "awslogs"
+                        Options:
+                            awslogs-group: "/ecs/iot-simulation-engine-task"
+                            awslogs-region:
+                                Fn::Sub: "${AWS::Region}"
+                            awslogs-stream-prefix: "ecs"
+                    Cpu: 1024
+                    Image: "898061675696.dkr.ecr.us-east-1.amazonaws.com/iotsim:latest"
+                    Name: "iot-simulation-engine-container"
+                    Essential: True
+
+    IotDeviceSimEngineServiceDefinition:
+        Type: "AWS::ECS::Service"
+        Properties:
+            ServiceName: "simulation-engine-service"
+            TaskDefinition: !Ref IotDeviceSimEngineTaskDefinition
+            Cluster: !GetAtt IotDeviceSimEngineCluster.Arn
+            DeploymentConfiguration:
+                MaximumPercent: 200
+                MinimumHealthyPercent: 50
+            DesiredCount: 4
+            LaunchType: "FARGATE"
+            NetworkConfiguration:
+                AwsvpcConfiguration:
+                    AssignPublicIp: "DISABLED"
+                    SecurityGroups:
+                        - !Ref IotSimEngineIntraVPCSecurityGroup
+                    Subnets:
+                        - !Ref IotSimEnginePrivateSubnet1A
+                        - !Ref IotSimEnginePrivateSubnet1B
+        DependsOn:
+            - IotDeviceSimEngineSettings
+            - IotDeviceSimAppSettings
+            - IotDeviceSimAutomotiveSettings
+            - IotDeviceSimDefaultAutoDevice
+
+    # Simulation Engine - ECS [end]
+
+    # Custom resources [start]
+
+    IotDeviceSimAppUuid:
+        Type: "Custom::LoadLambda"
+        Properties:
+            ServiceToken:
+                Fn::GetAtt:
+                    - "IotDeviceSimHelper"
+                    - "Arn"
+            Region:
+                - Ref: "AWS::Region"
+            customAction: "createUuid"
+
+    IotDeviceSimWebsite:
+        Type: "Custom::LoadLambda"
+        Properties:
+            ServiceToken:
+                Fn::GetAtt:
+                    - "IotDeviceSimHelper"
+                    - "Arn"
+            Region:
+                - Ref: "AWS::Region"
+            manifestKey: !Join ["/", [!FindInMap ["SourceCode", "General", "KeyPrefix"], "site-manifest.json"]]
+            sourceS3Bucket: !Join ["-", [!FindInMap ["SourceCode", "General", "S3Bucket"], Ref: "AWS::Region"]]
+            sourceS3key: !Join ["/", [!FindInMap ["SourceCode", "General", "KeyPrefix"], "console"]]
+            destS3Bucket: !Ref IotSimWebsiteBucket
+            customAction: "copyS3assets"
+
+    IotDeviceSimWebConfig:
+        Type: "Custom::LoadLambda"
+        Properties:
+            ServiceToken:
+                Fn::GetAtt:
+                    - "IotDeviceSimHelper"
+                    - "Arn"
+            Region:
+                - Ref: "AWS::Region"
+            destS3Bucket: !Ref IotSimWebsiteBucket
+            destS3key: "assets/appVariables.js"
+            configItem:
+                USER_POOL_ID:
+                    Fn::Sub: "${IotDeviceSimUserPool}"
+                USER_POOL_CLIENT_ID:
+                    Fn::Sub: "${IotDeviceSimConsoleClient}"
+                IDENTITY_POOL_ID:
+                    Fn::Sub: "${IotDeviceSimIdentityPool}"
+                COGNITO_IDP_ENDPOINT: ""
+                COGNITO_IDENTITY_ENDPOINT: ""
+                APIG_ENDPOINT: !Join ["", ["https://", Ref: IotDeviceSimApi, ".execute-api.", Ref: "AWS::Region", ".amazonaws.com/prod"]]
+                REGION:
+                    Fn::Sub: "${AWS::Region}"
+            customAction: "putConfigFile"
+
+    IotDeviceSimRoutes:
+        Type: "Custom::LoadLambda"
+        Properties:
+            ServiceToken:
+                Fn::GetAtt:
+                    - "IotDeviceSimHelper"
+                    - "Arn"
+            Region:
+                - Ref: "AWS::Region"
+            manifestKey: !Join ["/", [!FindInMap ["SourceCode", "General", "KeyPrefix"], "routes-manifest.json"]]
+            sourceS3Bucket: !Join ["-", [!FindInMap ["SourceCode", "General", "S3Bucket"], Ref: "AWS::Region"]]
+            sourceS3key: !Join ["/", [!FindInMap ["SourceCode", "General", "KeyPrefix"], "routedata"]]
+            destS3Bucket: !Ref IotSimDataBucket
+            customAction: "copyS3assets"
+
+    IotDeviceSimAnonymousMetric:
+        Type: "Custom::LoadLambda"
+        Properties:
+            ServiceToken:
+                Fn::GetAtt:
+                    - "IotDeviceSimHelper"
+                    - "Arn"
+            Region:
+                - Ref: "AWS::Region"
+            solutionId: "SO0041"
+            UUID: !GetAtt IotDeviceSimAppUuid.UUID
+            version: "1.0"
+            anonymousData: !FindInMap ["Send", "AnonymousUsage", "Data"]
+            customAction: "sendMetric"
+
+    IotDeviceSimEngineSettings:
+        Type: "Custom::LoadLambda"
+        Properties:
+            ServiceToken:
+                Fn::GetAtt:
+                    - "IotDeviceSimHelper"
+                    - "Arn"
+            Region:
+                - Ref: "AWS::Region"
+            ddbTable: !Ref SettingsTable
+            ddbItem:
+                settingId: "simulator"
+                type: "config"
+                setting:
+                    deviceQueueUrl: !Ref IotDeviceSimQueue
+                    deviceTable: !Ref DeviceWidgetsTable
+                    deviceTypeTable: !Ref DeviceTypesTable
+                    garbageCollectionInterval:
+                        N: 60000
+                    targetIotRegion:
+                        Fn::Sub: "${AWS::Region}"
+                    loggingLevel:
+                        N: 1
+                    metricsTable: !Ref MetricsTable
+                    queuePollerInterval:
+                        N: 10000
+                    region:
+                        Fn::Sub: "${AWS::Region}"
+                    uuid: !GetAtt IotDeviceSimAppUuid.UUID
+                    anonymousData: !FindInMap ["Send", "AnonymousUsage", "Data"]
+            customAction: "saveDdbItem"
+
+    IotDeviceSimAppSettings:
+        Type: "Custom::LoadLambda"
+        Properties:
+            ServiceToken:
+                Fn::GetAtt:
+                    - "IotDeviceSimHelper"
+                    - "Arn"
+            Region:
+                - Ref: "AWS::Region"
+            ddbTable: !Ref SettingsTable
+            ddbItem:
+                settingId: "app-config"
+                type: "config"
+                setting:
+                    idp: !Ref IotDeviceSimUserPool
+                    apiEndpoint: !Join ["", ["https://", Ref: IotDeviceSimApi, ".execute-api.", Ref: "AWS::Region", ".amazonaws.com/prod"]]
+                    uuid: !GetAtt IotDeviceSimAppUuid.UUID
+                    anonymousData: !FindInMap ["Send", "AnonymousUsage", "Data"]
+                    mapboxToken: "NA"
+            customAction: "saveDdbItem"
+
+    IotDeviceSimCurrentSettings:
+        Type: "Custom::LoadLambda"
+        Properties:
+            ServiceToken:
+                Fn::GetAtt:
+                    - "IotDeviceSimHelper"
+                    - "Arn"
+            Region:
+                - Ref: "AWS::Region"
+            ddbTable: !Ref SettingsTable
+            ddbItem:
+                settingId: "current-sims"
+                type: "counter"
+                setting:
+                    N: 0
+            customAction: "saveDdbItem"
+
+    IotDeviceSimAutomotiveSettings:
+        Type: "Custom::LoadLambda"
+        Properties:
+            ServiceToken:
+                Fn::GetAtt:
+                    - "IotDeviceSimHelper"
+                    - "Arn"
+            Region:
+                - Ref: "AWS::Region"
+            ddbTable: !Ref SettingsTable
+            ddbItem:
+                settingId: "automotive"
+                type: "config"
+                setting:
+                    routeBucket: !Ref IotSimDataBucket
+                    routeManifestPath: "routes/manifest.json"
+            customAction: "saveDdbItem"
+
+    IotDeviceSimDefaultAutoDevice:
+        Type: "Custom::LoadLambda"
+        Properties:
+            ServiceToken:
+                Fn::GetAtt:
+                    - "IotDeviceSimHelper"
+                    - "Arn"
+            Region:
+                - Ref: "AWS::Region"
+            ddbTable: !Ref DeviceTypesTable
+            ddbItem:
+                userId: "_default_"
+                typeId: "automotive"
+                name: "vehicle"
+                custom:
+                    B: false
+                spec:
+                    aggregateMetrics: true
+                    aggregationTransmissionTime:
+                        N: 90000
+                    dataAggregatedTopic: "connectedcar/trip"
+                    dataTopic: "connectedcar/telemetry"
+                    errorTopic: "connectedcar/dtc"
+                    measurementPollerInterval:
+                        N: 2000
+                    tripBucket: !Ref IotSimDataBucket
+                    sendAggregatedData:
+                        B: true
+                    sendErrorData:
+                        B: true
+                    sendTelemetryData:
+                        B: true
+                    telemetrySchema:
+                        -
+                            attribute: "name"
+                            value: "measurement_name"
+                        -
+                            attribute: "value"
+                            value: "measurement_value"
+                        -
+                            attribute: "vin"
+                            value: "vin"
+                        -
+                            attribute: "trip_id"
+                            value: "trip_id"
+                        -
+                            attribute: "timestamp"
+                            value: "timestamp"
+            customAction: "saveDdbItem"
+
+    # Custom resources [end]
+
+    # Microservices [start]
+
+    IotDeviceSimAdminService:
+        Type: "AWS::Lambda::Function"
+        Properties:
+            FunctionName: "iot-sim-admin-service"
+            Description: "IoT Device Simulator Solution administration microservice"
+            Code:
+                S3Bucket: !Join ["-", [!FindInMap ["SourceCode", "General", "S3Bucket"], Ref: "AWS::Region"]]
+                S3Key: !Join ["/", [!FindInMap ["SourceCode", "General", "KeyPrefix"],  "iot-sim-admin-service.zip"]]
+            Handler: index.handler
+            Runtime: nodejs8.10
+            Role: !GetAtt IotDeviceSimAdminRole.Arn
+            Timeout: 60
+            MemorySize: 256
+            Environment:
+                Variables:
+                    SETTINGS_TBL: !Ref SettingsTable
+                    LOGGING_LEVEL: 2
+
+
+    IotDeviceSimProfileService:
+        Type: "AWS::Lambda::Function"
+        Properties:
+            FunctionName: "iot-sim-profile-service"
+            Description: "IoT Device Simulator Solution profile microservice"
+            Code:
+                S3Bucket: !Join ["-", [!FindInMap ["SourceCode", "General", "S3Bucket"], Ref: "AWS::Region"]]
+                S3Key: !Join ["/", [!FindInMap ["SourceCode", "General", "KeyPrefix"],  "iot-sim-profile-service.zip"]]
+            Handler: index.handler
+            Runtime: nodejs8.10
+            Role: !GetAtt IotDeviceSimProfileRole.Arn
+            Timeout: 60
+            MemorySize: 256
+            Environment:
+                Variables:
+                    SETTINGS_TBL: !Ref SettingsTable
+                    LOGGING_LEVEL: 2
+
+    IotDeviceSimMetricsService:
+        Type: "AWS::Lambda::Function"
+        Properties:
+            FunctionName: "iot-sim-metrics-service"
+            Description: "IoT Device Simulator Solution metrics microservice"
+            Code:
+                S3Bucket: !Join ["-", [!FindInMap ["SourceCode", "General", "S3Bucket"], Ref: "AWS::Region"]]
+                S3Key: !Join ["/", [!FindInMap ["SourceCode", "General", "KeyPrefix"],  "iot-sim-metrics-service.zip"]]
+            Handler: index.handler
+            Runtime: nodejs8.10
+            Role: !GetAtt IotDeviceSimMetricsRole.Arn
+            Timeout: 60
+            MemorySize: 256
+            Environment:
+                Variables:
+                    SETTINGS_TBL: !Ref SettingsTable
+                    LOGGING_LEVEL: 2
+                    METRICS_TBL: !Ref MetricsTable
+
+    IotDeviceSimDeviceService:
+        Type: "AWS::Lambda::Function"
+        Properties:
+            FunctionName: "iot-sim-device-service"
+            Description: "IoT Device Simulator Solution metrics microservice"
+            Code:
+                S3Bucket: !Join ["-", [!FindInMap ["SourceCode", "General", "S3Bucket"], Ref: "AWS::Region"]]
+                S3Key: !Join ["/", [!FindInMap ["SourceCode", "General", "KeyPrefix"],  "iot-sim-device-service.zip"]]
+            Handler: index.handler
+            Runtime: nodejs8.10
+            Role: !GetAtt IotDeviceSimDeviceRole.Arn
+            Timeout: 300
+            MemorySize: 256
+            Environment:
+                Variables:
+                    SETTINGS_TBL: !Ref SettingsTable
+                    LOGGING_LEVEL: 2
+                    DEVICE_TYPES_TBL: !Ref DeviceTypesTable
+                    DEVICES_TBL: !Ref DeviceWidgetsTable
+                    SIMULATOR_QUEUE: !Ref IotDeviceSimQueue
+
+    IotDeviceSimHelper:
+        Type: "AWS::Lambda::Function"
+        Properties:
+            FunctionName: "iot-device-sim-helper"
+            Description: "IoT Device Simulator Solution deployment helper"
+            Code:
+                S3Bucket: !Join ["-", [!FindInMap ["SourceCode", "General", "S3Bucket"], Ref: "AWS::Region"]]
+                S3Key: !Join ["/", [!FindInMap ["SourceCode", "General", "KeyPrefix"],  "iot-sim-helper.zip"]]
+            Handler: index.handler
+            Runtime: nodejs8.10
+            Role: !GetAtt IotDeviceSimResourceHelperRole.Arn
+            Timeout: 300
+            MemorySize: 256
+
+    # Microservices [end]
+
+
+    # SQS [start]
+
+    IotDeviceSimQueue:
+        Type: "AWS::SQS::Queue"
+        Properties:
+            QueueName: iot-device-simulation
+
+    # SQS [end]
+
+    # s3 [start]
+
+    IotSimDataBucket:
+        Type: AWS::S3::Bucket
+        DeletionPolicy: Retain
+
+    IotSimWebsiteBucket:
+        Type: AWS::S3::Bucket
+        DeletionPolicy: Retain
+        Properties:
+            WebsiteConfiguration:
+                IndexDocument: "index.html"
+                ErrorDocument: "index.html"
+
+    IotSimWebsiteBucketPolicy:
+        Type: "AWS::S3::BucketPolicy"
+        Properties:
+            Bucket:
+                Ref: "IotSimWebsiteBucket"
+            PolicyDocument:
+                Statement:
+                    -
+                        Action:
+                            - "s3:GetObject"
+                        Effect: "Allow"
+                        Resource:
+                            Fn::Join:
+                                - ""
+                                -
+                                    - "arn:aws:s3:::"
+                                    -
+                                        Ref: "IotSimWebsiteBucket"
+                                    - "/*"
+                        Principal: "*"
+
+    # s3 [end]
+
+    # logs [start]
+
+    IotDeviceSimEngineLogs:
+        Type: AWS::Logs::LogGroup
+        Properties:
+            LogGroupName: "/ecs/iot-simulation-engine-task"
+            RetentionInDays: 30
+
+    # logs [end]
+
+    # DynamoDB Tables [start]
+
+    SettingsTable:
+        Type: "AWS::DynamoDB::Table"
+        DeletionPolicy: "Delete"
+        Properties:
+            AttributeDefinitions:
+                -
+                    AttributeName: "settingId"
+                    AttributeType: "S"
+            KeySchema:
+                -
+                    AttributeName: "settingId"
+                    KeyType: "HASH"
+            ProvisionedThroughput:
+                ReadCapacityUnits: 5
+                WriteCapacityUnits: 5
+            SSESpecification:
+                SSEEnabled: true
+            TableName: "iot-sim-settings"
+
+    MetricsTable:
+        Type: "AWS::DynamoDB::Table"
+        DeletionPolicy: "Delete"
+        Properties:
+            AttributeDefinitions:
+                -
+                    AttributeName: "userId"
+                    AttributeType: "S"
+            KeySchema:
+                -
+                    AttributeName: "userId"
+                    KeyType: "HASH"
+            ProvisionedThroughput:
+                ReadCapacityUnits: 5
+                WriteCapacityUnits: 5
+            SSESpecification:
+                SSEEnabled: true
+            TableName: "iot-sim-metrics"
+
+    DeviceTypesTable:
+        Type: "AWS::DynamoDB::Table"
+        DeletionPolicy: "Delete"
+        Properties:
+            AttributeDefinitions:
+                -
+                    AttributeName: "userId"
+                    AttributeType: "S"
+                -
+                    AttributeName: "typeId"
+                    AttributeType: "S"
+            KeySchema:
+                -
+                    AttributeName: "userId"
+                    KeyType: "HASH"
+                -
+                    AttributeName: "typeId"
+                    KeyType: "RANGE"
+            ProvisionedThroughput:
+                ReadCapacityUnits: 5
+                WriteCapacityUnits: 5
+            SSESpecification:
+                SSEEnabled: true
+            TableName: "iot-sim-device-types"
+
+    DeviceWidgetsTable:
+        Type: "AWS::DynamoDB::Table"
+        DeletionPolicy: "Delete"
+        Properties:
+            AttributeDefinitions:
+                -
+                    AttributeName: "userId"
+                    AttributeType: "S"
+                -
+                    AttributeName: "id"
+                    AttributeType: "S"
+                -
+                    AttributeName: "category"
+                    AttributeType: "S"
+            KeySchema:
+                -
+                    AttributeName: "userId"
+                    KeyType: "HASH"
+                -
+                    AttributeName: "id"
+                    KeyType: "RANGE"
+            GlobalSecondaryIndexes:
+                -
+                    IndexName: "userId-category-index"
+                    KeySchema:
+                        - AttributeName: "userId"
+                          KeyType: "HASH"
+                        - AttributeName: "category"
+                          KeyType: "RANGE"
+                    Projection:
+                        ProjectionType: "ALL"
+                    ProvisionedThroughput:
+                        ReadCapacityUnits: 10
+                        WriteCapacityUnits: 10
+            ProvisionedThroughput:
+                ReadCapacityUnits: 10
+                WriteCapacityUnits: 10
+            SSESpecification:
+                SSEEnabled: true
+            TableName: "iot-sim-device-widgets"
+
+    DDBScalingRole:
+        Type: "AWS::IAM::Role"
+        Properties:
+            AssumeRolePolicyDocument:
+                Version: "2012-10-17"
+                Statement:
+                    -
+                        Effect: "Allow"
+                        Principal:
+                            Service:
+                                - application-autoscaling.amazonaws.com
+                        Action:
+                            - "sts:AssumeRole"
+            Path: "/"
+            Policies:
+                -
+                    PolicyName: "root"
+                    PolicyDocument:
+                        Version: "2012-10-17"
+                        Statement:
+                            -
+                                Effect: "Allow"
+                                Action:
+                                    - "cloudwatch:PutMetricAlarm"
+                                    - "cloudwatch:DescribeAlarms"
+                                    - "cloudwatch:GetMetricStatistics"
+                                    - "cloudwatch:SetAlarmState"
+                                    - "cloudwatch:DeleteAlarms"
+                                Resource: "*"
+                            -
+                                Effect: "Allow"
+                                Action:
+                                    - "dynamodb:DescribeTable"
+                                    - "dynamodb:UpdateTable"
+                                    - "dynamodb:DescribeGlobalTable"
+                                    - "dynamodb:UpdateGlobalTable"
+                                Resource:
+                                    - !GetAtt DeviceWidgetsTable.Arn
+                                    - !GetAtt DeviceTypesTable.Arn
+                                    - !GetAtt MetricsTable.Arn
+                                    - !Join ["", ["arn:aws:dynamodb:", Ref: "AWS::Region", ":", Ref: "AWS::AccountId", ":table/", Ref: DeviceWidgetsTable, "/index/userId-category-index"]]
+
+    WidgetWriteCapacityScalableTarget:
+        Type: "AWS::ApplicationAutoScaling::ScalableTarget"
+        Properties:
+            MaxCapacity: 100
+            MinCapacity: 10
+            ResourceId: !Join ["/", ["table",  !Ref "DeviceWidgetsTable"]]
+            RoleARN: !GetAtt DDBScalingRole.Arn
+            ScalableDimension: dynamodb:table:WriteCapacityUnits
+            ServiceNamespace: dynamodb
+
+    WidgetWriteScalingPolicy:
+        Type: "AWS::ApplicationAutoScaling::ScalingPolicy"
+        Properties:
+            PolicyName: WidgetWriteAutoScalingPolicy
+            PolicyType: TargetTrackingScaling
+            ScalingTargetId: !Ref WidgetWriteCapacityScalableTarget
+            TargetTrackingScalingPolicyConfiguration:
+                TargetValue: 70.0
+                ScaleInCooldown: 60
+                ScaleOutCooldown: 60
+                PredefinedMetricSpecification:
+                    PredefinedMetricType: DynamoDBWriteCapacityUtilization
+
+    WidgetReadCapacityScalableTarget:
+        Type: "AWS::ApplicationAutoScaling::ScalableTarget"
+        Properties:
+            MaxCapacity: 100
+            MinCapacity: 10
+            ResourceId: !Join ["/", ["table",  !Ref "DeviceWidgetsTable"]]
+            RoleARN: !GetAtt DDBScalingRole.Arn
+            ScalableDimension: dynamodb:table:ReadCapacityUnits
+            ServiceNamespace: dynamodb
+
+    WidgetReadScalingPolicy:
+        DependsOn: WidgetWriteScalingPolicy
+        Type: "AWS::ApplicationAutoScaling::ScalingPolicy"
+        Properties:
+            PolicyName: WidgetReadAutoScalingPolicy
+            PolicyType: TargetTrackingScaling
+            ScalingTargetId: !Ref WidgetReadCapacityScalableTarget
+            TargetTrackingScalingPolicyConfiguration:
+                TargetValue: 70.0
+                ScaleInCooldown: 60
+                ScaleOutCooldown: 60
+                PredefinedMetricSpecification:
+                    PredefinedMetricType: DynamoDBReadCapacityUtilization
+
+    WidgetGiWriteCapacityScalableTarget:
+        Type: "AWS::ApplicationAutoScaling::ScalableTarget"
+        Properties:
+            MaxCapacity: 100
+            MinCapacity: 10
+            ResourceId: !Join ["/", ["table",  !Ref "DeviceWidgetsTable", "index/userId-category-index"]]
+            RoleARN: !GetAtt DDBScalingRole.Arn
+            ScalableDimension: dynamodb:index:WriteCapacityUnits
+            ServiceNamespace: dynamodb
+
+    WidgetGiWriteScalingPolicy:
+        DependsOn: WidgetReadScalingPolicy
+        Type: "AWS::ApplicationAutoScaling::ScalingPolicy"
+        Properties:
+            PolicyName: WidgetGiWriteAutoScalingPolicy
+            PolicyType: TargetTrackingScaling
+            ScalingTargetId: !Ref WidgetGiWriteCapacityScalableTarget
+            TargetTrackingScalingPolicyConfiguration:
+                TargetValue: 70.0
+                ScaleInCooldown: 60
+                ScaleOutCooldown: 60
+                PredefinedMetricSpecification:
+                    PredefinedMetricType: DynamoDBWriteCapacityUtilization
+
+    WidgetGiReadCapacityScalableTarget:
+        Type: "AWS::ApplicationAutoScaling::ScalableTarget"
+        Properties:
+            MaxCapacity: 100
+            MinCapacity: 10
+            ResourceId: !Join ["/", ["table",  !Ref "DeviceWidgetsTable", "index/userId-category-index"]]
+            RoleARN: !GetAtt DDBScalingRole.Arn
+            ScalableDimension: dynamodb:index:ReadCapacityUnits
+            ServiceNamespace: dynamodb
+
+    WidgetGiReadScalingPolicy:
+        DependsOn: WidgetGiWriteScalingPolicy
+        Type: "AWS::ApplicationAutoScaling::ScalingPolicy"
+        Properties:
+            PolicyName: WidgetGiReadAutoScalingPolicy
+            PolicyType: TargetTrackingScaling
+            ScalingTargetId: !Ref WidgetGiReadCapacityScalableTarget
+            TargetTrackingScalingPolicyConfiguration:
+                TargetValue: 70.0
+                ScaleInCooldown: 60
+                ScaleOutCooldown: 60
+                PredefinedMetricSpecification:
+                    PredefinedMetricType: DynamoDBReadCapacityUtilization
+
+    DTypeWriteCapacityScalableTarget:
+        Type: "AWS::ApplicationAutoScaling::ScalableTarget"
+        Properties:
+            MaxCapacity: 100
+            MinCapacity: 5
+            ResourceId: !Join ["/", ["table",  !Ref "DeviceTypesTable"]]
+            RoleARN: !GetAtt DDBScalingRole.Arn
+            ScalableDimension: dynamodb:table:WriteCapacityUnits
+            ServiceNamespace: dynamodb
+
+    DTypeWriteScalingPolicy:
+        DependsOn: WidgetGiReadScalingPolicy
+        Type: "AWS::ApplicationAutoScaling::ScalingPolicy"
+        Properties:
+            PolicyName: DTypeWriteAutoScalingPolicy
+            PolicyType: TargetTrackingScaling
+            ScalingTargetId: !Ref DTypeWriteCapacityScalableTarget
+            TargetTrackingScalingPolicyConfiguration:
+                TargetValue: 70.0
+                ScaleInCooldown: 60
+                ScaleOutCooldown: 60
+                PredefinedMetricSpecification:
+                    PredefinedMetricType: DynamoDBWriteCapacityUtilization
+
+    DTypeReadCapacityScalableTarget:
+        Type: "AWS::ApplicationAutoScaling::ScalableTarget"
+        Properties:
+            MaxCapacity: 100
+            MinCapacity: 5
+            ResourceId: !Join ["/", ["table",  !Ref "DeviceTypesTable"]]
+            RoleARN: !GetAtt DDBScalingRole.Arn
+            ScalableDimension: dynamodb:table:ReadCapacityUnits
+            ServiceNamespace: dynamodb
+
+    DTypeReadScalingPolicy:
+        DependsOn: DTypeWriteScalingPolicy
+        Type: "AWS::ApplicationAutoScaling::ScalingPolicy"
+        Properties:
+            PolicyName: DTypeReadAutoScalingPolicy
+            PolicyType: TargetTrackingScaling
+            ScalingTargetId: !Ref DTypeReadCapacityScalableTarget
+            TargetTrackingScalingPolicyConfiguration:
+                TargetValue: 70.0
+                ScaleInCooldown: 60
+                ScaleOutCooldown: 60
+                PredefinedMetricSpecification:
+                    PredefinedMetricType: DynamoDBReadCapacityUtilization
+
+    MetricsWriteCapacityScalableTarget:
+        Type: "AWS::ApplicationAutoScaling::ScalableTarget"
+        Properties:
+            MaxCapacity: 100
+            MinCapacity: 5
+            ResourceId: !Join ["/", ["table",  !Ref "MetricsTable"]]
+            RoleARN: !GetAtt DDBScalingRole.Arn
+            ScalableDimension: dynamodb:table:WriteCapacityUnits
+            ServiceNamespace: dynamodb
+
+    MetricsWriteScalingPolicy:
+        DependsOn: DTypeReadScalingPolicy
+        Type: "AWS::ApplicationAutoScaling::ScalingPolicy"
+        Properties:
+            PolicyName: MetricsWriteAutoScalingPolicy
+            PolicyType: TargetTrackingScaling
+            ScalingTargetId: !Ref MetricsWriteCapacityScalableTarget
+            TargetTrackingScalingPolicyConfiguration:
+                TargetValue: 70.0
+                ScaleInCooldown: 60
+                ScaleOutCooldown: 60
+                PredefinedMetricSpecification:
+                    PredefinedMetricType: DynamoDBWriteCapacityUtilization
+
+    MetricsReadCapacityScalableTarget:
+        Type: "AWS::ApplicationAutoScaling::ScalableTarget"
+        Properties:
+            MaxCapacity: 100
+            MinCapacity: 5
+            ResourceId: !Join ["/", ["table",  !Ref "MetricsTable"]]
+            RoleARN: !GetAtt DDBScalingRole.Arn
+            ScalableDimension: dynamodb:table:ReadCapacityUnits
+            ServiceNamespace: dynamodb
+
+    MetricsReadScalingPolicy:
+        DependsOn: MetricsWriteScalingPolicy
+        Type: "AWS::ApplicationAutoScaling::ScalingPolicy"
+        Properties:
+            PolicyName: MetricsReadAutoScalingPolicy
+            PolicyType: TargetTrackingScaling
+            ScalingTargetId: !Ref MetricsReadCapacityScalableTarget
+            TargetTrackingScalingPolicyConfiguration:
+                TargetValue: 70.0
+                ScaleInCooldown: 60
+                ScaleOutCooldown: 60
+                PredefinedMetricSpecification:
+                    PredefinedMetricType: DynamoDBReadCapacityUtilization
+
+
+    # DynamoDB Tables [end]
+
+    # VPC [start]
+
+    IotSimEngineVPC:
+        Type: "AWS::EC2::VPC"
+        Properties:
+            CidrBlock: "10.0.0.0/16"
+            EnableDnsSupport: true
+            EnableDnsHostnames: true
+            Tags:
+                -
+                    Key: "Name"
+                    Value: !Join ["-", [!Ref "AWS::StackName", "vpc"]]
+
+    # Public Subnets
+    IotSimEnginePublicSubnet1A:
+        Type: "AWS::EC2::Subnet"
+        Properties:
+            MapPublicIpOnLaunch: true
+            CidrBlock: "10.0.0.0/24"
+            AvailabilityZone:
+                !Select
+                    - 0
+                    - !GetAZs
+            Tags:
+                -
+                    Key: "Name"
+                    Value: "iot-sim-public-subnet-1a"
+            VpcId: !Ref IotSimEngineVPC
+
+    IotSimEnginePublicSubnet1B:
+        Type: "AWS::EC2::Subnet"
+        Properties:
+            MapPublicIpOnLaunch: true
+            CidrBlock: "10.0.1.0/24"
+            AvailabilityZone:
+                !Select
+                    - 1
+                    - !GetAZs
+            Tags:
+                -
+                    Key: "Name"
+                    Value: "iot-sim-public-subnet-1b"
+            VpcId: !Ref IotSimEngineVPC
+
+    # Private Subnets
+    IotSimEnginePrivateSubnet1A:
+        Type: "AWS::EC2::Subnet"
+        Properties:
+            CidrBlock: "10.0.2.0/24"
+            AvailabilityZone:
+                !Select
+                    - 0
+                    - !GetAZs
+            Tags:
+                -
+                    Key: "Name"
+                    Value: "iot-sim-private-subnet-1a"
+            VpcId: !Ref IotSimEngineVPC
+
+    IotSimEnginePrivateSubnet1B:
+        Type: "AWS::EC2::Subnet"
+        Properties:
+            CidrBlock: "10.0.3.0/24"
+            AvailabilityZone:
+                !Select
+                    - 0
+                    - !GetAZs
+            Tags:
+                -
+                    Key: "Name"
+                    Value: "iot-sim-private-subnet-1b"
+            VpcId: !Ref IotSimEngineVPC
+
+    IotSimEngineInternetGateway:
+        Type: "AWS::EC2::InternetGateway"
+        Properties:
+            Tags:
+                -
+                    Key: "Name"
+                    Value: "iot-sim-internet-gateway"
+
+    IotSimEngineGatewayAttachment:
+        Type: "AWS::EC2::VPCGatewayAttachment"
+        Properties:
+            InternetGatewayId: !Ref IotSimEngineInternetGateway
+            VpcId: !Ref IotSimEngineVPC
+
+    # Route Tables
+    IotSimEnginePublicSubnetRouteTable:
+        Type: "AWS::EC2::RouteTable"
+        Properties:
+            VpcId: !Ref IotSimEngineVPC
+            Tags:
+                -
+                    Key: "Name"
+                    Value: "iot-sim-public-route-table"
+
+    IotSimEnginePublicSubnetRoute:
+        Type: "AWS::EC2::Route"
+        Properties:
+            DestinationCidrBlock: "0.0.0.0/0"
+            GatewayId: !Ref IotSimEngineInternetGateway
+            RouteTableId: !Ref IotSimEnginePublicSubnetRouteTable
+        DependsOn: IotSimEngineGatewayAttachment
+
+    IotSimEngineSubnet1ARouteAssociation:
+        Type: "AWS::EC2::SubnetRouteTableAssociation"
+        Properties:
+            RouteTableId: !Ref IotSimEnginePublicSubnetRouteTable
+            SubnetId: !Ref IotSimEnginePublicSubnet1A
+
+    IotSimEngineSubnet1BRouteAssociation:
+        Type: "AWS::EC2::SubnetRouteTableAssociation"
+        Properties:
+            RouteTableId: !Ref IotSimEnginePublicSubnetRouteTable
+            SubnetId: !Ref IotSimEnginePublicSubnet1B
+
+    IotSimEngineElasticIP1A:
+        Type: "AWS::EC2::EIP"
+        DependsOn: IotSimEngineInternetGateway
+
+    IotSimEngineNATGateway1A:
+        Type: "AWS::EC2::NatGateway"
+        Properties:
+            AllocationId: !GetAtt IotSimEngineElasticIP1A.AllocationId
+            SubnetId: !Ref IotSimEnginePublicSubnet1A
+
+    IotSimEnginePrivateSubnetRouteTable1A:
+        Type: "AWS::EC2::RouteTable"
+        Properties:
+            VpcId: !Ref IotSimEngineVPC
+            Tags:
+                -
+                    Key: "Name"
+                    Value: "iot-sim-private-route-table-1a"
+
+    IotSimEnginePrivateSubnetRoute1A:
+        Type: "AWS::EC2::Route"
+        Properties:
+            DestinationCidrBlock: "0.0.0.0/0"
+            NatGatewayId: !Ref IotSimEngineNATGateway1A
+            RouteTableId: !Ref IotSimEnginePrivateSubnetRouteTable1A
+        DependsOn:
+            - IotSimEngineNATGateway1A
+            - IotSimEnginePrivateSubnetRouteTable1A
+
+    IotSimEngineElasticIP1B:
+        Type: "AWS::EC2::EIP"
+        DependsOn: IotSimEngineInternetGateway
+
+    IotSimEngineNATGateway1B:
+        Type: "AWS::EC2::NatGateway"
+        Properties:
+            AllocationId: !GetAtt IotSimEngineElasticIP1B.AllocationId
+            SubnetId: !Ref IotSimEnginePublicSubnet1B
+
+    IotSimEnginePrivateSubnetRouteTable1B:
+        Type: "AWS::EC2::RouteTable"
+        Properties:
+            VpcId: !Ref IotSimEngineVPC
+            Tags:
+                -
+                    Key: "Name"
+                    Value: "iot-sim-private-route-table-1b"
+
+    IotSimEnginePrivateSubnetRoute1B:
+        Type: "AWS::EC2::Route"
+        Properties:
+            DestinationCidrBlock: "0.0.0.0/0"
+            NatGatewayId: !Ref IotSimEngineNATGateway1B
+            RouteTableId: !Ref IotSimEnginePrivateSubnetRouteTable1B
+        DependsOn:
+            - IotSimEngineNATGateway1B
+            - IotSimEnginePrivateSubnetRouteTable1B
+
+    IotSimEnginePrivSubnet1ARouteAssociation:
+        Type: "AWS::EC2::SubnetRouteTableAssociation"
+        Properties:
+            RouteTableId: !Ref IotSimEnginePrivateSubnetRouteTable1A
+            SubnetId: !Ref IotSimEnginePrivateSubnet1A
+
+    IotSimEnginePrivSubnet1BRouteAssociation:
+        Type: "AWS::EC2::SubnetRouteTableAssociation"
+        Properties:
+            RouteTableId: !Ref IotSimEnginePrivateSubnetRouteTable1B
+            SubnetId: !Ref IotSimEnginePrivateSubnet1B
+
+    # Security Group
+    IotSimEngineIntraVPCSecurityGroup:
+        Type: "AWS::EC2::SecurityGroup"
+        Properties:
+            GroupName: "Intra-VPC Security Group"
+            GroupDescription: "Security group that allows inbound from the VPC and outbound to the Internet"
+            Tags:
+                -
+                    Key: "Name"
+                    Value: "iot-sim-intra-vpc-sg"
+            VpcId: !Ref IotSimEngineVPC
+
+    IotSimEngineIntraVPCSecurityGroupIngress:
+        Type: "AWS::EC2::SecurityGroupIngress"
+        Properties:
+            FromPort: 0
+            ToPort: 65535
+            GroupId: !Ref IotSimEngineIntraVPCSecurityGroup
+            IpProtocol: "-1"
+            SourceSecurityGroupId: !Ref IotSimEngineIntraVPCSecurityGroup
+
+    # VPC [end]
+
+# Outputs
+
+Outputs:
+    ManagementConsole:
+        Description: "Simulator Management Console URL"
+        Value: !GetAtt IotSimWebsiteBucket.WebsiteURL
+    IotDeviceSimApiEndpoint:
+        Description: "Iot Device Simulator API Endpoint"
+        Value: !Join ["", ["https://", Ref: IotDeviceSimApi, ".execute-api.", Ref: "AWS::Region", ".amazonaws.com/prod"]]
+    SolutionUUID:
+        Description: "Solution UUID"
+        Value: !GetAtt IotDeviceSimAppUuid.UUID
+    SettingsTable:
+        Description: "Settings Table"
+        Value: !Ref SettingsTable
+    MetricsTable:
+        Description: "Metrics table"
+        Value: !Ref MetricsTable
+    DeviceTypesTable:
+        Description: "Device Types table"
+        Value: !Ref DeviceTypesTable
+    DeviceWidgetsTable:
+        Description: "Device Widgets table"
+        Value: !Ref DeviceWidgetsTable
+    IotDeviceSimQueue:
+        Description: "IoT Simulation Queue"
+        Value: !Ref IotDeviceSimQueue
+    IotDeviceSimUserPool:
+        Description: "Iot Device Simulator User Pool"
+        Value: !GetAtt IotDeviceSimUserPool.Arn
+    IotDeviceSimUserPoolId:
+        Description: "Iot Device Simulator User Pool ID"
+        Value: !Ref IotDeviceSimUserPool
+    IotDeviceSimConsoleClientId:
+        Description: "Iot Device Simulator Console Client"
+        Value: !Ref IotDeviceSimConsoleClient
+    IotDeviceSimConsoleIdentityPool:
+        Description: "Iot Device Simulator Identity Pool"
+        Value: !Ref IotDeviceSimIdentityPool
