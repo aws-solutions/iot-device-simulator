@@ -256,6 +256,11 @@ Resources:
                         Action:
                             - "cognito-idp:AdminGetUser"
                             - "cognito-idp:AdminListGroupsForUser"
+                            - "cognito-idp:AdminEnableUser"
+                            - "cognito-idp:AdminDisableUser"
+                            - "cognito-idp:AdminCreateUser"
+                            - "cognito-idp:AdminDeleteUser"
+                            - "cognito-idp:AdminAddUserToGroup"
                             - "cognito-idp:ListUsers"
                             - "cognito-idp:ListGroups"
                         Resource:
@@ -2257,9 +2262,12 @@ Resources:
     IotSimEngineElasticIP1A:
         Type: "AWS::EC2::EIP"
         DependsOn: IotSimEngineInternetGateway
+        Properties:
+            Domain: vpc
 
     IotSimEngineNATGateway1A:
         Type: "AWS::EC2::NatGateway"
+        DependsOn: IotSimEngineElasticIP1A
         Properties:
             AllocationId: !GetAtt IotSimEngineElasticIP1A.AllocationId
             SubnetId: !Ref IotSimEnginePublicSubnet1A
@@ -2286,9 +2294,12 @@ Resources:
     IotSimEngineElasticIP1B:
         Type: "AWS::EC2::EIP"
         DependsOn: IotSimEngineInternetGateway
+        Properties:
+            Domain: vpc
 
     IotSimEngineNATGateway1B:
         Type: "AWS::EC2::NatGateway"
+        DependsOn: IotSimEngineElasticIP1B
         Properties:
             AllocationId: !GetAtt IotSimEngineElasticIP1B.AllocationId
             SubnetId: !Ref IotSimEnginePublicSubnet1B

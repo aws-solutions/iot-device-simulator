@@ -5,6 +5,8 @@ Often times, teams constantly have the need to quickly replicate the behavior of
 
 For more information and a detailed deployment guide visit the IoT Device Simulator solution at https://aws.amazon.com/answers/iot/iot-device-simulator/.
 
+__NOTE:__ Amazon Elastic Container Service (ECS) uses AWS Identity and Access Management (IAM) service-linked roles. A service-linked role is a unique type of IAM role that is linked directly to Amazon ECS. Service-linked roles are predefined by Amazon ECS and include all the permissions that the service requires to call other AWS services on your behalf. Amazon ECS uses the service-linked role named AWSServiceRoleForECS – Role to enable Amazon ECS to manage your cluster. Under some circumstances, you need to manually create the service-linked role. Please follow the instructions outlined [here](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/using-service-linked-roles.html#create-service-linked-role) to provision your service-linked role for ECS.
+
 ## Running unit tests for customization
 * Clone the repository, then make the desired code changes
 * Next, run unit tests to make sure added customization passes the tests
@@ -90,6 +92,16 @@ Each microservice follows the structure of:
     |-[service module libraries and unit tests]
   |-index.js [injection point for microservice]
   |-package.json
+```
+
+***
+
+#### v1.0.1 changes
+
+```
+* Resolved administration microservice role permissions to properly provide full user management access. Updated IotDeviceSimAdminPolicy.
+* Added domain to EIP to resolve classic account failure on NAT Gateway provisioning
+* Added documentation note regarding Amazon ECS service-linked role.
 ```
 
 ***
