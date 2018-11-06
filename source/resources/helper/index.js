@@ -21,6 +21,7 @@ const url = require('url');
 const moment = require('moment');
 const DynamoDBHelper = require('./lib/dynamodb-helper.js');
 const S3Helper = require('./lib/s3-helper.js');
+const IotHelper = require('./lib/iot-helper.js');
 const UsageMetrics = require('usage-metrics');
 const UUID = require('node-uuid');
 
@@ -124,6 +125,21 @@ exports.handler = (event, context, callback) => {
             };
             sendResponse(event, callback, context.logStreamName, responseStatus, responseData);
 
+        } else if (event.ResourceProperties.customAction === 'getIotEndpoint') {
+            let _iotHelper = new IotHelper();
+            _iotHelper.getIotEndpoint().then((data) => {
+                responseStatus = 'SUCCESS';
+                responseData = {
+                    endpoint: data
+                };
+                sendResponse(event, callback, context.logStreamName, responseStatus, responseData);
+            }).catch((err) => {
+                responseData = {
+                    Error: `Retrieving the regional IoT Endpoint failed`
+                };
+                console.log([responseData.Error, ':\n', err].join(''));
+                sendResponse(event, callback, context.logStreamName, responseStatus, responseData);
+            });
         } else if (event.ResourceProperties.customAction === 'sendMetric') {
             if (event.ResourceProperties.anonymousData === 'Yes') {
                 let _metric = {
@@ -153,6 +169,59 @@ exports.handler = (event, context, callback) => {
             } else {
                 sendResponse(event, callback, context.logStreamName, 'SUCCESS');
             }
+
+        } else {
+            sendResponse(event, callback, context.logStreamName, 'SUCCESS');
+        }
+    }
+
+    if (event.RequestType === 'Update') {
+        if (event.ResourceProperties.customAction === 'copyS3assets') {
+            let _s3Helper = new S3Helper();
+
+            _s3Helper.copyAssets(event.ResourceProperties.manifestKey,
+                event.ResourceProperties.sourceS3Bucket, event.ResourceProperties.sourceS3key,
+                event.ResourceProperties.destS3Bucket).then((data) => {
+                responseStatus = 'SUCCESS';
+                responseData = {};
+                sendResponse(event, callback, context.logStreamName, responseStatus, responseData);
+            }).catch((err) => {
+                responseData = {
+                    Error: `Copy of website assets failed`
+                };
+                console.log([responseData.Error, ':\n', err].join(''));
+                sendResponse(event, callback, context.logStreamName, responseStatus, responseData);
+            });
+
+        } else if (event.ResourceProperties.customAction === 'getIotEndpoint') {
+            let _iotHelper = new IotHelper();
+            _iotHelper.getIotEndpoint().then((data) => {
+                responseStatus = 'SUCCESS';
+                responseData = {
+                    endpoint: data
+                };
+                sendResponse(event, callback, context.logStreamName, responseStatus, responseData);
+            }).catch((err) => {
+                responseData = {
+                    Error: `Retrieving the regional IoT Endpoint failed`
+                };
+                console.log([responseData.Error, ':\n', err].join(''));
+                sendResponse(event, callback, context.logStreamName, responseStatus, responseData);
+            });
+        } else if (event.ResourceProperties.customAction === 'putConfigFile') {
+            let _s3Helper = new S3Helper();
+            console.log(event.ResourceProperties.configItem);
+            _s3Helper.putConfigFile(event.ResourceProperties.configItem, event.ResourceProperties.destS3Bucket, event.ResourceProperties.destS3key).then((data) => {
+                responseStatus = 'SUCCESS';
+                responseData = setting;
+                sendResponse(event, callback, context.logStreamName, responseStatus, responseData);
+            }).catch((err) => {
+                responseData = {
+                    Error: `Saving config file to ${event.ResourceProperties.destS3Bucket}/${event.ResourceProperties.destS3key} failed`
+                };
+                console.log([responseData.Error, ':\n', err].join(''));
+                sendResponse(event, callback, context.logStreamName, responseStatus, responseData);
+            });
 
         } else {
             sendResponse(event, callback, context.logStreamName, 'SUCCESS');

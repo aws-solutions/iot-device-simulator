@@ -137,12 +137,14 @@
         <div class="card">
             <div class="card-body">
                 <!-- /.modal -->
-                <h4 class="card-title">Vehicles</h4>
+                <h4 class="float-left card-title">Vehicles</h4>
+                <button type="submit" class="float-right btn btn-sm btn-success" *ngIf="getSelectedCount() === true" (click)="startSelectedVehicles();"><i class="mdi mdi-play"></i> Start Devices</button>
                 <div class="table-responsive m-t-20">
                     <table id="fleet-pagination" class="table stylish-table" style="text-transform:uppercase;" data-paging-limit="10">
                         <thead>
                             <tr>
                                 <th></th>
+                                <th><input type="checkbox" id="chk_all" [(ngModel)]="allSelected" class="classic-checkbox" (change)="selectAll()"></th>
                                 <th>Vehicle</th>
                                 <th class="text-right">Stage</th>
                                 <th class="text-right">Last Route</th>
@@ -160,6 +162,7 @@
                                         <div [class]="vehicle.stage === 'hydrated' ? 'notify device success' : (vehicle.stage === 'provisioning' ? 'notify device warning' : 'notify device error')"> <span *ngIf="vehicle.stage !== 'sleeping'" class="heartbit"></span> <span class="point"></span> </div>
                                     </span>
                                 </td>
+                                <td><input type="checkbox" id="chk_{{vehicle.id}}" class="classic-checkbox" [(ngModel)]="vehicle.isSelected" [ngModelOptions]="{standalone: true}"></td>
                                 <td>
                                     <h6>{{vehicle.metadata.vin}}</h6><small class="text-muted">{{vehicle.id}}</small>
                                 </td>
@@ -184,7 +187,7 @@
                         </tbody>
                         <tfoot>
                             <tr>
-                                <td colspan="8">
+                                <td colspan="9">
                                     <div class="text-right">
                                         <div class="pull-right">
                                             <button type="button" [class]="pages.current === 0 ? 'btn btn-sm btn-default disabled' : 'btn btn-sm btn-default'" (click)="previousPage()" [disabled]="pages.current === 1"><i class="mdi mdi-chevron-left"></i></button>

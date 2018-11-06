@@ -41,14 +41,16 @@ class iotHelper {
             let iot = new AWS.Iot({
                 region: process.env.AWS_REGION
             });
-            let params = {};
+            let params = {
+                endpointType: 'iot:Data-ATS'
+            };
             iot.describeEndpoint(params, function(err, endpt) {
                 if (err) {
                     console.log(`Error occurred while attempting to retrieve the AWS IoT endpoint for region ${process.env.AWS_REGION}.`);
                     reject(err)
+                } else {
+                    resolve(endpt.endpointAddress);
                 }
-
-                resolve(endpt);
             });
 
         });

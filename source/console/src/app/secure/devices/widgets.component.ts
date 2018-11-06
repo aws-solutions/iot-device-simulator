@@ -14,6 +14,7 @@ import { StatsService } from '../../service/stats.service';
 import { BlockUI, NgBlockUI } from 'ng-block-ui';
 import * as moment from 'moment';
 import * as _ from 'underscore';
+import { allSettled } from 'q';
 declare var jquery: any;
 declare var $: any;
 declare var swal: any;
@@ -29,6 +30,7 @@ export class WidgetsComponent implements OnInit, OnDestroy { // implements Logge
     private profile: ProfileInfo;
     public devices: Device[] = [];
     public deviceTypes: DeviceType[] = [];
+    private allSelected: boolean = false;
     private pollerInterval: any = null;
     public widgetRequest: WidgetRequest = new WidgetRequest();
     public provisionCountError: boolean = false;
@@ -116,30 +118,112 @@ export class WidgetsComponent implements OnInit, OnDestroy { // implements Logge
         this.router.navigate([['/securehome/general', deviceId].join('/')]);
     }
 
-    startDevice(deviceId: string) {
+    selectAll() {
+        const _self = this;
+        this.devices.forEach(function(d) {
+            d.isSelected = _self.allSelected;
+        });
+    }
+
+    getSelectedCount() {
+        const _devices = _.where(this.devices, {
+            isSelected: true
+        });
+        return (_devices.length > 0);
+    }
+
+    startSelectedDevices() {
+        const _self = this;
+        this.blockUI.start('Starting devices...');
+        this.allSelected = false;
+        const _devices = _.where(this.devices, {
+            isSelected: true,
+            stage: 'sleeping'
+        });
+
+        let _counter = 0;
+        let _errors = 0;
+        if (_devices.length > 0) {
+            _devices.forEach(function(device) {
+                if(device.isSelected) {
+                    _self.startDevice(device).then(() => {
+                        _counter++;
+                        if(_counter === _devices.length) {
+                            if (_errors > 0) {
+                                _self.blockUI.stop();
+                                swal(
+                                    'Oops...',
+                                    'Unable to start some of the selected widgets.',
+                                    'info');
+                                _self.logger.error('error occurred starting selected devices, show message');
+                            }
+                            _self.loadDevices();
+                            _self.statsService.refresh();
+                        }
+                    }).catch((err) => {
+                        _counter++;
+                        _self.logger.error(err);
+                        _errors++;
+                        if(_counter === _devices.length) {
+                            _self.blockUI.stop();
+                            swal(
+                                'Oops...',
+                                'Unable to start some of the selected widgets.',
+                                'info');
+                            _self.logger.error('error occurred starting selected devices, show message');
+                            _self.loadDevices();
+                            _self.statsService.refresh();
+                        }
+                    });
+                }
+            });
+        } else {
+            this.devices.forEach(function(d) {
+                d.isSelected = false;
+            });
+            this.blockUI.stop();
+        }
+ 
+    }
+
+    startWidget(deviceId) {
         this.blockUI.start('Starting device...');
         const device = _.where(this.devices, {
             id: deviceId
         });
 
         if (device.length > 0) {
-            if (device[0].stage === 'sleeping') {
-                device[0].operation = 'hydrate';
-                this.deviceService.updateDevice(device[0]).then((resp: any) => {
-                    this.loadDevices();
-                    this.statsService.refresh();
+            this.startDevice(device[0]).then(() => {
+                this.loadDevices();
+                this.statsService.refresh();
+            }).catch((err) => {
+                this.blockUI.stop();
+                swal(
+                    'Oops...',
+                    'Something went wrong! Unable to start the widget.',
+                    'error');
+                this.logger.error('error occurred calling updateDevice api, show message');
+                this.logger.error(err);
+                this.loadDevices();
+            });
+        } else {
+            this.blockUI.stop();
+            this.loadDevices();
+        }
+    }
+
+    private startDevice(device: Device) {
+        const promise = new Promise((resolve, reject) => {
+            if (device.stage === 'sleeping') {
+                device.operation = 'hydrate';
+                this.deviceService.updateDevice(device).then((resp: any) => {
+                    resolve();
                 }).catch((err) => {
-                    this.blockUI.stop();
-                    swal(
-                        'Oops...',
-                        'Something went wrong! Unable to start the widget.',
-                        'error');
-                    this.logger.error('error occurred calling updateDevice api, show message');
-                    this.logger.error(err);
-                    this.loadDevices();
+                    reject(err);
                 });
             }
-        }
+        });
+        return promise;
     }
 
     stopDevice(deviceId: string) {

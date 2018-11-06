@@ -248,6 +248,8 @@ export class DeviceTypeComponent implements OnInit {
             } else {
                 return 'asdqwiei1238';
             }
+        } else if (attr.type === 'id') {
+            return 'rLdMw4VRZ';
         } else if (attr.type === 'int') {
             return attr.max;
         } else if (attr.type === 'rstring') {

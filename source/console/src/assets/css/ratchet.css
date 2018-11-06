@@ -7952,3 +7952,9 @@ div.blockUI.blockMsg {
 div.blockUI.blockMsg h4 {
     color: #fff;
 }
+
+[type="checkbox"].classic-checkbox:not(:checked),
+[type="checkbox"].classic-checkbox:checked {
+  position: relative;
+  left: 0px;
+  opacity: 100; }

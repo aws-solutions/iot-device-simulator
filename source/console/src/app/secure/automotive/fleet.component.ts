@@ -28,6 +28,7 @@ export class FleetComponent implements OnInit, OnDestroy { // implements LoggedI
     public deviceStats: any = {};
     private profile: ProfileInfo;
     public fleet: Device[] = [];
+    private allSelected: boolean = false;
     public widgetRequest: WidgetRequest = new WidgetRequest();
     private pollerInterval: any = null;
     public provisionCountError: boolean = false;
@@ -114,6 +115,74 @@ export class FleetComponent implements OnInit, OnDestroy { // implements LoggedI
         });
     }
 
+    selectAll() {
+        const _self = this;
+        this.fleet.forEach(function(d) {
+            d.isSelected = _self.allSelected;
+        });
+    }
+
+    getSelectedCount() {
+        const _fleet = _.where(this.fleet, {
+            isSelected: true
+        });
+        return (_fleet.length > 0);
+    }
+
+    startSelectedVehicles() {
+        const _self = this;
+        this.blockUI.start('Starting vehicles...');
+        this.allSelected = false;
+        const _devices = _.where(this.fleet, {
+            isSelected: true,
+            stage: 'sleeping'
+        });
+
+        let _counter = 0;
+        let _errors = 0;
+        if (_devices.length > 0) {
+            _devices.forEach(function(device) {
+                if(device.isSelected) {
+                    _self.startDevice(device).then(() => {
+                        _counter++;
+                        if(_counter === _devices.length) {
+                            if (_errors > 0) {
+                                _self.blockUI.stop();
+                                swal(
+                                    'Oops...',
+                                    'Unable to start some of the selected vehicles.',
+                                    'info');
+                                _self.logger.error('error occurred starting selected vehicles, show message');
+                            }
+                            _self.loadDevices();
+                            _self.statsService.refresh();
+                        }
+                    }).catch((err) => {
+                        _counter++;
+                        _self.logger.error(err);
+                        _errors++;
+                        if(_counter === _devices.length) {
+                            _self.blockUI.stop();
+                            swal(
+                                'Oops...',
+                                'Unable to start some of the selected vehicles.',
+                                'info');
+                            _self.logger.error('error occurred starting selected vehicles, show message');
+                            _self.loadDevices();
+                            _self.statsService.refresh();
+                        }
+                    });
+                }
+            });
+        } else {
+            this.fleet.forEach(function(d) {
+                d.isSelected = false;
+            });
+            this.blockUI.stop();
+        }
+ 
+    }
+
     startVehicle(vehicleId: string) {
         this.blockUI.start('Starting vehicle...');
         const device = _.where(this.fleet, {
@@ -121,23 +190,37 @@ export class FleetComponent implements OnInit, OnDestroy { // implements LoggedI
         });
 
         if (device.length > 0) {
-            if (device[0].stage === 'sleeping') {
-                device[0].operation = 'hydrate';
-                this.deviceService.updateDevice(device[0]).then((resp: any) => {
-                    this.loadDevices();
-                    this.statsService.refresh();
+            this.startDevice(device[0]).then(() => {
+                this.loadDevices();
+                this.statsService.refresh();
+            }).catch((err) => {
+                this.blockUI.stop();
+                swal(
+                    'Oops...',
+                    'Something went wrong! Unable to start the vehicle.',
+                    'error');
+                this.logger.error('error occurred calling updateDevice api, show message');
+                this.logger.error(err);
+                this.loadDevices();
+            });
+        } else {
+            this.blockUI.stop();
+            this.loadDevices();
+        }        
+    }
+
+    private startDevice(device: Device) {
+        const promise = new Promise((resolve, reject) => {
+            if (device.stage === 'sleeping') {
+                device.operation = 'hydrate';
+                this.deviceService.updateDevice(device).then((resp: any) => {
+                    resolve();
                 }).catch((err) => {
-                    this.blockUI.stop();
-                    swal(
-                        'Oops...',
-                        'Something went wrong! Unable to start the vehicle.',
-                        'error');
-                    this.logger.error('error occurred calling updateDevice api, show message');
-                    this.logger.error(err);
-                    this.loadDevices();
+                    reject(err);
                 });
             }
-        }
+        });
+        return promise;
     }
 
     stopVehicle(vehicleId: string) {

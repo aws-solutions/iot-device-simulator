@@ -23,11 +23,11 @@
         "proxyquire": "*"
     },
     "scripts": {
-        "pretest": "npm install",
+        "pretest": "rm -rf package-lock.json && rm -rf node_modules && npm install",
         "test": "mocha lib/*.spec.js",
-        "prestart": "npm install",
+        "prestart": "rm -rf package-lock.json && npm install",
         "start": "node index.js",
-        "build:init": "rm -rf dist && rm -rf node_modules",
+        "build:init": "rm -rf package-lock.json && rm -rf dist && rm -rf node_modules",
         "build:zip": "zip -rq iot-sim-admin-service.zip . -x template.yml",
         "build:dist": "mkdir dist && mv iot-sim-admin-service.zip dist/",
         "build": "npm run build:init && npm install --production && npm run build:zip && npm run build:dist",
@@ -35,7 +35,6 @@
         "local:api": "sam local start-api --env-vars ../tests/env-vars.json"
     },
     "bundledDependencies": [
-        "aws-sdk",
         "moment",
         "underscore",
         "colors",

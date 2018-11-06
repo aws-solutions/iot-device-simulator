@@ -13,6 +13,7 @@ export class Device {
     startedAt: string;
     endedAt: string;
     operation: string;
+    isSelected: boolean  = false;
 
     constructor(values: Object = {}) {
         Object.assign(this, values);

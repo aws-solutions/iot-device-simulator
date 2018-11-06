@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: "2010-09-09"
-Description: "(SO0041) - The AWS CloudFormation template for deployment of the IoT Device Simulator. Version 1.0"
+Description: "(SO0041) - The AWS CloudFormation template for deployment of the IoT Device Simulator. Version 1.1.0"
 Parameters:
     AdministratorName:
         Type: String
@@ -158,6 +158,12 @@ Resources:
                                 Resource:
                                     - !Join ["/", [!GetAtt IotSimWebsiteBucket.Arn, "*"]]
                                     - !Join ["/", [!GetAtt IotSimDataBucket.Arn, "*"]]
+                            -
+                                Effect: "Allow"
+                                Action:
+                                    - "iot:describeEndpoint"
+                                Resource:
+                                    - "*"                                    
 
     IotDeviceSimProfileRole:
         Type: "AWS::IAM::Role"
@@ -519,6 +525,12 @@ Resources:
             Roles:
                 -
                     Ref: "IotDeviceSimIdentityPoolAuthRole"
+        Metadata:
+            cfn_nag:
+                rules_to_suppress:
+                    - 
+                        id: F5
+                        reason: "This is a policy for subscribing to any iot topic because users can simulator to any topic"
 
     IotDeviceSimIdentityPoolUnauthRole:
         Type: "AWS::IAM::Role"
@@ -1257,7 +1269,7 @@ Resources:
                             </p>
                             <p>
                             Please sign in to the IoT Device Simulator with your email address and temporary password provided above at: <br />
-                            ${IotSimWebsiteBucket.WebsiteURL}
+                            https://${IotSimWebsiteDistribution.DomainName}
                             </p>
                     EmailSubject: !Join [" ", ["Your", !FindInMap ["SourceCode", "App", "FullName"], "login."]]
                     SMSMessage: "Your username is {username} and temporary password is {####}."
@@ -1438,6 +1450,17 @@ Resources:
                 - Ref: "AWS::Region"
             customAction: "createUuid"
 
+    IotDeviceSimAppEndpoint:
+        Type: "Custom::LoadLambda"
+        Properties:
+            ServiceToken:
+                Fn::GetAtt:
+                    - "IotDeviceSimHelper"
+                    - "Arn"
+            Region:
+                - Ref: "AWS::Region"
+            customAction: "getIotEndpoint"            
+
     IotDeviceSimWebsite:
         Type: "Custom::LoadLambda"
         Properties:
@@ -1451,6 +1474,7 @@ Resources:
             sourceS3Bucket: !Join ["-", [!FindInMap ["SourceCode", "General", "S3Bucket"], Ref: "AWS::Region"]]
             sourceS3key: !Join ["/", [!FindInMap ["SourceCode", "General", "KeyPrefix"], "console"]]
             destS3Bucket: !Ref IotSimWebsiteBucket
+            version: "%%VERSION%%"
             customAction: "copyS3assets"
 
     IotDeviceSimWebConfig:
@@ -1474,6 +1498,7 @@ Resources:
                 COGNITO_IDP_ENDPOINT: ""
                 COGNITO_IDENTITY_ENDPOINT: ""
                 APIG_ENDPOINT: !Join ["", ["https://", Ref: IotDeviceSimApi, ".execute-api.", Ref: "AWS::Region", ".amazonaws.com/prod"]]
+                IOT_ENDPOINT: !GetAtt IotDeviceSimAppEndpoint.endpoint
                 REGION:
                     Fn::Sub: "${AWS::Region}"
             customAction: "putConfigFile"
@@ -1740,6 +1765,9 @@ Resources:
             Role: !GetAtt IotDeviceSimResourceHelperRole.Arn
             Timeout: 300
             MemorySize: 256
+            Environment:
+                Variables:
+                    VERSION: "%%VERSION%%"            
 
     # Microservices [end]
 
@@ -1786,9 +1814,65 @@ Resources:
                                     -
                                         Ref: "IotSimWebsiteBucket"
                                     - "/*"
-                        Principal: "*"
+                        Principal:
+                            CanonicalUser: !GetAtt IotSimWebsiteOriginAccessIdentity.S3CanonicalUserId
 
     # s3 [end]
+
+    # cloudfront
+
+    IotSimWebsiteOriginAccessIdentity:
+        Type: AWS::CloudFront::CloudFrontOriginAccessIdentity
+        Properties:
+            CloudFrontOriginAccessIdentityConfig:
+                Comment: !Sub "access-identity-${IotSimWebsiteBucket}"
+
+    IotSimWebsiteDistribution:
+        Type: AWS::CloudFront::Distribution
+        Properties:
+            DistributionConfig:
+                Comment: "Website distribution for IoT Device Simulator console"
+                Origins:
+                    -   
+                        Id: S3-iotsim-console
+                        DomainName: !Sub "${IotSimWebsiteBucket}.s3.${AWS::Region}.amazonaws.com"
+                        S3OriginConfig:
+                            OriginAccessIdentity: !Sub "origin-access-identity/cloudfront/${IotSimWebsiteOriginAccessIdentity}"
+                DefaultCacheBehavior:
+                    TargetOriginId: S3-iotsim-console
+                    AllowedMethods:
+                        - GET
+                        - HEAD
+                        - OPTIONS
+                        - PUT
+                        - POST
+                        - PATCH
+                        - DELETE
+                    CachedMethods:
+                        - GET
+                        - HEAD
+                        - OPTIONS
+                    ForwardedValues:
+                        QueryString: 'false'
+                    ViewerProtocolPolicy: redirect-to-https 
+                    DefaultTTL: 0
+                    MinTTL: 0
+                    MaxTTL: 0
+                DefaultRootObject: "index.html"
+                CustomErrorResponses:
+                   - ErrorCode: '404'
+                     ResponsePagePath: "/index.html"
+                     ResponseCode: '200'
+                   - ErrorCode: '403'
+                     ResponsePagePath: "/index.html"
+                     ResponseCode: '200'                 
+                IPV6Enabled: 'true'
+                ViewerCertificate:
+                    CloudFrontDefaultCertificate: 'true'    
+                Enabled: 'true'   
+                HttpVersion: 'http2'         
+
+    # cloudfront [end]    
 
     # logs [start]
 
@@ -2346,6 +2430,13 @@ Resources:
                     Key: "Name"
                     Value: "iot-sim-intra-vpc-sg"
             VpcId: !Ref IotSimEngineVPC
+        Metadata:
+            cfn_nag:
+                rules_to_suppress:
+                    - 
+                        id: F1000
+                        reason: "Missing egress rule is desired to specifically allow all traffic outbound"
+
 
     IotSimEngineIntraVPCSecurityGroupIngress:
         Type: "AWS::EC2::SecurityGroupIngress"
@@ -2363,7 +2454,7 @@ Resources:
 Outputs:
     ManagementConsole:
         Description: "Simulator Management Console URL"
-        Value: !GetAtt IotSimWebsiteBucket.WebsiteURL
+        Value: !Sub https://${IotSimWebsiteDistribution.DomainName}
     IotDeviceSimApiEndpoint:
         Description: "Iot Device Simulator API Endpoint"
         Value: !Join ["", ["https://", Ref: IotDeviceSimApi, ".execute-api.", Ref: "AWS::Region", ".amazonaws.com/prod"]]

@@ -1,7 +1,7 @@
 export class Attribute {
     _id_: string;
     name: string;
-    type: string = 'uuid';
+    type: string = 'id';
     default: string = '';
     static: boolean = true;
     tsformat: string = 'default';

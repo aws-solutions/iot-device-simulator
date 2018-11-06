@@ -93,7 +93,8 @@
         <div class="card">
             <div class="card-body">
                 <button type="button" class="float-right btn btn-sm btn-success m-l-15" (click)="refreshData()"><i class="fa fa-refresh"></i> Refresh</button>
-                <button type="button" class="float-right btn btn-sm btn-success" (click)="openWidgetModal()"><i class="mdi mdi-plus"></i> Add Widget</button>
+                <button type="button" class="float-right btn btn-sm btn-success m-l-15" (click)="openWidgetModal()"><i class="mdi mdi-plus"></i> Add Widget</button>
+                <button type="submit" class="float-right btn btn-sm btn-success" *ngIf="getSelectedCount() === true" (click)="startSelectedDevices();"><i class="mdi mdi-play"></i> Start Devices</button>
                 <!-- .modal -->
                 <div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-labelledby="addModalLabel1">
                     <div class="modal-dialog" role="document">
@@ -136,6 +137,7 @@
                         <thead>
                             <tr>
                                 <th></th>
+                                <th><input type="checkbox" id="chk_all" [(ngModel)]="allSelected" class="classic-checkbox" (change)="selectAll()"></th>
                                 <th>Device</th>
                                 <th class="text-right">Stage</th>
                                 <th class="text-right">Simulations</th>
@@ -152,6 +154,7 @@
                                         <div [class]="device.stage === 'hydrated' ? 'notify device success' : (device.stage === 'provisioning' ? 'notify device warning' : 'notify device error')"> <span *ngIf="device.stage !== 'sleeping'" class="heartbit"></span> <span class="point"></span> </div>
                                     </span>
                                 </td>
+                                <td><input type="checkbox" id="chk_{{device.id}}" class="classic-checkbox" [(ngModel)]="device.isSelected" [ngModelOptions]="{standalone: true}"></td>
                                 <td>
                                     <h6>{{device.subCategory}}</h6><small class="text-muted" style="text-transform:none;">{{device.id}}</small>
                                 </td>
@@ -165,7 +168,7 @@
                                     <!-- <button type="button" class="pull-right btn btn-sm btn-success btn-rounded" (click)="openDevice(device.deviceId)"><i class="mdi mdi-information-outline"></i> View</button> -->
                                     <div class="pull-right" role="group" aria-label="Basic example">
                                         <button type="button" class="btn btn-success btn-sm" data-toggle="tooltip" title="View Device" data-placement="top" (click)="openDevice(device.id)"><i class="mdi mdi-information"></i> View</button>
-                                        <button type="button" class="btn btn-success btn-sm" data-toggle="tooltip" title="Start Simulation" *ngIf="device.stage !== 'hydrated' && device.stage !== 'provisioning'"  (click)="startDevice(device.id)"><i class="mdi mdi-play"></i> Start</button>
+                                        <button type="button" class="btn btn-success btn-sm" data-toggle="tooltip" title="Start Simulation" *ngIf="device.stage !== 'hydrated' && device.stage !== 'provisioning'"  (click)="startWidget(device.id)"><i class="mdi mdi-play"></i> Start</button>
                                         <!-- <button type="button" class="btn btn-success btn-sm" data-toggle="tooltip" title="Stop Simulation" *ngIf="device.stage !== 'sleeping'" (click)="stopDevice(device.id)"><i class="mdi mdi-stop"></i> Stop</button> -->
                                         <button type="button" class="btn btn-danger btn-sm" data-toggle="tooltip" title="Delete Widget" *ngIf="device.stage !== 'hydrated'"  (click)="deleteDevice(device.id)"><i class="mdi mdi-delete-circle"></i> Delete</button>
                                     </div>

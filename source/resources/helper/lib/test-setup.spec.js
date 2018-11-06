@@ -7,7 +7,7 @@ before(function() {
 });
 
 beforeEach(function() {
-    this.sandbox = sinon.createSandbox();
+    this.sandbox = sinon.sandbox.create();
 });
 
 afterEach(function() {

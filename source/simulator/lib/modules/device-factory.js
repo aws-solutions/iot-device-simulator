@@ -71,7 +71,7 @@ class DeviceFactory {
                 if (!_.isEmpty(device)) {
                     resolve(device.Item);
                 } else {
-                    reject(`Device id: ${deviceId}, userId: ${userId}not found.`);
+                    reject(`Device id: ${deviceId}, userId: ${userId} not found.`);
                 }
 
             });

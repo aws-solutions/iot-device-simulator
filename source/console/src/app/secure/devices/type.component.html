@@ -92,6 +92,7 @@
                                             <div class="form-group">
                                                 <label for="type" class="form-control-label">Attribute data type:</label>
                                                 <select class="custom-select col-12" name="type" id="type" #type="ngModel" [(ngModel)]="attribute.type" required ngModel>
+                                                    <option value="id">DEVICE ID</option>
                                                     <option value="boolean">BOOLEAN</option>
                                                     <option value="float">FLOAT</option>
                                                     <option value="int">INTEGER</option>
@@ -238,7 +239,7 @@
                                                     <small>Maximum value for the decimal precision.</small>
                                                 </div>
                                             </div>
-                                            <div *ngIf="attribute.type !== 'rstring' && attribute.type !== 'location' && attribute.type !== 'pickOne'" class="form-group">
+                                            <div *ngIf="attribute.type !== 'rstring' && attribute.type !== 'location' && attribute.type !== 'pickOne' && attribute.type !== 'id'" class="form-group">
                                                 <label for="default" class="form-control-label">Default Value (Optional):</label>
                                                 <input type="text" class="form-control form-control-line" name="default" id="default" #default="ngModel" [(ngModel)]="attribute.default" required ngModel>
                                                 <div class="form-control-feedback">

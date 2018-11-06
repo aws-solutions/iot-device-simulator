@@ -144,7 +144,7 @@ describe('DeviceFactory', function() {
             _df.loadDevice(device.userId, device.id).then((d) => {
                 done('invalid failure for negative test');
             }).catch((err) => {
-                expect(err).to.equal(`Device id: ${device.id}, userId: ${device.userId}not found.`);
+                expect(err).to.equal(`Device id: ${device.id}, userId: ${device.userId} not found.`);
                 done();
             });
         });

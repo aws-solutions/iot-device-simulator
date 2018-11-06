@@ -1,11 +1,9 @@
 ## IoT Device Simulator
-IoT is a sprawling set of technologies and use cases that has no clear, single definition. Despite enormous advances, we’ve only seen a fraction of what the Internet revolution has yet to deliver. That’s because many powerful technological forces are now converging — poised to magnify, multiply, and exponentially increase the opportunities that software and the Internet can deliver by connecting the devices, or “things”, in the physical world around us. These devices are able to convert valuable information into digital data that provides increased visibility to businesses of how users interact with the world around them. The backend services required to process and uncover these valuable insights can be expensive to prove without a large pool of physical devices for full end to end integration setup or time-consuming development of scripts.  
+IoT is a sprawling set of technologies and use cases that has no clear, single definition. Despite enormous advances, we’ve only seen a fraction of what the Internet revolution has yet to deliver. That’s because many powerful technological forces are now converging — poised to magnify, multiply, and exponentially increase the opportunities that software and the Internet can deliver by connecting the devices, or “things”, in the physical world around us. Each of these devices is able to convert valuable information from the real world into digital data that provides increased visibility to businesses of how users interact their products or services. The backend services required to process and uncover these valuable insights can be expensive to prove without a large pool of physical devices for full end to end integration setup or time-consuming development of scripts.
 
 Often times, teams constantly have the need to quickly replicate the behavior of their devices interacting with AWS IoT to assess their backend services. The IoT Device Simulator solution is a Graphical User Interface (GUI) based engine designed to enable customers to get started quickly assessing AWS IoT services without an existing pool of devices. The IoT Device Simulator leverages managed, highly available, highly scalable AWS-native services to effortlessly create and simulate thousands of connected devices that are defined by the customer.
 
 For more information and a detailed deployment guide visit the IoT Device Simulator solution at https://aws.amazon.com/answers/iot/iot-device-simulator/.
-
-__NOTE:__ Amazon Elastic Container Service (ECS) uses AWS Identity and Access Management (IAM) service-linked roles. A service-linked role is a unique type of IAM role that is linked directly to Amazon ECS. Service-linked roles are predefined by Amazon ECS and include all the permissions that the service requires to call other AWS services on your behalf. Amazon ECS uses the service-linked role named AWSServiceRoleForECS – Role to enable Amazon ECS to manage your cluster. Under some circumstances, you need to manually create the service-linked role. Please follow the instructions outlined [here](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/using-service-linked-roles.html#create-service-linked-role) to provision your service-linked role for ECS.
 
 ## Running unit tests for customization
 * Clone the repository, then make the desired code changes
@@ -96,12 +94,24 @@ Each microservice follows the structure of:
 
 ***
 
+#### v1.1.0 changes
+
+```
+* Change manifest generator to use writeFileSync to eliminate callback deprecation error
+* Added development template [iot-device-simualtor.yaml] to deployment folder
+* [New] Added Amazon CloudFront distribution to simulator console
+* [New] Set Amazon CloudFront OAI restrictive permissions for simulator console Amazon S3 bucket 
+* [New] Updated signin URL for user invitation emails to Amazon CloudFront distribution domain
+* [New] Added new device type attribute `DEVICE ID` which provides a static unique identifier for each generated device constant across simulations
+* [New] Added ability to bulk start devices by selecting multiple devices on a given page and “one click start” the simulations for multiple devices
+* [New] Migration from VeriSign AWS IoT endpoints to ATS AWS IoT endpoints
+```
+
 #### v1.0.1 changes
 
 ```
-* Resolved administration microservice role permissions to properly provide full user management access. Updated IotDeviceSimAdminPolicy.
-* Added domain to EIP to resolve classic account failure on NAT Gateway provisioning
-* Added documentation note regarding Amazon ECS service-linked role.
+* Added fix for creation of Elastic IPs in legacy accounts that are not vpc-by-default
+* Added fix for administration microservice IAM policy to include all required permissions to manage users through the simulator console
 ```
 
 ***
