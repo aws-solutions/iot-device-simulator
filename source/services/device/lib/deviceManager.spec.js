@@ -46,13 +46,13 @@ describe('DeviceManager', function() {
     const newAutoDevice = {
         metadata: {},
         typeId: 'automotive',
-        count: 5
+        count: 50
     };
 
     const newDeviceExceed = {
         metadata: {},
         typeId: '8S2DzAk',
-        count: 26
+        count: 101
     };
 
     const deviceType = {
@@ -272,7 +272,7 @@ describe('DeviceManager', function() {
             });
 
             let _deviceManager = new DeviceManager();
-            _deviceManager.getDeviceStatsBySubCategory(ticket, null).then((data) => {
+            _deviceManager.getDeviceStatsBySubCategory(ticket, {}).then((data) => {
                 console.log(data)
                 assert.equal(data['temperature sensor'], 1);
                 assert.equal(data.total, 1);
@@ -294,7 +294,7 @@ describe('DeviceManager', function() {
             });
 
             let _deviceManager = new DeviceManager();
-            _deviceManager.getDeviceStatsBySubCategory(ticket, null).then((data) => {
+            _deviceManager.getDeviceStatsBySubCategory(ticket, {}).then((data) => {
                 done('invalid failure for negative test');
             }).catch((err) => {
                 expect(err).to.deep.equal({
@@ -432,9 +432,9 @@ describe('DeviceManager', function() {
 
             let _deviceManager = new DeviceManager();
             _deviceManager.createDevice(ticket, newAutoDevice).then((data) => {
+                console.log(data)
                 expect(data).to.deep.equal({
-                    processedItems: 5,
-                    consumedCapacity: 10
+                    processedItems: 50
                 });
                 done();
             }).catch((err) => {
@@ -481,8 +481,7 @@ describe('DeviceManager', function() {
             let _deviceManager = new DeviceManager();
             _deviceManager.createDevice(ticket, newDevice).then((data) => {
                 expect(data).to.deep.equal({
-                    processedItems: 5,
-                    consumedCapacity: 10
+                    processedItems: 5
                 });
                 done();
             }).catch((err) => {
@@ -519,8 +518,7 @@ describe('DeviceManager', function() {
             let _deviceManager = new DeviceManager();
             _deviceManager.createDevice(ticket, newDevice).then((data) => {
                 expect(data).to.deep.equal({
-                    processedItems: 5,
-                    consumedCapacity: 10
+                    processedItems: 5
                 });
                 done();
             }).catch((err) => {
@@ -546,7 +544,7 @@ describe('DeviceManager', function() {
                 expect(err).to.deep.equal({
                     code: 400,
                     error: 'DeviceCreateLimitExceeded',
-                    message: 'Exceeded limit of 25 concurrent device creations per request.'
+                    message: 'Exceeded limit of 100 concurrent device creations per request.'
                 });
                 done();
             });
@@ -626,14 +624,20 @@ describe('DeviceManager', function() {
                 }
             });
 
+            AWS.mock('DynamoDB.DocumentClient', 'scan', function(params, callback) {
+                callback(null, {
+                    Items: []
+                });
+            });
+
             let _deviceManager = new DeviceManager();
             _deviceManager.createDevice(ticket, newDevice).then((data) => {
                 done('invalid failure for negative test');
             }).catch((err) => {
                 expect(err).to.deep.equal({
                     code: 400,
-                    error: 'MissingDefaultDeviceType',
-                    message: `The device type ${newDevice.typeId} for user ${ticket.userid} does not exist.`
+                    error: 'MissingDeviceType',
+                    message: `The device type ${newDevice.typeId} for user ${ticket.userid}, default or shared does not exist.`
                 });
                 done();
             });
@@ -1004,6 +1008,7 @@ describe('DeviceManager', function() {
             _deviceManager.updateDevice(ticket, 'F5W2Aoz', deviceWithOp).then((data) => {
                 done('invalid failure for negative test');
             }).catch((err) => {
+                console.log(err)
                 expect(err).to.deep.equal({
                     code: 500,
                     error: 'DeviceUpdateFailure',

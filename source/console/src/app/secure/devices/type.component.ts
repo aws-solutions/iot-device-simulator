@@ -14,6 +14,7 @@ import { AsyncLocalStorage } from 'angular-async-local-storage';
 import { BlockUI, NgBlockUI } from 'ng-block-ui';
 import * as moment from 'moment';
 import * as shortid from 'shortid';
+import { integer } from 'aws-sdk/clients/storagegateway';
 declare var jquery: any;
 declare var $: any;
 declare var swal: any;
@@ -33,6 +34,14 @@ export class DeviceTypeComponent implements OnInit {
     public attribute: Attribute;
     public hasError: boolean = false;
     public errorMsg: string = '';
+    public readOnly: boolean = true;
+    public stringMinError: boolean = false;
+    public boolMinError: boolean = false;
+    public floatIntMinError: boolean = false;
+    public floatDecMinError: boolean = false;
+    public intMinError: boolean = false;
+    public nestedDepth: integer = 0;
+    private refAttr = null;
 
     public dtype: DeviceType;
 
@@ -58,7 +67,8 @@ export class DeviceTypeComponent implements OnInit {
                 interval: 2000,
                 payload: [],
                 topic: '/sample/topic'
-            }
+            },
+            visibility: 'private'
         });
 
         this.sub = this.route.params.subscribe(params => {
@@ -73,20 +83,26 @@ export class DeviceTypeComponent implements OnInit {
         this.statsService.refresh();
 
         this.localStorage.getItem<ProfileInfo>('profile').subscribe((profile) => {
-            _self.profile = new ProfileInfo(profile);
+            console.log(profile)
+            this.profile = new ProfileInfo(profile);
             if (this.typeId !== 'new') {
                 _self.loadDeviceType();
             } else {
+                this.readOnly = false;
                 this.blockUI.stop();
             }
         });
     }
 
     loadDeviceType() {
+        const _self = this;
         this.deviceService.getDeviceType(this.typeId).then((type: DeviceType) => {
             this.blockUI.stop();
             this.logger.info(type);
             this.dtype = new DeviceType(type);
+            if (this.dtype.userId === this.profile.user_id) {
+                this.readOnly = false;
+            }
         }).catch((err) => {
             this.blockUI.stop();
             swal(
@@ -103,13 +119,25 @@ export class DeviceTypeComponent implements OnInit {
     }
 
     removeSchemaAttribute(id: string) {
-        this.dtype.spec.payload = _.filter(this.dtype.spec.payload, function(o: any) { return o._id_ !== id; });
+        this.dtype.spec.payload = this._removePayloadAttribute(this.dtype.spec.payload, id);
+    }
+
+    _removePayloadAttribute(payload: any, id: string) {
+        let _this = this;
+        let _newPayload = [];
+        _newPayload = _.filter(payload, function(o: any) { return o._id_ !== id; });
+        _newPayload.forEach(function(item) {
+            if (item.type === 'object') {
+                item.payload = _this._removePayloadAttribute(item.payload, id);
+            }
+        });
+        return _newPayload;
     }
 
     viewSchemaAttribute(id: string) {
-        const attribute: any = _.filter(this.dtype.spec.payload, function(o: any) { return o._id_ === id; });
-        if (attribute.length > 0) {
-            swal({ title: `${attribute[0].name} config`, html: '<pre style=\'text-align:left; font-size:14px;\'>' + JSON.stringify(attribute[0], undefined, 2) + '</pre>' });
+        let attribute: any = this.getSchemaAttribute(id, this.dtype.spec.payload);
+        if (!_.isEmpty(attribute)) {
+            swal({ title: `${attribute.name} config`, html: '<pre style=\'text-align:left; font-size:14px;\'>' + JSON.stringify(attribute, undefined, 2) + '</pre>' });
         } else {
             swal(
                 'Oops...',
@@ -118,21 +146,120 @@ export class DeviceTypeComponent implements OnInit {
         }
     }
 
-    addSchemaAttribute() {
+    getSchemaAttribute(id: string, payload: any) {
+        let attribute = {};
+        for (let i = 0; i < payload.length; i++) {
+            if (payload[i]._id_ === id) {
+                attribute = payload[i];
+            } else if (payload[i].type === 'object') {
+                attribute = this.getSchemaAttribute(id, payload[i].payload);
+            }
+
+            if (!_.isEmpty(attribute)) {
+                console.log(attribute)
+                break;
+            }
+        }
+
+        return attribute;
+    }
+
+    addSchemaAttribute(reference: any = null, depth: integer = 0) {
+        this.nestedDepth = depth;
+        console.log(this.nestedDepth)
         this.attribute = new Attribute();
         this.attribute._id_ = shortid.generate();
         this.attribute.name = this.attribute._id_;
+        this.refAttr = reference;
         $('#attributeModal').modal('show');
     }
 
     addAttribute(form: any) {
         this.logger.info(form);
-        if (form.type === 'pickOne') {
-            let _tmp = form.arr.replace(/\s/g, '');
-            form.arr = _tmp.split(',');
+        if (!form.name) {
+            return;
         }
+
+        this.stringMinError = false;
+        this.boolMinError = false;
+        this.intMinError = false;
+        this.floatIntMinError = false;
+        this.floatDecMinError = false;
+
+        if (form.type === 'string') {
+            if (form.smin >= form.smax) {
+                this.stringMinError = true;
+                return;
+            } else {
+                this.stringMinError = false;
+            }
+        }
+
+        if (form.type === 'bool') {
+            if (form.bmin >= form.bmax) {
+                this.boolMinError = true;
+                return;
+            } else {
+                this.boolMinError = false;
+            }
+        }
+
+        if (form.type === 'sinusoidal' || form.type === 'int') {
+            if (form.min >= form.max) {
+                this.intMinError = true;
+                return;
+            } else {
+                this.intMinError = false;
+            }
+        }
+
+        if (form.type === 'float') {
+            if (form.imin >= form.imax) {
+                this.floatIntMinError = true;
+                return;
+            } else {
+                this.floatIntMinError = false;
+            }
+
+            if (form.dmin >= form.dmax) {
+                this.floatDecMinError = true;
+                return;
+            } else {
+                this.floatDecMinError = false;
+            }
+        }
+
+        if (form.type === 'pickOne') {
+            if (typeof form.arr === "string") {
+                let _tmp = form.arr.replace(/\s/g, '');
+                form.arr = _tmp.split(',');
+            }
+        }
+        if (form.type === 'object') {
+            form.payload = [];
+        }
+
         form._id_ = this.attribute._id_;
-        this.dtype.spec.payload.push(form);
+
+        //remove empty default attribute if it exists
+        if (form.hasOwnProperty('default')) {
+            if (form.default === '') {
+                delete form.default;
+            }
+        }
+
+        //correct potential type cast issue
+        if (form.hasOwnProperty('static')) {
+            if (typeof form.static === 'string') {
+                form.static = form.static === 'true' ? true : false;
+            }
+        }
+
+        if (this.refAttr) {
+            this.refAttr.payload.push(form);
+        } else {
+            this.dtype.spec.payload.push(form);
+        }
         $('#attributeModal').modal('hide');
     }
 
@@ -174,13 +301,6 @@ export class DeviceTypeComponent implements OnInit {
             return;
         } else {
             this.blockUI.start('Saving device type...');
-            for (let i = 0; i < this.dtype.spec.payload.length; i++) {
-                if (this.dtype.spec.payload[i].hasOwnProperty('default')) {
-                    if (this.dtype.spec.payload[i].default === '') {
-                        delete this.dtype.spec.payload[i].default;
-                    }
-                }
-            }
 
             if (this.typeId === 'new') {
                 this.deviceService.createDeviceType(this.dtype).then((resp: any) => {
@@ -250,7 +370,7 @@ export class DeviceTypeComponent implements OnInit {
             }
         } else if (attr.type === 'id') {
             return 'rLdMw4VRZ';
-        } else if (attr.type === 'int') {
+        } else if (attr.type === 'int' || attr.type === 'decay' || attr.type === 'sinusoidal') {
             return attr.max;
         } else if (attr.type === 'rstring') {
             return 'asdqwiei1238';
@@ -266,12 +386,18 @@ export class DeviceTypeComponent implements OnInit {
             }
         } else if (attr.type === 'float') {
             return parseFloat([attr.imax, '.', attr.dmax].join(''));
-        } else if (attr.type === 'boolean') {
+        } else if (attr.type === 'bool') {
             return 'true';
         } else if (attr.type === 'location') {
             return `{ 'latitude': ${attr.lat}, 'longitude': ${attr.long} }`;
         } else if (attr.type === 'pickOne') {
             return attr.arr[0];
+        } else if (attr.type === 'object') {
+            let _s = {};
+            for (let i = 0; i < attr.payload.length; i++) {
+                _s[attr.payload[i].name] = this.generateSampleData(attr.payload[i]);
+            }
+            return _s;
         }
     }
 

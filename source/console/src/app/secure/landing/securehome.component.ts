@@ -125,7 +125,12 @@ export class SecureHomeComponent implements OnInit, LoggedInCallback {
         $(function() {
             const url = window.location;
             let element = $('ul#sidebarnav a').filter(function() {
-                return this.href === url.href;
+                console.log(url.href, this.href)
+                if (this.href.endsWith('securehome')) {
+                    return this.href === url.href;
+                } else {
+                    return url.href.includes(this.href);
+                }
             }).addClass('active').parent().addClass('active');
             while (true) {
                 if (element.is('li')) {

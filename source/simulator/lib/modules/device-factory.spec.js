@@ -101,7 +101,7 @@ describe('DeviceFactory', function() {
             _df.loadDeviceType('test_user', '72cKnCg').then((dtype) => {
                 done('invalid failure for negative test');
             }).catch((err) => {
-                expect(err).to.equal('Unable to load user or default device type for module.');
+                expect(err).to.equal('Unable to load user, default or shared device type for module.');
                 done();
             });
         });

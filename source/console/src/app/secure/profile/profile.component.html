@@ -19,7 +19,7 @@
             <div class="d-flex m-r-20 m-l-10 hidden-md-down">
                 <div class="chart-text m-r-10">
                     <h6 class="m-b-0"><small>Simulations</small></h6>
-                    <h4 class="m-t-0 text-warning">{{deviceStats.simulations}} running</h4></div>
+                    <h4 class="m-t-0 text-success-alt">{{deviceStats.simulations}} running</h4></div>
             </div>
         </div>
     </div>
@@ -33,9 +33,6 @@
             <div class="card-body">
                 <h4 class="card-title">Profile Information</h4>
                 <h6 class="card-subtitle">Your application user account information. Please contact your administrator for further information.</h6>
-                <!-- <div *ngIf="user.user_id">
-                    <button type="button" class="btn btn-outline-danger btn-rounded" *ngIf="user.enabled" (click)="disableUser()">Disable User</button>
-                </div> -->
                 <form class="form-material m-t-40">
                     <div class="form-group">
                         <label><b>User Id</b></label>
@@ -64,26 +61,29 @@
                     <h3 class="text-info"><i class="fa fa-exclamation-circle"></i> Password complexity requirements</h3> Password must be at least 8 characters, and must include at least one upper case letter, one lower case letter, and one numeric digit.
                 </div>
                 <form name="changePasswordForm" #f="ngForm" class="form-control-line" (ngSubmit)="changePassword(f)" novalidate>
-                    <div [class]="(oldpassword.dirty || oldpassword.touched) ? (oldpassword.invalid ? 'form-group has-danger' :'form-group has-success-alt') : 'form-group'">
+                    <div [class]="(oldpassword.dirty || oldpassword.touched) ? (oldpassword.invalid ? 'form-group has-danger' :'form-group') : 'form-group'">
                         <label for="oldpassword" class="form-control-label">Current Password:</label>
-                        <input type="password" [class]="(oldpassword.dirty || oldpassword.touched) ? (oldpassword.invalid ? 'form-control form-control-line form-control-danger' : 'form-control form-control-line form-control-success-alt') : 'form-control form-control-line'" name="oldpassword" id="oldpassword" #oldpassword="ngModel" required ngModel>
+                        <input type="password" [class]="(oldpassword.dirty || oldpassword.touched) ? (oldpassword.invalid ? 'form-control form-control-line form-control-danger' : 'form-control form-control-line') : 'form-control form-control-line'" name="oldpassword" id="oldpassword" [(ngModel)]="creds.oldpassword" #oldpassword="ngModel" required ngModel>
                         <div *ngIf="(oldpassword.invalid && (oldpassword.dirty || oldpassword.touched)) && oldpassword.errors.required" class="form-control-feedback">
                             <small>Your current password is required.</small>
                         </div>
                     </div>
-                    <div [class]="(newpassword.dirty || newpassword.touched) ? (newpassword.invalid ? 'form-group has-danger' :'form-group has-success-alt') : 'form-group'">
+                    <div [class]="(newpassword.dirty || newpassword.touched) ? (newpassword.invalid ? 'form-group has-danger' :'form-group') : 'form-group'">
                         <label for="newpassword" class="form-control-label">New Password:</label>
-                        <input type="password" [class]="(newpassword.dirty || newpassword.touched) ? (newpassword.invalid ? 'form-control form-control-line form-control-danger' : 'form-control form-control-line form-control-success-alt') : 'form-control form-control-line'" name="newpassword" id="newpassword" #newpassword="ngModel" required ngModel>
+                        <input type="password" [class]="(newpassword.dirty || newpassword.touched) ? (newpassword.invalid ? 'form-control form-control-line form-control-danger' : 'form-control form-control-line') : 'form-control form-control-line'" name="newpassword" id="newpassword" [(ngModel)]="creds.newpassword" #newpassword="ngModel" required ngModel>
                         <div *ngIf="(newpassword.invalid && (newpassword.dirty || newpassword.touched)) && newpassword.errors.required" class="form-control-feedback">
                             <small>Your new password is required.</small>
                         </div>
                     </div>
-                    <div [class]="(confirmpassword.dirty || confirmpassword.touched) ? (confirmpassword.invalid ? 'form-group has-danger' :'form-group has-success-alt') : 'form-group'">
+                    <div [class]="(confirmpassword.dirty || confirmpassword.touched) ? (confirmpassword.invalid ? 'form-group has-danger' :'form-group') : 'form-group'">
                         <label for="confirmpassword" class="form-control-label">Confirm New Password:</label>
-                        <input type="password" [class]="(confirmpassword.dirty || confirmpassword.touched) ? (confirmpassword.invalid ? 'form-control form-control-line form-control-danger' : 'form-control form-control-line form-control-success-alt') : 'form-control form-control-line'" name="confirmpassword" id="confirmpassword" #confirmpassword="ngModel" validateEqual="newpassword" required ngModel>
+                        <input type="password" [class]="(confirmpassword.dirty || confirmpassword.touched) ? (confirmpassword.invalid ? 'form-control form-control-line form-control-danger' : 'form-control form-control-line') : 'form-control form-control-line'" name="confirmpassword" id="confirmpassword" [(ngModel)]="creds.confirmpassword" #confirmpassword="ngModel" validateEqual="newpassword" required ngModel>
                         <div *ngIf="(confirmpassword.invalid && (confirmpassword.dirty || confirmpassword.touched))" class="form-control-feedback">
                             <small>Does not match your new password.</small>
                         </div>
+                    </div>
+                    <div class="alert alert-danger" *ngIf="complexityError">
+                        <h3 class="text-danger"><i class="fa fa-exclamation-circle"></i> Password complexity error</h3> Your new password does not meet the complexity requirements.
                     </div>
                     <div>
                         <button type="button" class="btn btn-secondary btn-rounded" (click)="cancelPasswordChange(f)">Cancel</button>

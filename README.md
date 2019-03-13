@@ -116,6 +116,43 @@ Each microservice follows the structure of:
 * Added fix for administration microservice IAM policy to include all required permissions to manage users through the simulator console
 ```
 
+#### v2.0.0 changes
+
+```
+* [New] Added new data generation algorithms: Sinusoidal and Decay
+* [New] Added new attribute type for nested (JSON) objects (up to 3 deep) for device type payloads
+* [New] Added ability to share Device Templates between users of the same installation
+* [new] Update user interface paging size for widget and fleet listings to 100
+* [new] Update launch and start limits for widgets and fleets to 100
+* [new] Added ability for users to stop simulations (single or in bulk of 100) for widgets and vehicles.
+* [new] Add search ability for widgets (or vehicles) by device id, device type and status
+* [new] DynamoDB tables switched to be created with PAY_PER_REQUEST billing mode vice PROVISIONED capacity
+* [new] Added ability for device attributes to be included in the topic as variables
+You can use tier 1 attribute values from your defined payload as variables in the topic definition. For example, if you define a Device ID attribute with a name deviceId in your payload. 
+{
+  "deviceId": "dICxo8dI_B",
+  "data": {
+    "outdoorTemp": 35.14,
+    "indoorTemp": 43.99,
+    "speed": 450.0000000000001
+  },
+  "info": {
+    "serialNumber": "1903aac6-2e3a-4567-8513-d48087cecebe",
+    "manufacturerId": "PJVx0fxjJ",
+    "plant": {
+      "plantId": "5-wxbxJJFH",
+      "lineId": "xxjwbjidhmmwgijefc",
+      "location": "detroit"
+    }
+  },
+  "timestamp": "2019-02-04T14:52:53",
+  "_id_": "dICxo8dI_B"
+}
+You can use that attribute as a variable in the data topic you define by adding ${attribute} around the attribute name. ex. /sample/${deviceId}/data ( translates to /sample/dICxo8dI_B/data )
+* [fix] Resolved availability zone offset issue with Fargate cluster VPC
+
+```
+
 ***
 
 Copyright 2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.

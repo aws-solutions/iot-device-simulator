@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: "2010-09-09"
-Description: "(SO0041) - The AWS CloudFormation template for deployment of the IoT Device Simulator. Version 1.1.0"
+Description: "(SO0041) - The AWS CloudFormation template for deployment of the IoT Device Simulator. Version 2.0"
 Parameters:
     AdministratorName:
         Type: String
@@ -1264,7 +1264,6 @@ Resources:
                             <p>You are invited to join the IoT Device Simulator. Your temporary password is as follows:</p>
                             <p>
                             Password: <strong>{####}</strong><br />
-                            Email: <strong>${AdministratorEmail}</strong><br />
                             id: {username}
                             </p>
                             <p>
@@ -1406,7 +1405,7 @@ Resources:
                                 Fn::Sub: "${AWS::Region}"
                             awslogs-stream-prefix: "ecs"
                     Cpu: 1024
-                    Image: "898061675696.dkr.ecr.us-east-1.amazonaws.com/iotsim:latest"
+                    Image: "898061675696.dkr.ecr.us-east-1.amazonaws.com/iotsim:v2"
                     Name: "iot-simulation-engine-container"
                     Essential: True
 
@@ -1890,6 +1889,7 @@ Resources:
         Type: "AWS::DynamoDB::Table"
         DeletionPolicy: "Delete"
         Properties:
+            BillingMode: "PAY_PER_REQUEST"
             AttributeDefinitions:
                 -
                     AttributeName: "settingId"
@@ -1898,9 +1898,6 @@ Resources:
                 -
                     AttributeName: "settingId"
                     KeyType: "HASH"
-            ProvisionedThroughput:
-                ReadCapacityUnits: 5
-                WriteCapacityUnits: 5
             SSESpecification:
                 SSEEnabled: true
             TableName: "iot-sim-settings"
@@ -1909,6 +1906,7 @@ Resources:
         Type: "AWS::DynamoDB::Table"
         DeletionPolicy: "Delete"
         Properties:
+            BillingMode: "PAY_PER_REQUEST"
             AttributeDefinitions:
                 -
                     AttributeName: "userId"
@@ -1917,9 +1915,6 @@ Resources:
                 -
                     AttributeName: "userId"
                     KeyType: "HASH"
-            ProvisionedThroughput:
-                ReadCapacityUnits: 5
-                WriteCapacityUnits: 5
             SSESpecification:
                 SSEEnabled: true
             TableName: "iot-sim-metrics"
@@ -1928,6 +1923,7 @@ Resources:
         Type: "AWS::DynamoDB::Table"
         DeletionPolicy: "Delete"
         Properties:
+            BillingMode: "PAY_PER_REQUEST"
             AttributeDefinitions:
                 -
                     AttributeName: "userId"
@@ -1942,9 +1938,6 @@ Resources:
                 -
                     AttributeName: "typeId"
                     KeyType: "RANGE"
-            ProvisionedThroughput:
-                ReadCapacityUnits: 5
-                WriteCapacityUnits: 5
             SSESpecification:
                 SSEEnabled: true
             TableName: "iot-sim-device-types"
@@ -1953,6 +1946,7 @@ Resources:
         Type: "AWS::DynamoDB::Table"
         DeletionPolicy: "Delete"
         Properties:
+            BillingMode: "PAY_PER_REQUEST"
             AttributeDefinitions:
                 -
                     AttributeName: "userId"
@@ -1980,249 +1974,9 @@ Resources:
                           KeyType: "RANGE"
                     Projection:
                         ProjectionType: "ALL"
-                    ProvisionedThroughput:
-                        ReadCapacityUnits: 10
-                        WriteCapacityUnits: 10
-            ProvisionedThroughput:
-                ReadCapacityUnits: 10
-                WriteCapacityUnits: 10
             SSESpecification:
                 SSEEnabled: true
             TableName: "iot-sim-device-widgets"
-
-    DDBScalingRole:
-        Type: "AWS::IAM::Role"
-        Properties:
-            AssumeRolePolicyDocument:
-                Version: "2012-10-17"
-                Statement:
-                    -
-                        Effect: "Allow"
-                        Principal:
-                            Service:
-                                - application-autoscaling.amazonaws.com
-                        Action:
-                            - "sts:AssumeRole"
-            Path: "/"
-            Policies:
-                -
-                    PolicyName: "root"
-                    PolicyDocument:
-                        Version: "2012-10-17"
-                        Statement:
-                            -
-                                Effect: "Allow"
-                                Action:
-                                    - "cloudwatch:PutMetricAlarm"
-                                    - "cloudwatch:DescribeAlarms"
-                                    - "cloudwatch:GetMetricStatistics"
-                                    - "cloudwatch:SetAlarmState"
-                                    - "cloudwatch:DeleteAlarms"
-                                Resource: "*"
-                            -
-                                Effect: "Allow"
-                                Action:
-                                    - "dynamodb:DescribeTable"
-                                    - "dynamodb:UpdateTable"
-                                    - "dynamodb:DescribeGlobalTable"
-                                    - "dynamodb:UpdateGlobalTable"
-                                Resource:
-                                    - !GetAtt DeviceWidgetsTable.Arn
-                                    - !GetAtt DeviceTypesTable.Arn
-                                    - !GetAtt MetricsTable.Arn
-                                    - !Join ["", ["arn:aws:dynamodb:", Ref: "AWS::Region", ":", Ref: "AWS::AccountId", ":table/", Ref: DeviceWidgetsTable, "/index/userId-category-index"]]
-
-    WidgetWriteCapacityScalableTarget:
-        Type: "AWS::ApplicationAutoScaling::ScalableTarget"
-        Properties:
-            MaxCapacity: 100
-            MinCapacity: 10
-            ResourceId: !Join ["/", ["table",  !Ref "DeviceWidgetsTable"]]
-            RoleARN: !GetAtt DDBScalingRole.Arn
-            ScalableDimension: dynamodb:table:WriteCapacityUnits
-            ServiceNamespace: dynamodb
-
-    WidgetWriteScalingPolicy:
-        Type: "AWS::ApplicationAutoScaling::ScalingPolicy"
-        Properties:
-            PolicyName: WidgetWriteAutoScalingPolicy
-            PolicyType: TargetTrackingScaling
-            ScalingTargetId: !Ref WidgetWriteCapacityScalableTarget
-            TargetTrackingScalingPolicyConfiguration:
-                TargetValue: 70.0
-                ScaleInCooldown: 60
-                ScaleOutCooldown: 60
-                PredefinedMetricSpecification:
-                    PredefinedMetricType: DynamoDBWriteCapacityUtilization
-
-    WidgetReadCapacityScalableTarget:
-        Type: "AWS::ApplicationAutoScaling::ScalableTarget"
-        Properties:
-            MaxCapacity: 100
-            MinCapacity: 10
-            ResourceId: !Join ["/", ["table",  !Ref "DeviceWidgetsTable"]]
-            RoleARN: !GetAtt DDBScalingRole.Arn
-            ScalableDimension: dynamodb:table:ReadCapacityUnits
-            ServiceNamespace: dynamodb
-
-    WidgetReadScalingPolicy:
-        DependsOn: WidgetWriteScalingPolicy
-        Type: "AWS::ApplicationAutoScaling::ScalingPolicy"
-        Properties:
-            PolicyName: WidgetReadAutoScalingPolicy
-            PolicyType: TargetTrackingScaling
-            ScalingTargetId: !Ref WidgetReadCapacityScalableTarget
-            TargetTrackingScalingPolicyConfiguration:
-                TargetValue: 70.0
-                ScaleInCooldown: 60
-                ScaleOutCooldown: 60
-                PredefinedMetricSpecification:
-                    PredefinedMetricType: DynamoDBReadCapacityUtilization
-
-    WidgetGiWriteCapacityScalableTarget:
-        Type: "AWS::ApplicationAutoScaling::ScalableTarget"
-        Properties:
-            MaxCapacity: 100
-            MinCapacity: 10
-            ResourceId: !Join ["/", ["table",  !Ref "DeviceWidgetsTable", "index/userId-category-index"]]
-            RoleARN: !GetAtt DDBScalingRole.Arn
-            ScalableDimension: dynamodb:index:WriteCapacityUnits
-            ServiceNamespace: dynamodb
-
-    WidgetGiWriteScalingPolicy:
-        DependsOn: WidgetReadScalingPolicy
-        Type: "AWS::ApplicationAutoScaling::ScalingPolicy"
-        Properties:
-            PolicyName: WidgetGiWriteAutoScalingPolicy
-            PolicyType: TargetTrackingScaling
-            ScalingTargetId: !Ref WidgetGiWriteCapacityScalableTarget
-            TargetTrackingScalingPolicyConfiguration:
-                TargetValue: 70.0
-                ScaleInCooldown: 60
-                ScaleOutCooldown: 60
-                PredefinedMetricSpecification:
-                    PredefinedMetricType: DynamoDBWriteCapacityUtilization
-
-    WidgetGiReadCapacityScalableTarget:
-        Type: "AWS::ApplicationAutoScaling::ScalableTarget"
-        Properties:
-            MaxCapacity: 100
-            MinCapacity: 10
-            ResourceId: !Join ["/", ["table",  !Ref "DeviceWidgetsTable", "index/userId-category-index"]]
-            RoleARN: !GetAtt DDBScalingRole.Arn
-            ScalableDimension: dynamodb:index:ReadCapacityUnits
-            ServiceNamespace: dynamodb
-
-    WidgetGiReadScalingPolicy:
-        DependsOn: WidgetGiWriteScalingPolicy
-        Type: "AWS::ApplicationAutoScaling::ScalingPolicy"
-        Properties:
-            PolicyName: WidgetGiReadAutoScalingPolicy
-            PolicyType: TargetTrackingScaling
-            ScalingTargetId: !Ref WidgetGiReadCapacityScalableTarget
-            TargetTrackingScalingPolicyConfiguration:
-                TargetValue: 70.0
-                ScaleInCooldown: 60
-                ScaleOutCooldown: 60
-                PredefinedMetricSpecification:
-                    PredefinedMetricType: DynamoDBReadCapacityUtilization
-
-    DTypeWriteCapacityScalableTarget:
-        Type: "AWS::ApplicationAutoScaling::ScalableTarget"
-        Properties:
-            MaxCapacity: 100
-            MinCapacity: 5
-            ResourceId: !Join ["/", ["table",  !Ref "DeviceTypesTable"]]
-            RoleARN: !GetAtt DDBScalingRole.Arn
-            ScalableDimension: dynamodb:table:WriteCapacityUnits
-            ServiceNamespace: dynamodb
-
-    DTypeWriteScalingPolicy:
-        DependsOn: WidgetGiReadScalingPolicy
-        Type: "AWS::ApplicationAutoScaling::ScalingPolicy"
-        Properties:
-            PolicyName: DTypeWriteAutoScalingPolicy
-            PolicyType: TargetTrackingScaling
-            ScalingTargetId: !Ref DTypeWriteCapacityScalableTarget
-            TargetTrackingScalingPolicyConfiguration:
-                TargetValue: 70.0
-                ScaleInCooldown: 60
-                ScaleOutCooldown: 60
-                PredefinedMetricSpecification:
-                    PredefinedMetricType: DynamoDBWriteCapacityUtilization
-
-    DTypeReadCapacityScalableTarget:
-        Type: "AWS::ApplicationAutoScaling::ScalableTarget"
-        Properties:
-            MaxCapacity: 100
-            MinCapacity: 5
-            ResourceId: !Join ["/", ["table",  !Ref "DeviceTypesTable"]]
-            RoleARN: !GetAtt DDBScalingRole.Arn
-            ScalableDimension: dynamodb:table:ReadCapacityUnits
-            ServiceNamespace: dynamodb
-
-    DTypeReadScalingPolicy:
-        DependsOn: DTypeWriteScalingPolicy
-        Type: "AWS::ApplicationAutoScaling::ScalingPolicy"
-        Properties:
-            PolicyName: DTypeReadAutoScalingPolicy
-            PolicyType: TargetTrackingScaling
-            ScalingTargetId: !Ref DTypeReadCapacityScalableTarget
-            TargetTrackingScalingPolicyConfiguration:
-                TargetValue: 70.0
-                ScaleInCooldown: 60
-                ScaleOutCooldown: 60
-                PredefinedMetricSpecification:
-                    PredefinedMetricType: DynamoDBReadCapacityUtilization
-
-    MetricsWriteCapacityScalableTarget:
-        Type: "AWS::ApplicationAutoScaling::ScalableTarget"
-        Properties:
-            MaxCapacity: 100
-            MinCapacity: 5
-            ResourceId: !Join ["/", ["table",  !Ref "MetricsTable"]]
-            RoleARN: !GetAtt DDBScalingRole.Arn
-            ScalableDimension: dynamodb:table:WriteCapacityUnits
-            ServiceNamespace: dynamodb
-
-    MetricsWriteScalingPolicy:
-        DependsOn: DTypeReadScalingPolicy
-        Type: "AWS::ApplicationAutoScaling::ScalingPolicy"
-        Properties:
-            PolicyName: MetricsWriteAutoScalingPolicy
-            PolicyType: TargetTrackingScaling
-            ScalingTargetId: !Ref MetricsWriteCapacityScalableTarget
-            TargetTrackingScalingPolicyConfiguration:
-                TargetValue: 70.0
-                ScaleInCooldown: 60
-                ScaleOutCooldown: 60
-                PredefinedMetricSpecification:
-                    PredefinedMetricType: DynamoDBWriteCapacityUtilization
-
-    MetricsReadCapacityScalableTarget:
-        Type: "AWS::ApplicationAutoScaling::ScalableTarget"
-        Properties:
-            MaxCapacity: 100
-            MinCapacity: 5
-            ResourceId: !Join ["/", ["table",  !Ref "MetricsTable"]]
-            RoleARN: !GetAtt DDBScalingRole.Arn
-            ScalableDimension: dynamodb:table:ReadCapacityUnits
-            ServiceNamespace: dynamodb
-
-    MetricsReadScalingPolicy:
-        DependsOn: MetricsWriteScalingPolicy
-        Type: "AWS::ApplicationAutoScaling::ScalingPolicy"
-        Properties:
-            PolicyName: MetricsReadAutoScalingPolicy
-            PolicyType: TargetTrackingScaling
-            ScalingTargetId: !Ref MetricsReadCapacityScalableTarget
-            TargetTrackingScalingPolicyConfiguration:
-                TargetValue: 70.0
-                ScaleInCooldown: 60
-                ScaleOutCooldown: 60
-                PredefinedMetricSpecification:
-                    PredefinedMetricType: DynamoDBReadCapacityUtilization
-
 
     # DynamoDB Tables [end]
 
@@ -2288,10 +2042,10 @@ Resources:
     IotSimEnginePrivateSubnet1B:
         Type: "AWS::EC2::Subnet"
         Properties:
-            CidrBlock: "10.0.3.0/24"
+            CidrBlock: "10.0.5.0/24"
             AvailabilityZone:
                 !Select
-                    - 0
+                    - 1
                     - !GetAZs
             Tags:
                 -

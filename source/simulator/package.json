@@ -1,10 +1,10 @@
 {
-    "name": "connected-car-sim-engine",
-    "description": "The simulation engine for the connected car solutions",
+    "name": "iot-sim-engine",
+    "description": "The simulation engine for the iot device simulation solution",
     "main": "index.js",
     "license": "ASL",
-    "version": "0.0.1",
-    "private": "true",
+    "version": "2.0.0",
+    "private": true,
     "dependencies": {
         "aws-sdk": "*",
         "colors": "*",

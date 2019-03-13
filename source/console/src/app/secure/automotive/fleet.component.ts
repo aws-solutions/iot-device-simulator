@@ -22,7 +22,7 @@ declare var mapboxgl: any;
     selector: 'app-ratchet',
     templateUrl: './fleet.component.html'
 })
-export class FleetComponent implements OnInit, OnDestroy { // implements LoggedInCallback {
+export class FleetComponent implements OnInit, OnDestroy {
 
     public title: string = 'My Automotive Fleet';
     public deviceStats: any = {};
@@ -32,16 +32,23 @@ export class FleetComponent implements OnInit, OnDestroy { // implements LoggedI
     public widgetRequest: WidgetRequest = new WidgetRequest();
     private pollerInterval: any = null;
     public provisionCountError: boolean = false;
+    public filterStages: string[] = ['< All >', 'provisioning', 'sleeping', 'stopping', 'running'];
     public pages: any = {
         current: 1,
         total: 0,
-        pageSize: 20
+        pageSize: 100
     };
     public metrics: any = {
         total: 0,
         running: 0,
         provisioning: 0,
         sleeping: 0
+    };
+    public filter: any = {
+        category: 'automotive',
+        subCategory: 'vehicle',
+        stage: '< All >',
+        deviceId: ''
     };
 
     @BlockUI() blockUI: NgBlockUI;
@@ -80,10 +87,21 @@ export class FleetComponent implements OnInit, OnDestroy { // implements LoggedI
     }
 
     loadDevices() {
-        this.deviceService.getDeviceStats('automotive').then((data: any) => {
+        let _filter = { 
+            ...this.filter
+        };
+
+        _filter.stage = _filter.stage === '< All >' ? '' : _filter.stage;
+        _filter.stage = _filter.stage === 'running' ? 'hydrated' : _filter.stage;
+        console.log(_filter)
+
+        this.deviceService.getDeviceStats(_filter).then((data: any) => {
             this.metrics = data;
             this.pages.total = Math.ceil(data.total / this.pages.pageSize);
-            this.deviceService.getAllDevices((this.pages.current - 1), 'automotive').then((devices: Device[]) => {
+            this.deviceService.getAllDevices((this.pages.current - 1), _filter).then((devices: Device[]) => {
+                if (this.allSelected) { 
+                    this.allSelected = false;
+                }
                 this.blockUI.stop();
                 this.fleet.length = 0;
                 this.fleet = devices;
@@ -183,6 +201,73 @@ export class FleetComponent implements OnInit, OnDestroy { // implements LoggedI
  
     }
 
+
+    stopSelectedVehicles() {
+        const _self = this;
+        this.blockUI.start('Stopping vehicles...');
+        this.allSelected = false;
+        const _devices = _.where(this.fleet, {
+            isSelected: true,
+            stage: 'hydrated'
+        });
+
+        let _counter = 0;
+        let _devicesToUpdate = [];
+        let _errors = 0;
+        if (_devices.length > 0) {
+            _devices.forEach(function(device) {
+                if(device.isSelected) {
+                    _counter++;
+                    if (device.stage === 'hydrated') {
+                        device.operation = 'stop';
+                        _devicesToUpdate.push(device);
+                    }
+                    if (_devicesToUpdate.length === 20 || _counter === _devices.length) {
+                        console.log(_devicesToUpdate.length)
+                        let _sendDevices = [
+                            ..._devicesToUpdate
+                        ];
+                        _devicesToUpdate.length = 0;
+                        _self.bulkUpdateVehicles(_sendDevices).then(() => {
+                            if(_counter === _devices.length) {
+                                if (_errors > 0) {
+                                    _self.blockUI.stop();
+                                    swal(
+                                        'Oops...',
+                                        'Unable to stop some of the selected vehicles.',
+                                        'info');
+                                    _self.logger.error('error occurred stopping selected vehicles, show message');
+                                }
+                                _self.loadDevices();
+                                _self.statsService.refresh();
+                            }
+                        }).catch((err) => {
+                            _self.logger.error(err);
+                            _devicesToUpdate.length = 0;
+                            _errors++;
+                            if(_counter === _devices.length) {
+                                _self.blockUI.stop();
+                                swal(
+                                    'Oops...',
+                                    'Unable to stop some of the selected vehicles.',
+                                    'info');
+                                _self.logger.error('error occurred stopping selected vehicles, show message');
+                                _self.loadDevices();
+                                _self.statsService.refresh();
+                            }
+                        });
+                    }
+                }
+            });
+        } else {
+            this.fleet.forEach(function(d) {
+                d.isSelected = false;
+            });
+            this.blockUI.stop();
+        }
+ 
+    }  
+
     startVehicle(vehicleId: string) {
         this.blockUI.start('Starting vehicle...');
         const device = _.where(this.fleet, {
@@ -209,6 +294,20 @@ export class FleetComponent implements OnInit, OnDestroy { // implements LoggedI
         }        
     }
 
+    private bulkUpdateVehicles(devices: Device[]) {
+        const _self = this;
+        const promise = new Promise((resolve, reject) => {
+            _self.deviceService.bulkUpdateDevices(devices).then((resp: any) => {
+                console.log(resp)
+                resolve();
+            }).catch((err) => {
+                console.log(err)
+                reject(err);
+            });
+        });
+        return promise;
+    }
+
     private startDevice(device: Device) {
         const promise = new Promise((resolve, reject) => {
             if (device.stage === 'sleeping') {
@@ -230,7 +329,7 @@ export class FleetComponent implements OnInit, OnDestroy { // implements LoggedI
         });
 
         if (device.length > 0) {
-            if (device[0].stage === 'hydrated') {
+            if (device[0].stage === 'hydrated' || device[0].stage === 'provisioning') {
                 device[0].operation = 'stop';
                 this.deviceService.updateDevice(device[0]).then((resp: any) => {
                     this.loadDevices();
@@ -244,13 +343,33 @@ export class FleetComponent implements OnInit, OnDestroy { // implements LoggedI
                     this.logger.error(err);
                     this.loadDevices();
                 });
+            } else {
+                this.blockUI.stop();
             }
+        } else {
+            this.blockUI.stop();
         }
     }
 
     refreshData() {
         this.blockUI.start('Loading fleet...');
         this.loadDevices();
+    }
+
+    search() {
+        this.blockUI.start('Loading fleet...');
+        this.pages.current = 1;
+        this.loadDevices();
+    }
+
+    clear() {
+        this.filter = {
+            category: 'automotive',
+            subCategory: 'vehicle',
+            stage: '< All >',
+            deviceId: ''
+        };
+        this.search();
     }
 
     openDevice(deviceId: string) {
@@ -282,7 +401,7 @@ export class FleetComponent implements OnInit, OnDestroy { // implements LoggedI
 
     addVehicles(w: WidgetRequest) {
         this.provisionCountError = false;
-        if (w.count > 25) {
+        if (w.count > 100) {
             this.provisionCountError = true;
             return;
         }

@@ -23,6 +23,7 @@ export class AutoConfiguration {
     };
     createdAt: string = '';
     updatedAt: string = '';
+    visibility: string = 'private';
 
     constructor(values: Object = {}) {
         Object.assign(this, values);

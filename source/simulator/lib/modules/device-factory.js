@@ -43,7 +43,13 @@ class DeviceFactory {
                     resolve(dtype);
                 }).catch((err) => {
                     _self.options.logger.log(err, _self.options.logger.levels.ROBUST);
-                    reject('Unable to load user or default device type for module.');
+                    _self.options.logger.log('Unable to load user or default device type for module. Attempting shared type lookup.', _self.options.logger.levels.INFO);
+                    _self._loadSharedDeviceType(_self.options.deviceTypeTable, type).then((sharedtype) => {
+                        resolve(sharedtype);
+                    }).catch((err) => {
+                        _self.options.logger.log(err, _self.options.logger.levels.ROBUST);
+                        reject('Unable to load user, default or shared device type for module.');
+                    });
                 });
             });
         });
@@ -65,7 +71,7 @@ class DeviceFactory {
             docClient.get(params, function(err, device) {
                 if (err) {
                     _self.options.logger.log(err, _self.options.logger.levels.ROBUST);
-                    reject(`Error loading device from ddb, id: ${deviceId}, userId: ${userId}`);
+                    return reject(`Error loading device from ddb, id: ${deviceId}, userId: ${userId}`);
                 }
 
                 if (!_.isEmpty(device)) {
@@ -87,6 +93,7 @@ class DeviceFactory {
     provision() {}
 
     _loadDeviceType(table, userId, type) {
+        let _self = this;
         return new Promise((resolve, reject) => {
 
             const params = {
@@ -100,12 +107,51 @@ class DeviceFactory {
             const docClient = new AWS.DynamoDB.DocumentClient(this.dynamoConfig);
             docClient.get(params, function(err, dtype) {
                 if (err) {
-                    console.log(err);
-                    reject(`Unable to load device type entry ${type}`);
+                    _self.options.logger.log(err, _self.options.logger.levels.INFO);
+                    return reject(`Unable to load device type entry ${type}`);
                 }
 
                 if (!_.isEmpty(dtype)) {
                     resolve(dtype.Item);
+                } else {
+                    reject(`Unable to load device type entry ${type}`);
+                }
+            });
+        });
+    }
+
+    //v2.0 - added lookup for user shared device types.
+    _loadSharedDeviceType(table, type) {
+        let _self = this;
+        return new Promise((resolve, reject) => {
+            const params = {
+                TableName: table,
+                FilterExpression: 'typeId = :tid and visibility = :vis',
+                ExpressionAttributeValues: {
+                    ':tid': type,
+                    ':vis': 'shared'
+                },
+                Limit: 100
+            };
+
+            const docClient = new AWS.DynamoDB.DocumentClient(this.dynamoConfig);
+            docClient.scan(params, function(err, sharedData) {
+                if (err) {
+                    _self.options.logger.log(err, _self.options.logger.levels.INFO);
+                    return reject(`Unable to load device type entry ${type}`);
+                }
+
+                if (sharedData.Items.length > 0) {
+                    // v2.0 - validate device type is shared
+                    if (sharedData.Items[0].hasOwnProperty('visibility')) {
+                        if (sharedData.Items[0].visibility === 'shared') {
+                            resolve(sharedData.Items[0]);
+                        } else {
+                            reject(`Unable to load device type entry ${type}. Visibility is private.`);
+                        }
+                    } else {
+                        reject(`Unable to load device type entry ${type}. Visibility is private.`);
+                    }
                 } else {
                     reject(`Unable to load device type entry ${type}`);
                 }

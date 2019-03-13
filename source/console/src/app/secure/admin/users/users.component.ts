@@ -10,9 +10,11 @@ import { AsyncLocalStorage } from 'angular-async-local-storage';
 import { LoggerService } from '../../../service/logger.service';
 import { StatsService } from '../../../service/stats.service';
 import { BlockUI, NgBlockUI } from 'ng-block-ui';
+import * as _ from 'underscore';
 declare var jquery: any;
 declare var $: any;
 declare var swal: any;
+
 
 @Component({
     selector: 'app-ratchet-users',
@@ -39,6 +41,7 @@ export class UsersComponent implements OnInit { // implements LoggedInCallback {
         private _ngZone: NgZone) {
         this.invite = new Invitation();
         this.invite.name = '';
+        this.invite.email = '';
     }
 
     ngOnInit() {
@@ -92,6 +95,23 @@ export class UsersComponent implements OnInit { // implements LoggedInCallback {
     inviteUser(form: NgForm) {
         if (form.valid) {
             const _self = this;
+
+            //check if user exists already
+            const _exists = _.where(this.users, {
+                email: form.value.email
+            });
+
+            if (_exists.length > 0) {
+                this.invite.name = '';
+                this.invite.email = '';
+                this.blockUI.stop();
+                swal(
+                    'Oops...',
+                    'It appears this user already exists. Please use an unregistered email address.',
+                    'error');
+                return;
+            }
+
             const _invite: Invitation = {
                 name: form.value.name,
                 email: form.value.email,
@@ -104,6 +124,8 @@ export class UsersComponent implements OnInit { // implements LoggedInCallback {
             this.blockUI.start('Inviting user...');
             $('#inviteModal').modal('hide');
             this.adminService.inviteUser(_invite).then((result) => {
+                this.invite.name = '';
+                this.invite.email = '';
                 _self.loadUsers();
             }).catch((err) => {
                 this.blockUI.stop();

@@ -46,6 +46,7 @@ util.loadConfigValues('simulator').then((config) => {
         let engine = new Engine(rc);
         engine.start();
     }).catch((err2) => {
+        console.log(moment.utc().format('YYYY-MM-DD HH:mm:ss'), ' : ', err2);
         // create engine instance and start
         console.log(moment.utc().format('YYYY-MM-DD HH:mm:ss'), ' : ', `[critical] Unable to retrieve the IoT endpoint for the target region ${rc.targetIotRegion}`);
         rc.iotEndpoint = '';

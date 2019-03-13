@@ -129,7 +129,7 @@ class ResponseManager {
                 });
             } else if (!(_.isEmpty(event.pathParameters)) && event.pathParameters.hasOwnProperty('typeid') && event.httpMethod === 'PUT') {
                 _operation = ['update device type', event.pathParameters.typeid].join(' ');
-                Logger.log(Logger.levels.INFO, ['Attempting to', _operation].join(' '));
+                Logger.log(Logger.levels.INFO, `Attempting to ${_operation}`);
                 _deviceTypeManager.updateDeviceType(ticket, event.pathParameters.typeid, _body).then((data) => {
                     resolve(this._processResponse(200, data, _operation));
                 }).catch((err) => {
@@ -165,6 +165,14 @@ class ResponseManager {
                 _operation = 'create device for user';
                 Logger.log(Logger.levels.INFO, ['Attempting to', _operation].join(' '));
                 _deviceManager.createDevice(ticket, _body).then((data) => {
+                    resolve(this._processResponse(200, data, _operation));
+                }).catch((err) => {
+                    reject(this._processResponse(err.code, err, _operation));
+                });
+            } else if (event.resource === '/devices/widgets' && event.httpMethod === 'PUT') {
+                _operation = `bulk update devices ${JSON.stringify(_body)}`;
+                Logger.log(Logger.levels.INFO, `Attempting to ${_operation}`);
+                _deviceManager.bulkUpdateDevices(ticket, _body).then((data) => {
                     resolve(this._processResponse(200, data, _operation));
                 }).catch((err) => {
                     reject(this._processResponse(err.code, err, _operation));

@@ -12,6 +12,7 @@ export class DeviceType {
     };
     createdAt: string = '';
     updatedAt: string = '';
+    visibility: string = 'private';
 
     constructor(values: Object = {}) {
         Object.assign(this, values);

@@ -35,12 +35,20 @@
                 <button type="button" class="float-right btn btn-sm btn-success m-l-15" (click)="refreshData()"><i class="fa fa-refresh"></i> Refresh</button>
                 <button type="button" class="float-right btn btn-sm btn-success m-l-15" (click)="openDeviceType('new')"><i class="mdi mdi-plus"></i> Add Device Type</button>
                 <h4 class="card-title">Device Types ({{metrics.total}})</h4>
+                <div *ngIf="deviceTypes.length > 0" class="m-t-20 m-r-10">
+                    <div class="pull-right">
+                        <button type="button" [class]="pages.current === 0 ? 'btn btn-sm btn-default disabled' : 'btn btn-sm btn-default'" (click)="previousPage()" [disabled]="pages.current === 1"><i class="mdi mdi-chevron-left"></i></button>
+                        <span class="m-l-10 m-r-10">Page {{pages.current}} of {{pages.total}}</span>
+                        <button type="button" [class]="pages.current === (pages.total - 1) ? 'btn btn-sm btn-default disabled' : 'btn btn-sm btn-default'" (click)="nextPage()" [disabled]="pages.current === pages.total"><i class="mdi mdi-chevron-right"></i></button>
+                    </div>
+                </div>
                 <div class="table-responsive m-t-20">
                     <table id="types-pagination" class="table stylish-table" style="text-transform:uppercase;" data-paging-limit="10">
                         <thead>
                             <tr>
                                 <th></th>
                                 <th>Device Type</th>
+                                <th class="text-right">Visibility</th>
                                 <th class="text-right">Created At</th>
                                 <th class="text-right">Last Updated At</th>
                                 <th></th>
@@ -49,13 +57,15 @@
                         <tbody>
                             <tr *ngFor="let type of deviceTypes">
                                 <td>
-                                    <!-- <span [class]="device.stage === 'running' ? 'round round-success-alt' : (device.stage === 'provisioning' ? 'round round-warning' : 'round round-danger')"> -->
                                     <span class="round round-light-grey">
-                                        <i class="mdi mdi-chip text-normal"></i>
+                                        <i class="mdi mdi-file-xml text-normal" style="font-size:24px;"></i>
                                     </span>
                                 </td>
                                 <td>
                                     <h6>{{type.name}}</h6><small class="text-muted">{{type.typeId}}</small>
+                                </td>
+                                <td class="text-right">
+                                    <span [class]="type.visibility === 'shared' ? 'label label-light-success-alt' : 'label label-light-danger'">{{type.visibility}}</span>
                                 </td>
                                 <!-- <td><span [class]="user.status === 'CONFIRMED' ? 'label label-light-info' : 'label label-light-danger'">{{user.status}}</span></td> -->
                                 <td class="text-right">{{formatDate(type.createdAt)}}</td>
@@ -68,9 +78,9 @@
                                 </td>
                             </tr>
                         </tbody>
-                        <tfoot>
+                        <tfoot *ngIf="deviceTypes.length > 0">
                             <tr>
-                                <td colspan="7">
+                                <td colspan="9">
                                     <div class="text-right">
                                         <div class="pull-right">
                                             <button type="button" [class]="pages.current === 0 ? 'btn btn-sm btn-default disabled' : 'btn btn-sm btn-default'" (click)="previousPage()" [disabled]="pages.current === 1"><i class="mdi mdi-chevron-left"></i></button>

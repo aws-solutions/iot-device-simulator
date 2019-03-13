@@ -89,7 +89,7 @@ export class DashboardComponent implements OnInit {
     loadDashboardMetrics() {
         this.metricsService.getDashboardMetrics().then((data: any) => {
             this.metrics = data;
-            this.deviceService.getDeviceStats('', 'catstats').then((cstats: any) => {
+            this.deviceService.getDeviceStats({}, 'catstats').then((cstats: any) => {
                 this.logger.info(cstats);
                 this.setDeviceCategoryCounts(cstats);
                 this.loadDashboardCharting();

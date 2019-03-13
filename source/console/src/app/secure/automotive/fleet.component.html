@@ -33,7 +33,6 @@
         <div class="card">
             <div class="card-body">
                 <div class="clearfix">
-                    <button type="button" class="float-right btn btn-sm btn-success m-l-15" (click)="refreshData()"><i class="fa fa-refresh"></i> Refresh</button>
                     <button type="button" class="btn btn-sm btn-success" (click)="openVehicleAddModal()"><i class="mdi mdi-plus"></i> Add Vehicles</button>
                     <button type="button" class="btn btn-sm btn-warning" (click)="customize()"><i class="mdi mdi-car-wash"></i> Configuration</button>
                 </div>
@@ -49,13 +48,13 @@
                                 <form name="vehiclesForm" #f="ngForm" class="form-control-line" (ngSubmit)="addVehicles(f.value)" novalidate>
                                     <div class="form-group">
                                         <label for="vehicles" class="form-control-label">Number of vehicles to create:</label>
-                                        <input type="number" class="form-control form-control-line" onkeypress='return event.charCode >= 48 && event.charCode <= 57' name="count" id="count" required ngModel #count="ngModel" [(ngModel)]="widgetRequest.count">
+                                        <input type="number" class="form-control form-control-line" onkeypress='return event.charCode >= 48 && event.charCode <= 57' name="count" id="count" required ngModel #count="ngModel" [(ngModel)]="widgetRequest.count" min="1">
                                         <div class="form-control-feedback">
-                                            <small>Number of vehicles to create. Up to 25 at a time.</small>
+                                            <small>Number of vehicles to create. Up to 100 at a time.</small>
                                         </div>
                                     </div>
                                     <div class="alert alert-danger" *ngIf="provisionCountError">
-                                        <h3 class="text-danger"><i class="fa fa-exclamation-circle"></i> Oops!</h3> Your number of vehicles to create must be <= 25.
+                                        <h3 class="text-danger"><i class="fa fa-exclamation-circle"></i> Oops!</h3> Your number of vehicles to create must be <= 100.
                                     </div>
                                 </form>
                             </div>
@@ -108,8 +107,8 @@
                 <div class="d-flex flex-row">
                     <div class="round round-lg align-self-center round-warning"><i class="mdi mdi-car"></i></div>
                     <div class="m-l-10 align-self-center">
-                        <h3 class="m-b-0 font-lgiht">{{metrics.provisioning}}</h3>
-                        <h5 class="text-muted m-b-0">Provisioning</h5></div>
+                        <h3 class="m-b-0 font-lgiht">{{metrics.stopping}}</h3>
+                        <h5 class="text-muted m-b-0">Stopping</h5></div>
                 </div>
             </div>
         </div>
@@ -131,14 +130,53 @@
     <!-- Column -->
 </div>
 <!-- Row -->
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="card-title">Filter</h4>
+                <div class="m-t-20">
+                    <form name="filterForm" #f="ngForm">
+                        <div class="row m-0">
+                            <div class="col-xs-12 col-md-4">
+                                <div class="form-group">
+                                    <label for="stage" class="form-control-label">Stage:</label>
+                                    <select class="form-control" name="stage" id="stage" required ngModel #stage="ngModel" [(ngModel)]="filter.stage">
+                                        <option *ngFor="let s of filterStages" [value]="s"> {{s}}</option>
+                                    </select>
+                                </div>
+                            </div>                            
+                            <div class="col-xs-12 col-md-4">
+                                <label for="deviceId" class="form-control-label">Vehicle ID:</label>
+                                <input type="text" class="form-control" name="deviceId" id="deviceId" required ngModel #deviceId="ngModel" [(ngModel)]="filter.deviceId">
+                            </div>
+                        </div>
+                        <button type="submit" class="float-right btn btn-sm btn-success" (click)="search();"><i class="mdi mdi-magnify"></i> Filter</button>
+                        <button type="submit" class="float-right btn btn-sm btn-success m-r-10" (click)="clear();"><i class="mdi mdi-close"></i> Clear</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 <!-- Row -->
 <div class="row">
     <div class="col-lg-12">
         <div class="card">
             <div class="card-body">
                 <!-- /.modal -->
-                <h4 class="float-left card-title">Vehicles</h4>
-                <button type="submit" class="float-right btn btn-sm btn-success" *ngIf="getSelectedCount() === true" (click)="startSelectedVehicles();"><i class="mdi mdi-play"></i> Start Devices</button>
+                <!-- <h4 class="float-left card-title">Vehicles ({{(pages.current-1)*100}} - {{((pages.current-1)*100) + fleet.length}})</h4> -->
+                <button type="button" class="float-right btn btn-sm btn-success m-l-15" (click)="refreshData()"><i class="fa fa-refresh"></i> Refresh</button>
+                <button type="submit" class="float-right btn btn-sm btn-danger m-l-15" *ngIf="getSelectedCount() === true" (click)="stopSelectedVehicles();"><i class="mdi mdi-stop"></i> Stop Vehicles</button>
+                <button type="submit" class="float-right btn btn-sm btn-success" *ngIf="getSelectedCount() === true" (click)="startSelectedVehicles();"><i class="mdi mdi-play"></i> Start Vehicles</button>
+                <h4 class="card-title">Vehicles <span *ngIf="fleet.length > 0">({{((pages.current-1)*100) + 1}} - {{((pages.current-1)*100) + fleet.length}})</span></h4>
+                <div *ngIf="fleet.length > 0" class="m-t-20 m-r-10">
+                    <div class="pull-right">
+                        <button type="button" [class]="pages.current === 0 ? 'btn btn-sm btn-default disabled' : 'btn btn-sm btn-default'" (click)="previousPage()" [disabled]="pages.current === 1"><i class="mdi mdi-chevron-left"></i></button>
+                        <span class="m-l-10 m-r-10">Page {{pages.current}} of {{pages.total}}</span>
+                        <button type="button" [class]="pages.current === (pages.total - 1) ? 'btn btn-sm btn-default disabled' : 'btn btn-sm btn-default'" (click)="nextPage()" [disabled]="pages.current === pages.total"><i class="mdi mdi-chevron-right"></i></button>
+                    </div>
+                </div>
                 <div class="table-responsive m-t-20">
                     <table id="fleet-pagination" class="table stylish-table" style="text-transform:uppercase;" data-paging-limit="10">
                         <thead>
@@ -149,7 +187,7 @@
                                 <th class="text-right">Stage</th>
                                 <th class="text-right">Last Route</th>
                                 <th class="text-right">Trip Time</th>
-                                <th class="text-right">Simulations</th>
+                                <th class="text-right">Sims</th>
                                 <th class="text-right">Last Simulation</th>
                                 <th></th>
                             </tr>
@@ -164,28 +202,26 @@
                                 </td>
                                 <td><input type="checkbox" id="chk_{{vehicle.id}}" class="classic-checkbox" [(ngModel)]="vehicle.isSelected" [ngModelOptions]="{standalone: true}"></td>
                                 <td>
-                                    <h6>{{vehicle.metadata.vin}}</h6><small class="text-muted">{{vehicle.id}}</small>
+                                    <h6>{{vehicle.metadata.vin}}</h6><small class="text-muted" style="text-transform:none;">{{vehicle.id}}</small>
                                 </td>
-                                <!-- <td><span [class]="user.status === 'CONFIRMED' ? 'label label-light-info' : 'label label-light-danger'">{{user.status}}</span></td> -->
                                 <td class="text-right">
-                                    <span [class]="vehicle.stage === 'hydrated' ? 'label label-light-success-alt' : (vehicle.stage === 'provisioning' ? 'label label-light-warning' : 'label label-light-danger')">{{vehicle.stage === 'hydrated' ? 'running' : vehicle.stage}}</span>
+                                    <span [class]="vehicle.stage === 'hydrated' ? 'label label-light-success-alt' : (vehicle.stage === 'provisioning' ? 'label label-light-primary' : (vehicle.stage === 'stopping' ? 'label label-light-warning' : 'label label-light-danger'))">{{vehicle.stage === 'hydrated' ? 'running' : vehicle.stage}}</span>
                                 </td>
                                 <td class="text-right"><span class="label label-light-inverse">{{vehicle.metadata.route}}</span></td>
                                 <td class="text-right"><span class="label label-muted">{{vehicle.metadata.trip}}</span></td>
                                 <td class="text-right"><span class="label label-success">{{vehicle.runs}}</span></td>
                                 <td class="text-right">{{formatDate(vehicle.lastRunAt)}}</td>
                                 <td>
-                                    <!-- <button type="button" class="pull-right btn btn-sm btn-success btn-rounded" (click)="openDevice(device.deviceId)"><i class="mdi mdi-information-outline"></i> View</button> -->
                                     <div class="pull-right" role="group" aria-label="Basic example">
                                         <button type="button" class="btn btn-success btn-sm" data-toggle="tooltip" title="View Vehicle" data-placement="top" (click)="openDevice(vehicle.id)"><i class="mdi mdi-information"></i> View</button>
-                                        <button type="button" class="btn btn-success btn-sm" data-toggle="tooltip" title="Start Simulation" *ngIf="vehicle.stage !== 'hydrated' && vehicle.stage !== 'provisioning'" (click)="startVehicle(vehicle.id)"><i class="mdi mdi-play"></i> Start</button>
-                                        <!-- <button type="button" class="btn btn-success btn-sm" data-toggle="tooltip" title="Stop Simulation" *ngIf="vehicle.stage === 'hydrated'" (click)="stopVehicle(vehicle.id)"><i class="mdi mdi-stop"></i> Stop</button> -->
-                                        <button type="button" class="btn btn-danger btn-sm" data-toggle="tooltip" title="Delete Vehicle" *ngIf="vehicle.stage !== 'hydrated'" (click)="deleteVehicle(vehicle.id)"><i class="mdi mdi-delete-circle"></i> Delete</button>
+                                        <button type="button" class="btn btn-success btn-sm" data-toggle="tooltip" title="Start Simulation" *ngIf="vehicle.stage === 'sleeping'"  (click)="startVehicle(vehicle.id)"><i class="mdi mdi-play"></i> Start</button>
+                                        <button type="button" class="btn btn-success btn-sm" data-toggle="tooltip" title="Stop Simulation" *ngIf="vehicle.stage === 'hydrated'" (click)="stopVehicle(vehicle.id)"><i class="mdi mdi-stop"></i> Stop</button>
+                                        <button type="button" class="btn btn-danger btn-sm" data-toggle="tooltip" title="Delete Vehicle" *ngIf="vehicle.stage === 'sleeping'"  (click)="deleteVehicle(vehicle.id)"><i class="mdi mdi-delete-circle"></i> Delete</button>
                                     </div>
                                 </td>
                             </tr>
                         </tbody>
-                        <tfoot>
+                        <tfoot *ngIf="fleet.length > 0">
                             <tr>
                                 <td colspan="9">
                                     <div class="text-right">

@@ -5,5 +5,5 @@ export const environment = {
     appVersion: '1.0.0',
     isDebugMode: false,
 
-    refreshInterval: 30000
+    refreshInterval: 60000
 };

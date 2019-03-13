@@ -19,7 +19,7 @@ export class DeviceService {
     constructor(private http: HttpClient, private cognito: CognitoUtil, private logger: LoggerService) {
     }
 
-    public getAllDevices(page: number, filter: string) {
+    public getAllDevices(page: number, filter: any) {
         const _self = this;
 
         const promise = new Promise((resolve, reject) => {
@@ -35,8 +35,9 @@ export class DeviceService {
 
                     let path = `widgets?page=${pg}&op=list`;
                     if (filter) {
-                        path = `${path}&filter=${filter}`;
+                        path = `${path}&filter=${encodeURI(JSON.stringify(filter))}`;
                     }
+                    console.log(path);
 
                     _self.http
                         .get<any>([appVariables.APIG_ENDPOINT, 'devices', path].join('/'), {
@@ -67,14 +68,14 @@ export class DeviceService {
         return promise;
     }
 
-    public getDeviceStats(filter: string, op: string = 'stats') {
+    public getDeviceStats(filter: any, op: string = 'stats') {
         const _self = this;
 
         const promise = new Promise((resolve, reject) => {
             let path = `widgets?op=${op}`;
 
             if (filter) {
-                path = `${path}&filter=${filter}`;
+                path = `${path}&filter=${encodeURI(JSON.stringify(filter))}`;
             }
 
             this.cognito.getIdToken({
@@ -143,6 +144,42 @@ export class DeviceService {
                             reject(err);
                         }
                         );
+                }
+            });
+        });
+
+        return promise;
+    }
+
+    public bulkUpdateDevices(devices: Device[]) {
+        const _self = this;
+
+        const promise = new Promise((resolve, reject) => {
+            const path = `widgets`;
+
+            this.cognito.getIdToken({
+                callback() {
+                },
+                callbackWithParam(token: any) {
+                    _self.http
+                        .put<any>([appVariables.APIG_ENDPOINT, 'devices', path].join('/'), devices, {
+                            headers: new HttpHeaders().set('Authorization', token)
+                        })
+                        .toPromise()
+                        .then((data: any) => {
+                            resolve(data);
+                        },
+                        (err: HttpErrorResponse) => {
+                            if (err.error instanceof Error) {
+                                // A client-side or network error occurred.
+                                _self.logger.error('An error occurred:', err.error.message);
+                            } else {
+                                // The backend returned an unsuccessful response code.
+                                // The response body may contain clues as to what went wrong,
+                                _self.logger.error(`Backend returned code ${err.status}, body was: ${err.error}`);
+                            }
+                            reject(err);
+                        });
                 }
             });
         });
@@ -436,7 +473,8 @@ export class DeviceService {
                     let payload = {
                         spec: dtype.spec,
                         name: dtype.name,
-                        custom: dtype.custom
+                        custom: dtype.custom,
+                        visibility: dtype.visibility
                     };
 
                     if (_.has(dtype, 'typeId')) {

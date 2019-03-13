@@ -1,10 +1,11 @@
-import { Component, Input, OnInit, ViewChild } from '@angular/core';
+import { Component, Input, OnInit, ViewChild, NgZone } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, NgForm } from '@angular/forms';
 import { UserLoginService } from '../../service/user-login.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { ProfileInfo } from '../../model/profileInfo';
 import { Subscription } from 'rxjs/Subscription';
 import { LoggerService } from '../../service/logger.service';
+import { StatsService } from '../../service/stats.service';
 import * as _ from 'underscore';
 import { AsyncLocalStorage } from 'angular-async-local-storage';
 import { BlockUI, NgBlockUI } from 'ng-block-ui';
@@ -24,6 +25,12 @@ export class ProfileComponent implements OnInit {
     private sub: Subscription;
     public deviceStats: any = {};
     public profile: ProfileInfo = new ProfileInfo();
+    public complexityError: boolean = false;
+    public creds: any = {
+        newpassword: '',
+        confirmpassword: '',
+        oldpassword: ''
+    };
 
     @BlockUI() blockUI: NgBlockUI;
 
@@ -31,7 +38,9 @@ export class ProfileComponent implements OnInit {
         public route: ActivatedRoute,
         public userService: UserLoginService,
         protected localStorage: AsyncLocalStorage,
-        private logger: LoggerService) {
+        private statsService: StatsService,
+        private logger: LoggerService,
+        private _ngZone: NgZone) {
     }
 
     ngOnInit() {
@@ -39,6 +48,12 @@ export class ProfileComponent implements OnInit {
         this.blockUI.start('Loading profile...');
 
         const _self = this;
+        this.statsService.statObservable$.subscribe(message => {
+            this.deviceStats = message;
+            this._ngZone.run(() => { });
+        });
+        this.statsService.refresh();
+
         this.localStorage.getItem<any>('deviceStats').subscribe((stats) => {
             _self.deviceStats = stats;
         });
@@ -78,18 +93,32 @@ export class ProfileComponent implements OnInit {
     }
 
     changePassword(form: NgForm) {
-        this.userService.changePassword(form.value.oldpassword, form.value.newpassword).then((data: any) => {
-            swal(
-                'Done...',
-                'Your password has been successfully updates.',
-                'success');
-        }).catch((err) => {
-            this.blockUI.stop();
-            swal(
-                'Oops...',
-                'Something went wrong! Unable to change your password.',
-                'error');
-        });
+        console.log(form)
+        let regex1 = RegExp(/(?=^.{8,}$)(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?!.*\s).*$/, 'g');
+        if (regex1.exec(this.creds.newpassword) === null) {
+            this.complexityError = true;
+            return;
+        } else {
+            this.complexityError = false;
+            this.userService.changePassword(this.creds.oldpassword, this.creds.newpassword).then((data: any) => {
+                swal(
+                    'Done...',
+                    'Your password has been successfully updates.',
+                    'success');
+                this.creds.newpassword = '';
+                this.creds.confirmpassword = '';
+                this.creds.oldpassword = '';
+            }).catch((err) => {
+                this.blockUI.stop();
+                swal(
+                    'Oops...',
+                    'Something went wrong! Unable to change your password.',
+                    'error');
+                this.creds.newpassword = '';
+                this.creds.confirmpassword = '';
+                this.creds.oldpassword = ''; 
+            });
+        }
     }
 
     formatDate(dt: string) {

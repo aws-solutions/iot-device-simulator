@@ -40,6 +40,8 @@ class Widget extends Device {
         this.messageSpec = spec;
         this.duration = params.duration;
         this.info = {};
+
+        this.currentState = {};
     }
 
     /**
@@ -49,6 +51,7 @@ class Widget extends Device {
         let _self = this;
 
         return new Promise((resolve, reject) => {
+            this.currentState = {};
             _self.run(_self.messageSpec.interval).then((result) => {
                 _self.started = moment();
                 _self.options.logger.log(result, this.options.logger.levels.ROBUST);
@@ -90,28 +93,12 @@ class Widget extends Device {
                 _self.options.logger.error(err, _self.options.logger.levels.ROBUST);
             });
         } else {
-            let _message = {};
             if (this.messageSpec.hasOwnProperty('payload')) {
-                for (let i = 0; i < this.messageSpec.payload.length; i++) {
-                    // TODO: skip if spec item has no 'name' defined for now
-                    if (this.messageSpec.payload[i].hasOwnProperty('name')) {
-                        if (this.messageSpec.payload[i].static) {
-                            // check to see if attribute already generated
-                            if (this.info.hasOwnProperty(this.messageSpec.payload[i].name)) {
-                                _message[this.messageSpec.payload[i].name] = this.info[this.messageSpec.payload[i].name];
-                            } else {
-                                _message[this.messageSpec.payload[i].name] = this._processSpecAttribtue(this.messageSpec.payload[i]);
-                            }
-                        } else {
-                            _message[this.messageSpec.payload[i].name] = this._processSpecAttribtue(this.messageSpec.payload[i]);
-                        }
-                    }
-                }
+                let _message = this._generateMessageConstruct();
 
-                _message._id_ = this.id;
-                let _payload = JSON.stringify(_message);
-                this.options.logger.debug(`Sending data for '${this.id}' (${this.userId}) to AWS IoT ${_payload} to ${this.messageSpec.topic}`, this.options.logger.levels.DEBUG);
-                this._publishMessage(this.messageSpec.topic, _payload).then((result) => {
+                let _payload = JSON.stringify(_message.payload);
+                this.options.logger.debug(`Sending data for '${this.id}' (${this.userId}) to AWS IoT ${_payload} to ${_message.topic}`, this.options.logger.levels.DEBUG);
+                this._publishMessage(_message.topic, _payload).then((result) => {
                     this.options.logger.debug(`Message successfully sent for '${this.id}' to configured topic.`, this.options.logger.levels.DEBUG);
                 }).catch((err) => {
                     this.options.logger.error(err, this.options.logger.levels.ROBUST);
@@ -128,12 +115,63 @@ class Widget extends Device {
         }
     }
 
+    //v2 - add ability to use attribute values in the topic
+    _generateMessageConstruct() {
+        let _message = {
+            topic: this.messageSpec.topic,
+            payload: {}
+        };
+        _message.payload = this._generateMessagePayload(this.messageSpec.payload);
+
+        const varRegex = /\$\{(\w+)\}/g; // matches ${name}
+        const attributesToRemove = {};
+        _message.topic = this.messageSpec.topic.replace(varRegex, function(match, capture) {
+            attributesToRemove[capture] = 0;
+            return _message.payload[capture];
+        });
+
+        // for (var v in attributesToRemove) {
+        //     delete _message.payload[v];
+        // }
+
+        _message.payload._id_ = this.id;
+
+        return _message;
+    }
+
+    _generateMessagePayload(payload) {
+        let _message = {};
+        for (let i = 0; i < payload.length; i++) {
+            if (payload[i].hasOwnProperty('name')) {
+                if (payload[i].static) {
+                    // check to see if attribute already generated
+                    if (this.info.hasOwnProperty(payload[i].name)) {
+                        _message[payload[i].name] = this.info[payload[i].name];
+                    } else {
+                        _message[payload[i].name] = this._processSpecAttribtue(payload[i]);
+                    }
+                } else {
+                    _message[payload[i].name] = this._processSpecAttribtue(payload[i]);
+                }
+            }
+        }
+
+        return _message;
+    }
+
     _processSpecAttribtue(attribute) {
         let _value = null;
         if (attribute.hasOwnProperty('default')) {
             if (attribute.default !== '') {
                 return attribute.default;
             }
+        }
+
+        if(!this.currentState.hasOwnProperty(attribute.name)){
+            this.currentState[attribute.name] = { 
+                value: _value,
+                cnt: 1
+            };
         }
 
         // TODO: skip if spec item has no 'type' defined for now
@@ -168,6 +206,10 @@ class Widget extends Device {
                     break;
                 case 'pickOne':
                     _value = this.generator.pickOne(attribute.arr);
+                    //v2 - added ability for pickOne to pick value once per simulation and be static
+                    if (attribute.hasOwnProperty('static')) {
+                        this.info[attribute.name] = _value;
+                    }
                     break;
                 case 'uuid':
                     _value = this.generator.uuid();
@@ -189,10 +231,26 @@ class Widget extends Device {
 
                     _value = this.generator.location(_center, attribute.radius);
                     break;
+                case 'sinusoidal':
+                    _value = this.generator.sin(attribute.min, attribute.max, this.currentState[attribute.name].cnt);
+                    break;   
+                case 'decay':
+                    _value = this.generator.decay(attribute.min, attribute.max, this.currentState[attribute.name].cnt);
+                    break;      
+                case 'object':
+                    _value = this._generateMessagePayload(attribute.payload);  
+                    break;                             
                 default:
                     _value = '';
                     break;
             }
+        }
+
+        if(this.currentState.hasOwnProperty(attribute.name)){
+            this.currentState[attribute.name] = { 
+                value: _value,
+                cnt: this.currentState[attribute.name].cnt + 1
+            };
         }
         return _value;
     }

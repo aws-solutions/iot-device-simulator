@@ -196,7 +196,9 @@ module.exports = {
             let iot = new AWS.Iot({
                 region: targetRegion
             });
-            let params = {};
+            let params = {
+                endpointType: 'iot:Data-ATS'
+            };
             iot.describeEndpoint(params, function(err, data) {
                 if (err) {
                     console.log(`Error occurred while attempting to retrieve the AWS IoT endpoint for region ${targetRegion}.`);

@@ -254,6 +254,181 @@ describe('Generator', function() {
         });
     });
 
+    describe('#sin', function() {
+
+        beforeEach(function() {});
+
+        afterEach(function() {
+
+        });
+
+        it('should return a random float greater than 50 and less than 80 when successful', function(done) {
+
+            let _g = new Generator(_opts);
+            let data = _g.sin(50, 80, 2);
+
+            expect(data).to.be.at.least(50);
+            expect(data).to.be.at.most(80);
+            done();
+
+        });
+
+        it('should return a random float greater than 0 and less than 80 when min is string', function(done) {
+
+            let _g = new Generator(_opts);
+            let data = _g.sin('abc', 80, 2);
+
+            expect(data).to.be.at.least(0);
+            expect(data).to.be.at.most(80);
+            done();
+
+        });
+
+        it('should return a random float greater than 0 and less than 80 when min is null', function(done) {
+
+            let _g = new Generator(_opts);
+            let data = _g.sin(null, 80, 2);
+
+            expect(data).to.be.at.least(0);
+            expect(data).to.be.at.most(80);
+            done();
+
+        });
+
+        it('should return a random float greater than 0 and less than 80 when min is undefined', function(done) {
+
+            let _g = new Generator(_opts);
+            let data = _g.sin(undefined, 80, 2);
+
+            expect(data).to.be.at.least(0);
+            expect(data).to.be.at.most(80);
+            done();
+
+        });
+
+        it('should return a random float less than 100 and greater than 10 when max is string', function(done) {
+
+            let _g = new Generator(_opts);
+            let data = _g.sin(10, 'abc', 2);
+
+            expect(data).to.be.at.least(10);
+            expect(data).to.be.at.most(100);
+            done();
+
+        });
+
+        it('should return a random float greater than 10 and less than 100 when max is null', function(done) {
+
+            let _g = new Generator(_opts);
+            let data = _g.sin(10, null, 2);
+
+            expect(data).to.be.at.least(10);
+            expect(data).to.be.at.most(100);
+            done();
+
+        });
+
+        it('should return a random float greater than 10 and less than 100 when max is undefined', function(done) {
+
+            let _g = new Generator(_opts);
+            let data = _g.sin(10, undefined, 2);
+
+            expect(data).to.be.at.least(10);
+            expect(data).to.be.at.most(100);
+            done();
+
+        });
+
+        // remove min > max validation check
+    });    
+
+    describe('#decay', function() {
+
+        beforeEach(function() {});
+
+        afterEach(function() {
+
+        });
+
+        it('should return a random float greater than 50 and less than 80 when successful', function(done) {
+
+            let _g = new Generator(_opts);
+            let data = _g.decay(50, 80, 2);
+
+            expect(data).to.be.at.least(50);
+            expect(data).to.be.at.most(80);
+            done();
+
+        });
+
+        it('should return a random float greater than 0 and less than 80 when min is string', function(done) {
+
+            let _g = new Generator(_opts);
+            let data = _g.decay('abc', 80, 2);
+
+            expect(data).to.be.at.least(0);
+            expect(data).to.be.at.most(80);
+            done();
+
+        });
+
+        it('should return a random float greater than 0 and less than 80 when min is null', function(done) {
+
+            let _g = new Generator(_opts);
+            let data = _g.decay(null, 80, 2);
+
+            expect(data).to.be.at.least(0);
+            expect(data).to.be.at.most(80);
+            done();
+
+        });
+
+        it('should return a random float greater than 0 and less than 80 when min is undefined', function(done) {
+
+            let _g = new Generator(_opts);
+            let data = _g.decay(undefined, 80, 2);
+
+            expect(data).to.be.at.least(0);
+            expect(data).to.be.at.most(80);
+            done();
+
+        });
+
+        it('should return a random float less than 100 and greater than 10 when max is string', function(done) {
+
+            let _g = new Generator(_opts);
+            let data = _g.decay(10, 'abc', 2);
+
+            expect(data).to.be.at.least(10);
+            expect(data).to.be.at.most(100);
+            done();
+
+        });
+
+        it('should return a random float greater than 10 and less than 100 when max is null', function(done) {
+
+            let _g = new Generator(_opts);
+            let data = _g.decay(10, null, 2);
+
+            expect(data).to.be.at.least(10);
+            expect(data).to.be.at.most(100);
+            done();
+
+        });
+
+        it('should return a random float greater than 10 and less than 100 when max is undefined', function(done) {
+
+            let _g = new Generator(_opts);
+            let data = _g.decay(10, undefined, 2);
+
+            expect(data).to.be.at.least(10);
+            expect(data).to.be.at.most(100);
+            done();
+
+        });
+
+    });     
+
     describe('#bool', function() {
 
         beforeEach(function() {});
@@ -591,7 +766,7 @@ describe('Generator', function() {
         it('should return a random float greater than -5.55 and less than 20.55 with precision of 2 when dmin is string', function(done) {
 
             let _g = new Generator(_opts);
-            let data = _g.float(-5.99, 20, 'abc', 55, 2);
+            let data = _g.float(-5, 20, 'abc', 55, 2);
 
             expect(data).to.be.at.least(-5.55);
             expect(data).to.be.at.most(20.55);

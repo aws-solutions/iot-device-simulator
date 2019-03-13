@@ -21,4 +21,5 @@ export class Attribute {
     long: number = 77.0369;
     radius: number = 1609;
     arr: string[] = ['running', 'stopped', 'starting', 'error'];
+    object: any = {};
 }

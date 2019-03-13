@@ -21,7 +21,6 @@ class Vehicle extends Device {
     }
 
     _initialize_data(params) {
-        this.id = '';
         if (!params.id) {
             this.id = this.uid;
         } else {
@@ -356,7 +355,9 @@ class Vehicle extends Device {
             }
         }
 
-        var s3 = new AWS.S3();
+        var s3 = new AWS.S3({
+            signatureVersion: 'v4'
+        });
         let _filename = [tripId, 'json'].join('.');
         let params = {
             Bucket: bucket,

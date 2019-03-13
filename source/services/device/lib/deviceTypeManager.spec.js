@@ -116,14 +116,14 @@ describe('DeviceTypeManager', function() {
             AWS.restore('DynamoDB.DocumentClient');
         });
 
-        it('should return device types when ddb query successful', function(done) {
+        it('should return device types when ddb scan successful', function(done) {
 
             let ticket = {
                 auth_status: 'authorized',
                 userid: 'test_user'
             };
 
-            AWS.mock('DynamoDB.DocumentClient', 'query', function(params, callback) {
+            AWS.mock('DynamoDB.DocumentClient', 'scan', function(params, callback) {
                 callback(null, {
                     Items: [deviceType]
                 });
@@ -138,14 +138,14 @@ describe('DeviceTypeManager', function() {
             });
         });
 
-        it('should return error information when ddb query fails', function(done) {
+        it('should return error information when ddb scan fails', function(done) {
 
             let ticket = {
                 auth_status: 'authorized',
                 userid: 'test_user'
             };
 
-            AWS.mock('DynamoDB.DocumentClient', 'query', function(params, callback) {
+            AWS.mock('DynamoDB.DocumentClient', 'scan', function(params, callback) {
                 callback('error', null);
             });
 
@@ -206,6 +206,12 @@ describe('DeviceTypeManager', function() {
                 callback(null, {});
             });
 
+            AWS.mock('DynamoDB.DocumentClient', 'scan', function(params, callback) {
+                callback(null, {
+                    Items: []
+                });
+            });
+
             let _deviceTypeManager = new DeviceTypeManager();
             _deviceTypeManager.getDeviceType(ticket, 'dt-1234').then((data) => {
                 done('invalid failure for negative test');
@@ -213,7 +219,7 @@ describe('DeviceTypeManager', function() {
                 expect(err).to.deep.equal({
                     code: 400,
                     error: 'MissingDeviceType',
-                    message: `The device type ${deviceType.typeId} for user ${ticket.userid} or default does not exist.`
+                    message: `The device type ${deviceType.typeId} for user ${ticket.userid}, default or shared does not exist.`
                 });
                 done();
             });
@@ -329,6 +335,31 @@ describe('DeviceTypeManager', function() {
                 assert.exists(data.typeId);
                 assert.exists(data.userId);
                 assert.equal(data.name, newDeviceType.name);
+                done();
+            }).catch((err) => {
+                done(err)
+            });
+        });
+
+        it('should return device type new typeid with visibility private when ddb put successful', function(done) {
+
+            let ticket = {
+                auth_status: 'authorized',
+                userid: 'test_user'
+            };
+
+            AWS.mock('DynamoDB.DocumentClient', 'put', function(params, callback) {
+                callback(null, {
+                    Item: newDeviceType
+                });
+            });
+
+            let _deviceTypeManager = new DeviceTypeManager();
+            _deviceTypeManager.createDeviceType(ticket, newDeviceType).then((data) => {
+                assert.exists(data.typeId);
+                assert.exists(data.userId);
+                assert.equal(data.name, newDeviceType.name);
+                assert.equal(data.visibility, 'private');
                 done();
             }).catch((err) => {
                 done(err)
@@ -520,6 +551,11 @@ describe('DeviceTypeManager', function() {
                 userid: 'test_user'
             };
 
+            let _tmp = {
+                ...deviceType,
+                visibility: 'private'
+            };
+
             AWS.mock('DynamoDB.DocumentClient', 'get', function(params, callback) {
                 callback(null, {
                     Item: deviceType
@@ -527,12 +563,12 @@ describe('DeviceTypeManager', function() {
             });
 
             AWS.mock('DynamoDB.DocumentClient', 'put', function(params, callback) {
-                callback(null, deviceType);
+                callback(null, _tmp);
             });
 
             let _deviceTypeManager = new DeviceTypeManager();
             _deviceTypeManager.updateDeviceType(ticket, 'dt-1234', deviceType).then((data) => {
-                expect(data).to.equal(deviceType);
+                expect(data).to.equal(_tmp);
                 done();
             }).catch((err) => {
                 done(err)

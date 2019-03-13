@@ -37,9 +37,9 @@
                     <div class="form-body">
                         <h3 class="box-title">Vehicle Details
                             <div class="pull-right" role="group">
-                                <button type="button" class="btn btn-success btn-sm" data-toggle="tooltip" title="Start Simulation" *ngIf="device.stage !== 'hydrated' && device.stage !== 'provisioning'"  (click)="startDevice()"><i class="mdi mdi-play"></i> Start</button>
-                                <!-- <button type="button" class="btn btn-success btn-sm" data-toggle="tooltip" title="Stop Simulation" *ngIf="device.stage !== 'sleeping'" (click)="stopDevice()"><i class="mdi mdi-stop"></i> Stop</button> -->
-                                <button type="button" class="btn btn-danger btn-sm" data-toggle="tooltip" title="Delete Widget" *ngIf="device.stage !== 'hydrated'"  (click)="deleteDevice()"><i class="mdi mdi-delete-circle"></i> Delete</button>
+                                <button type="button" class="btn btn-success btn-sm" data-toggle="tooltip" title="Start Simulation" *ngIf="device.stage === 'sleeping'"  (click)="startDevice()"><i class="mdi mdi-play"></i> Start</button>
+                                <button type="button" class="btn btn-success btn-sm" data-toggle="tooltip" title="Stop Simulation" *ngIf="device.stage === 'hydrated'" (click)="stopDevice()"><i class="mdi mdi-stop"></i> Stop</button>
+                                <button type="button" class="btn btn-danger btn-sm" data-toggle="tooltip" title="Delete Widget" *ngIf="device.stage === 'sleeping'"  (click)="deleteDevice()"><i class="mdi mdi-delete-circle"></i> Delete</button>
                                 <button type="button" class="btn btn-success btn-sm" data-toggle="tooltip" title="Refresh" (click)="refreshData()"><i class="fa fa-refresh"></i> Refresh</button>
                             </div>
                         </h3>
@@ -275,7 +275,7 @@
                         </div>
                     </div>
                     <div style="background-color: #eee;">
-                        <pre style="margin-left: 15px; margin-right: 15px; color: #002630; margin-bottom:0px; padding: 10px;">{{strinifyContent(m.content)}}</pre>
+                        <pre style="margin-left: 15px; margin-right: 15px; color: #002630; margin-bottom:0px; padding: 10px; font-family: 'Source Code Pro', monospace; font-weight: 400;">{{strinifyContent(m.content)}}</pre>
                     </div>
                 </div>
             </div>

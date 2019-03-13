@@ -28,9 +28,7 @@ describe('iotHelper', function() {
 
             let _helper = new IotHelper();
             _helper.getIotEndpoint().then((data) => {
-                expect(data).to.deep.equal({
-                    endpointAddress: 'abcxyz'
-                });
+                expect(data).to.equal('abcxyz');
                 done();
             }).catch((err) => {
                 done(err)

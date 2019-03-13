@@ -32,6 +32,7 @@ export class WidgetComponent implements OnInit, OnDestroy { // implements Logged
     public device: Device = new Device();
     public deviceType: DeviceType = new DeviceType();
     public messages: Message[] = [];
+    public subscribeMessage = '';
     private pollerInterval: any = null;
 
     @BlockUI() blockUI: NgBlockUI;
@@ -84,14 +85,17 @@ export class WidgetComponent implements OnInit, OnDestroy { // implements Logged
                 _self.deviceService.getDeviceType(_self.device.typeId).then((type: DeviceType) => {
                     _self.blockUI.stop();
                     _self.deviceType = new DeviceType(type);
-                    this.mqttService.subscribe(_self.deviceType.spec.topic);
-                    // * listen to the MQTT stream
-                    _self.mqttService.messageObservable$.subscribe(message => {
-                        if (message.topic.startsWith(_self.deviceType.spec.topic) && message.content._id_ === _self.device.id) {
-                            _self.messages.unshift(message);
-                            _self._ngZone.run(() => { });
-                        }
-                    });
+
+                    if (this._canSubscribeToTopic(_self.deviceType.spec.topic)) {
+                        this.mqttService.subscribe(_self.deviceType.spec.topic);
+                        // * listen to the MQTT stream
+                        _self.mqttService.messageObservable$.subscribe(message => {
+                            if (message.topic.startsWith(_self.deviceType.spec.topic) && message.content._id_ === _self.device.id) {
+                                _self.messages.unshift(message);
+                                _self._ngZone.run(() => { });
+                            }
+                        });
+                    }
                 }).catch((err) => {
                     this.blockUI.stop();
                     this.logger.error('error occurred calling getDeviceType api, show message');
@@ -149,6 +153,8 @@ export class WidgetComponent implements OnInit, OnDestroy { // implements Logged
                 this.logger.error(err);
                 this.loadDevice();
             });
+        } else {
+            this.blockUI.stop();
         }
     }
 
@@ -202,6 +208,19 @@ export class WidgetComponent implements OnInit, OnDestroy { // implements Logged
 
     clearMessages() {
         this.messages.length = 0;
+    }
+
+    _canSubscribeToTopic(topic: string) {
+        const _regex = /\$\{(\w+)\}/g; // matches ${name}
+        let _result = true;
+
+        let _found = topic.match(_regex);
+        if (_found) {
+            this.subscribeMessage = `Unable to subscribe to device type topics with attribute variables in the definition.  [ ${topic} ]`;
+            _result = false;
+        }
+
+        return _result;
     }
 
 }

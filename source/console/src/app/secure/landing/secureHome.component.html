@@ -56,12 +56,11 @@
                                         <div class="u-img" style="text-align:center;font-size:50px;"><i class="fa fa-user-circle"></i></div>
                                         <div class="u-text">
                                             <h4>{{profile.name}}</h4>
-                                            <p class="text-muted">{{profile.email}}</p><a href="securehome/profile" class="btn btn-rounded btn-danger btn-sm">View Profile</a></div>
+                                            <p class="text-muted">{{profile.email}}</p><a href="securehome/profile" class="btn btn-rounded btn-danger btn-sm"><i class="mdi mdi-account-card-details"></i> View Profile</a></div>
                                     </div>
                                 </li>
                                 <li role="separator" class="divider"></li>
-                                <li><a href="securehome/profile"><i class="ti-user"></i> My Profile</a></li>
-                                <li><a href="securehome/devices"><i class="ti-wallet"></i> My Devices</a></li>
+                                <li><a href="securehome/devices"><i class="mdi mdi-view-module"></i> My Devices</a></li>
                                 <li role="separator" class="divider"></li>
                                 <li><a [routerLink]="['/securehome/logout']"><i class="fa fa-power-off"></i> Logout</a></li>
                             </ul>
@@ -98,10 +97,10 @@
                     </li>
                     <li class="nav-small-cap">MODULES</li>
                     <li>
-                        <a class="waves-effect waves-dark" href="securehome/general"><i class="mdi mdi-lock-pattern"></i><span class="hide-menu">Widgets </span></a>
-                    </li>
+                        <a class="waves-effect waves-dark" href="securehome/types"><i class="mdi mdi-file-xml"></i><span class="hide-menu">Device Types </span></a>
+                    </li>                    
                     <li>
-                        <a class="waves-effect waves-dark" href="securehome/types"><i class="mdi mdi-chip"></i><span class="hide-menu">Device Types </span></a>
+                        <a class="waves-effect waves-dark" href="securehome/general"><i class="mdi mdi-chip"></i><span class="hide-menu">Widgets </span></a>
                     </li>
                     <li>
                         <a class="waves-effect waves-dark" href="securehome/automotive"><i class="mdi mdi-car-connected"></i><span class="hide-menu">Automotive </span></a>

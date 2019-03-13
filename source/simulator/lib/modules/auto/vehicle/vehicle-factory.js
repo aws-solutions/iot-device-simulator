@@ -45,7 +45,9 @@ class VehicleFactory extends DeviceFactory {
         const _self = this;
         return new Promise((resolve, reject) => {
 
-            var s3 = new AWS.S3();
+            var s3 = new AWS.S3({
+                signatureVersion: 'v4'
+            });
             let params = {
                 Bucket: _self.config.routeBucket,
                 Key: _self.config.routeManifestPath
@@ -208,7 +210,9 @@ class VehicleFactory extends DeviceFactory {
         const _self = this;
         return new Promise((resolve, reject) => {
             if (index < routes.length) {
-                var s3 = new AWS.S3();
+                var s3 = new AWS.S3({
+                    signatureVersion: 'v4'
+                });
                 let params = {
                     Bucket: _self.config.routeBucket,
                     Key: routes[index].s3path

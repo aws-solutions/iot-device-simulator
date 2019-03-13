@@ -53,7 +53,7 @@
                                     </div>
                                     <div [class]="(email.dirty || email.touched) ? (email.invalid ? 'form-group has-danger' :'form-group has-success-alt') : 'form-group'">
                                         <label for="email" class="form-control-label">Email Address:</label>
-                                        <input type="email" [class]="(email.dirty || email.touched) ? (email.invalid ? 'form-control form-control-line form-control-danger' : 'form-control form-control-line form-control-success-alt') : 'form-control form-control-line'" name="email" id="email" #email="ngModel" required email ngModel>
+                                        <input type="email" [class]="(email.dirty || email.touched) ? (email.invalid ? 'form-control form-control-line form-control-danger' : 'form-control form-control-line form-control-success-alt') : 'form-control form-control-line'" name="email" id="email" #email="ngModel"  [(ngModel)]="invite.email" required email ngModel>
                                         <div *ngIf="(email.invalid && (email.dirty || email.touched)) && email.errors.required" class="form-control-feedback">
                                             <small>User's email is required.</small>
                                         </div>

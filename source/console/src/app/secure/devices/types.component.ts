@@ -27,7 +27,7 @@ export class DeviceTypesComponent implements OnInit { // implements LoggedInCall
     public pages: any = {
         current: 1,
         total: 0,
-        pageSize: 20
+        pageSize: 50
     };
     public metrics: any = {
         total: 0,

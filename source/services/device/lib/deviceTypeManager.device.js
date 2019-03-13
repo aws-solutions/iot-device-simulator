@@ -147,10 +147,54 @@ class DeviceTypeManager {
                         if (!_.isEmpty(defaultData)) {
                             return resolve(defaultData.Item);
                         } else {
-                            return reject({
-                                code: 400,
-                                error: 'MissingDeviceType',
-                                message: `The device type ${deviceTypeId} for user ${ticket.userid} or default does not exist.`
+                            // v2.0 checking for shared device
+                            Logger.error(Logger.levels.INFO, `The _default_ device type ${deviceTypeId} does not exist, checking for shared device type.`);
+                            params = {
+                                TableName: process.env.DEVICE_TYPES_TBL,
+                                FilterExpression: 'typeId = :tid and visibility = :vis',
+                                ExpressionAttributeValues: {
+                                    ':tid': deviceTypeId,
+                                    ':vis': 'shared'
+                                },
+                                Limit: 100
+                            };
+                            console.log(params)
+                            docClient.scan(params, function(err, sharedData) {
+                                if (err) {
+                                    Logger.error(Logger.levels.INFO, err);
+                                    return reject({
+                                        code: 500,
+                                        error: 'DeviceTypeRetrieveFailure',
+                                        message: `Error occurred while attempting to search for shared device type ${deviceTypeId}.`
+                                    });
+                                }
+                                console.log(sharedData)
+                                if (sharedData.Items.length > 0) {
+                                    // v2.0 - validate device type is shared
+                                    if (sharedData.Items[0].hasOwnProperty('visibility')) {
+                                        if (sharedData.Items[0].visibility === 'shared') {
+                                            return resolve(sharedData.Items[0]);
+                                        } else {
+                                            return reject({
+                                                code: 400,
+                                                error: 'MissingDeviceType',
+                                                message: `The device type ${deviceTypeId} for user ${ticket.userid}, default or shared does not exist.`
+                                            });
+                                        }
+                                    } else {
+                                        return reject({
+                                            code: 400,
+                                            error: 'MissingDeviceType',
+                                            message: `The device type ${deviceTypeId} for user ${ticket.userid}, default or shared does not exist.`
+                                        });
+                                    }
+                                } else {
+                                    return reject({
+                                        code: 400,
+                                        error: 'MissingDeviceType',
+                                        message: `The device type ${deviceTypeId} for user ${ticket.userid}, default or shared does not exist.`
+                                    });
+                                }
                             });
                         }
                     });
@@ -174,12 +218,14 @@ class DeviceTypeManager {
                 _id = shortid.generate();
             }
 
+            // v2.0 - added device type visilibility, default is private.
             let _deviceType = {
                 userId: ticket.userid,
                 typeId: _id,
                 custom: deviceType.custom,
                 name: deviceType.name,
                 spec: deviceType.spec,
+                visibility: deviceType.visibility === 'shared' ? 'shared' : 'private',
                 createdAt: moment().utc().format(),
                 updatedAt: moment().utc().format()
             };
@@ -294,6 +340,8 @@ class DeviceTypeManager {
                 if (!_.isEmpty(deviceType)) {
                     deviceType.Item.updatedAt = moment().utc().format();
                     deviceType.Item.spec = newDeviceType.spec;
+                    // v2.0 - added device type visilibility, default is private.
+                    deviceType.Item.visibility = newDeviceType.visibility === 'shared' ? 'shared' : 'private';
 
                     let _updateParams = {
                         TableName: process.env.DEVICE_TYPES_TBL,
@@ -334,13 +382,24 @@ class DeviceTypeManager {
         const _self = this;
         return new Promise((resolve, reject) => {
 
+            // const params = {
+            //     TableName: process.env.DEVICE_TYPES_TBL,
+            //     KeyConditionExpression: 'userId = :uid',
+            //     ExpressionAttributeValues: {
+            //         ':uid': ticket.userid
+            //     },
+            //     Limit: 20
+            // };
+
+            // v2.0 - moving to scan to retrieve 'shared' device types as well
             const params = {
                 TableName: process.env.DEVICE_TYPES_TBL,
-                KeyConditionExpression: 'userId = :uid',
+                FilterExpression: 'userId = :uid or visibility = :vis',
                 ExpressionAttributeValues: {
-                    ':uid': ticket.userid
+                    ':uid': ticket.userid,
+                    ':vis': 'shared'
                 },
-                Limit: 20
+                Limit: 50
             };
 
             if (lastevalkey) {
@@ -348,7 +407,9 @@ class DeviceTypeManager {
             }
 
             let docClient = new AWS.DynamoDB.DocumentClient(_self.dynamoConfig);
-            docClient.query(params, function(err, result) {
+            // v2.0 - moving to scan to retrieve 'shared' device types as well
+            //docClient.query(params, function(err, result) {
+            docClient.scan(params, function(err, result) {
                 if (err) {
                     Logger.error(Logger.levels.INFO, err);
                     return reject(`Error occurred while attempting to retrieve page ${targetpage} from device types.`);

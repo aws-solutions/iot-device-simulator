@@ -55,6 +55,30 @@ class Generator {
         return random.int(min, max);
     }
 
+    sin(min, max, step) {
+        min = this._isValidInteger('min', min, 0);
+        max = this._isValidInteger('max', max, 100);
+        step = this._isValidInteger('step', step, 1);
+
+        min = this._checkLessThanValue('min', 'max', min, max);
+
+        let _sin = Math.sin(2 * Math.PI * step/100 * 5) * Math.random();
+        let _sinWithNoise = this._median([min, max]) + this._median([0, max - min]) * _sin;
+
+        return _sinWithNoise;
+    }
+
+    decay(min, max, step) {
+        min = this._isValidInteger('min', min, 0);
+        max = this._isValidInteger('max', max, 100);
+        step = this._isValidInteger('step', step, 1);
+
+        //P20941158 - allow inverse decay - remove min validation
+        let _decay = max - ((max - min) * (1 - Math.exp(-(0.05 * step))));  
+
+        return _decay;
+    }
+
     ts(format) {
         let _ts = null;
         switch (format) {
@@ -234,6 +258,21 @@ class Generator {
         }
 
         return val;
+    }
+
+    _median(values){
+        values.sort(function(a,b){
+        return a-b;
+      });
+    
+      if(values.length ===0) return 0
+    
+      var half = Math.floor(values.length / 2);
+    
+      if (values.length % 2)
+        return values[half];
+      else
+        return (values[half - 1] + values[half]) / 2.0;
     }
 
 };

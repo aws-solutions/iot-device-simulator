@@ -33,9 +33,9 @@
     <div class="col-lg-12">
         <div class="card">
             <div class="card-body">
-                <div class="switch pull-right">
+                <!-- <div class="switch pull-right">
                     <label>Disabled<input type="checkbox" checked [(ngModel)]="config.spec.sendTelemetryData" [ngModelOptions]="{standalone: true}"><span class="lever"></span>Enabled</label>
-                </div>
+                </div> -->
                 <h4 class="card-title">Individual Telemetry Sensor Data</h4>
                 <h6 class="card-subtitle">Customize how individual simulated telemetry sensor data is sent to AWS IoT.</h6>
                 <form class="fm-t-40">
@@ -43,7 +43,7 @@
                         <label>Telemetry Data Topic</label>
                         <input type="text" class="form-control form-control-line" [disabled]="!config.spec.sendTelemetryData" name="dataTopic" id="dataTopic" required ngModel #dataTopic="ngModel" [(ngModel)]="config.spec.dataTopic"/>
                         <div class="form-control-feedback">
-                            <small>The topic where individual sensor data is sent.</small>
+                            <small>The topic where individual sensor data is sent. <i>Note: the Vehicle Identification Number is appended to the topic. (ex. connectedcar/telemetry/SAMPLEVIN1234)</i></small>
                         </div>
                     </div>
                     <div class="form-group">
@@ -89,9 +89,9 @@
     <div class="col-lg-12">
         <div class="card">
             <div class="card-body">
-                <div class="switch pull-right">
+                <!-- <div class="switch pull-right">
                     <label>Disabled<input type="checkbox" checked [(ngModel)]="config.spec.sendAggregatedData" [ngModelOptions]="{standalone: true}"><span class="lever"></span>Enabled</label>
-                </div>
+                </div> -->
                 <h4 class="card-title">Aggregated Telemetry Data</h4>
                 <h6 class="card-subtitle">Customize how aggregated simulated telemetry sensor data is sent to AWS IoT.</h6>
                 <form class="fm-t-40">
@@ -99,7 +99,7 @@
                         <label>Aggregated Telemetry Data Topic</label>
                         <input type="text" class="form-control form-control-line" [disabled]="!config.spec.sendAggregatedData" name="dataAggregatedTopic" id="dataAggregatedTopic" required ngModel #dataAggregatedTopic="ngModel" [(ngModel)]="config.spec.dataAggregatedTopic"/>
                         <div class="form-control-feedback">
-                            <small>The topic where aggregated telemetry data is sent.</small>
+                            <small>The topic where aggregated telemetry data is sent. <i>Note: the Vehicle Identification Number is appended to the topic. (ex. connectedcar/trip/SAMPLEVIN1234)</i></small>
                         </div>
                     </div>
                     <div class="form-group">
@@ -120,9 +120,9 @@
     <div class="col-lg-12">
         <div class="card">
             <div class="card-body">
-                <div class="switch pull-right">
+                <!-- <div class="switch pull-right">
                     <label>Disabled<input type="checkbox" checked [(ngModel)]="config.spec.sendErrorData" [ngModelOptions]="{standalone: true}"><span class="lever"></span>Enabled</label>
-                </div>
+                </div> -->
                 <h4 class="card-title">Error Data</h4>
                 <h6 class="card-subtitle">Customize how diagnostic trouble codes are sent to AWS IoT.</h6>
                 <form class="fm-t-40">
@@ -130,7 +130,7 @@
                         <label>Error (DTC) Topic</label>
                         <input type="text" class="form-control form-control-line" [disabled]="!config.spec.sendErrorData" name="errorTopic" id="errorTopic" required ngModel #errorTopic="ngModel" [(ngModel)]="config.spec.errorTopic"/>
                         <div class="form-control-feedback">
-                            <small>The topic where diagnostic trouble code data is sent.</small>
+                            <small>The topic where diagnostic trouble code data is sent. <i>Note: the Vehicle Identification Number is appended to the topic. (ex. connectedcar/telemetry/SAMPLEVIN1234)</i></small>
                         </div>
                     </div>
                 </form>

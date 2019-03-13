@@ -33,7 +33,11 @@
     <div class="col-lg-12">
         <div class="card">
             <div class="card-body">
-                <h4 class="card-title">Device Type Definition</h4>
+                <h4 class="card-title">
+                    <span>Device Type Definition</span>
+                    <span style="text-transform: uppercase;" [class]="dtype.visibility === 'shared' ? 'label label-light-success-alt pull-right' : 'label label-light-danger pull-right'">{{dtype.visibility}}</span>
+                    <span *ngIf="readOnly" style="text-transform: uppercase; margin-right: 10px;" class="label label-light-danger pull-right">READONLY</span>
+                </h4>
                 <h6 class="card-subtitle">Customize how device data of this customized type is sent to AWS IoT.</h6>
                 <form class="fm-t-40">
                     <div class="form-group">
@@ -43,23 +47,33 @@
                             <small>The common name of the device type.</small>
                         </div>
                     </div>
+                    <div class="form-group" *ngIf="!readOnly">
+                        <label for="visibility" class="form-control-label">Visibility:</label>
+                        <select class="custom-select col-12" name="visibility" id="visibility" #visibility="ngModel" [(ngModel)]="dtype.visibility" required ngModel [disabled]="dtype.visibility === 'shared'">
+                            <option value="private">PRIVATE</option>
+                            <option value="shared">SHARED</option>
+                        </select>
+                        <div class="form-control-feedback">
+                            <small>The visibility of device type. Selecting "Shared" allows members to use this device type in simulations.</small>
+                        </div>
+                    </div>
                     <div class="form-group">
                         <label>Data Topic</label>
-                        <input type="text" class="form-control form-control-line" name="topic" id="topic" #topic="ngModel" [(ngModel)]="dtype.spec.topic" required ngModel />
+                        <input type="text" class="form-control form-control-line" name="topic" id="topic" #topic="ngModel" [(ngModel)]="dtype.spec.topic" required ngModel [readonly]="readOnly" />
                         <div class="form-control-feedback">
                             <small>The topic where individual sensor data is sent.</small>
                         </div>
                     </div>
                     <div class="form-group">
-                        <label>Data Transmision Duration</label>
-                        <input type="number" class="form-control form-control-line" onkeypress='return event.charCode >= 48 && event.charCode <= 57' name="duration" id="duration" #duration="ngModel" [(ngModel)]="dtype.spec.duration" required ngModel />
+                        <label>Data Transmission Duration</label>
+                        <input type="number" class="form-control form-control-line" onkeypress='return event.charCode >= 48 && event.charCode <= 57' name="duration" id="duration" #duration="ngModel" [(ngModel)]="dtype.spec.duration" required ngModel [readonly]="readOnly" />
                         <div class="form-control-feedback">
                             <small>How long the device will simulate sending data to the defined data topic (milliseconds) [must be >= 60000].</small>
                         </div>
                     </div>
                     <div class="form-group">
-                        <label>Data Transmision Interval</label>
-                        <input type="number" class="form-control form-control-line" onkeypress='return event.charCode >= 48 && event.charCode <= 57' name="interval" id="interval" #interval="ngModel" [(ngModel)]="dtype.spec.interval" required ngModel />
+                        <label>Data Transmission Interval</label>
+                        <input type="number" class="form-control form-control-line" onkeypress='return event.charCode >= 48 && event.charCode <= 57' name="interval" id="interval" #interval="ngModel" [(ngModel)]="dtype.spec.interval" required ngModel [readonly]="readOnly" />
                         <div class="form-control-feedback">
                             <small>How often devices will send data during a simulation (milliseconds) [must be >= 1000].</small>
                         </div>
@@ -93,11 +107,14 @@
                                                 <label for="type" class="form-control-label">Attribute data type:</label>
                                                 <select class="custom-select col-12" name="type" id="type" #type="ngModel" [(ngModel)]="attribute.type" required ngModel>
                                                     <option value="id">DEVICE ID</option>
-                                                    <option value="boolean">BOOLEAN</option>
+                                                    <option value="bool">BOOLEAN</option>
+                                                    <option value="decay">DECAY</option>
                                                     <option value="float">FLOAT</option>
                                                     <option value="int">INTEGER</option>
                                                     <option value="location">LOCATION</option>
+                                                    <option *ngIf="nestedDepth < 3" value="object">OBJECT</option>
                                                     <option value="string">STRING</option>
+                                                    <option value="sinusoidal">SINUSOIDAL</option>
                                                     <option value="uuid">UNIQUE IDENTIFIER</option>
                                                     <option value="shortid">UNIQUE SHORT IDENTIFIER</option>
                                                     <option value="timestamp">UTC TIMESTAMP</option>
@@ -109,14 +126,14 @@
                                             </div>
                                             <div *ngIf="attribute.type === 'location'" class="form-group">
                                                 <label for="smin" class="form-control-label">Center position latitude:</label>
-                                                <input type="number" class="form-control form-control-line" name="lat" id="lat" #lat="ngModel" [(ngModel)]="attribute.lat" required ngModel>
+                                                <input type="number" class="form-control form-control-line" name="lat" id="lat" #lat="ngModel" [(ngModel)]="attribute.lat" required ngModel min="-90" max="90">
                                                 <div class="form-control-feedback">
                                                     <small>The latitude of the center position for the random coordinates to be generated.</small>
                                                 </div>
                                             </div>
                                             <div *ngIf="attribute.type === 'location'" class="form-group">
                                                 <label for="smax" class="form-control-label">Center position longitude:</label>
-                                                <input type="number" class="form-control form-control-line" name="long" id="long" #long="ngModel" [(ngModel)]="attribute.long" required ngModel>
+                                                <input type="number" class="form-control form-control-line" name="long" id="long" #long="ngModel" [(ngModel)]="attribute.long" required ngModel min="-180" max="180">
                                                 <div class="form-control-feedback">
                                                     <small>The longitude of the center position for the random coordinates to be generated.</small>
                                                 </div>
@@ -125,7 +142,7 @@
                                                 <label for="smin" class="form-control-label">Radius:</label>
                                                 <input type="number" class="form-control form-control-line" onkeypress='return event.charCode >= 48 && event.charCode <= 57' name="radius" id="radius" #radius="ngModel" [(ngModel)]="attribute.radius" required ngModel>
                                                 <div class="form-control-feedback">
-                                                    <small>The radius from the center position for the random coordinates to be generated.</small>
+                                                    <small>The radius from the center position for the random coordinates to be generated (in meters).</small>
                                                 </div>
                                             </div>
                                             <div *ngIf="attribute.type === 'pickOne'" class="form-group">
@@ -141,6 +158,9 @@
                                                 <div class="form-control-feedback">
                                                     <small>The minimum length of the random string generated.</small>
                                                 </div>
+                                                <div class="alert alert-danger" *ngIf="stringMinError">
+                                                    String minimum length must be less than the string maximum length.
+                                                </div>
                                             </div>
                                             <div *ngIf="attribute.type === 'string'" class="form-group">
                                                 <label for="smax" class="form-control-label">String maximum length:</label>
@@ -149,42 +169,52 @@
                                                     <small>The maximum length of the random string generated.</small>
                                                 </div>
                                             </div>
-                                            <div *ngIf="attribute.type === 'boolean'" class="form-group">
+                                            <div *ngIf="attribute.type === 'bool'" class="form-group">
                                                 <label for="bmin" class="form-control-label">Boolean minimum:</label>
                                                 <input type="number" class="form-control form-control-line" onkeypress='return event.charCode >= 48 && event.charCode <= 57' name="bmin" id="bmin" #bmin="ngModel" [(ngModel)]="attribute.bmin" required ngModel>
                                                 <div class="form-control-feedback">
                                                     <small>The minimum value range for random boolean generated.</small>
                                                 </div>
                                             </div>
-                                            <div *ngIf="attribute.type === 'boolean'" class="form-group">
+                                            <div *ngIf="attribute.type === 'bool'" class="form-group">
                                                 <label for="bmax" class="form-control-label">Boolean maximum:</label>
                                                 <input type="number" class="form-control form-control-line" onkeypress='return event.charCode >= 48 && event.charCode <= 57' name="bmax" id="bmax" #bmax="ngModel" [(ngModel)]="attribute.bmax" required ngModel>
                                                 <div class="form-control-feedback">
                                                     <small>The maximum value range for random boolean generated.</small>
                                                 </div>
+                                                <div class="alert alert-danger" *ngIf="boolMinError">
+                                                    Boolean minimum length must be less than the boolean maximum length.
+                                                </div>
                                             </div>
-                                            <div *ngIf="attribute.type === 'boolean'" class="form-group">
+                                            <div *ngIf="attribute.type === 'bool'" class="form-group">
                                                 <label for="bseed" class="form-control-label">Boolean seed:</label>
                                                 <input type="number" class="form-control form-control-line" onkeypress='return event.charCode >= 48 && event.charCode <= 57' name="bseed" id="bseed" #bseed="ngModel" [(ngModel)]="attribute.bseed" required ngModel>
                                                 <div class="form-control-feedback">
                                                     <small>The seed value for random boolean generated.</small>
                                                 </div>
                                             </div>
-                                            <div *ngIf="attribute.type === 'int'" class="form-group">
+                                            <div *ngIf="attribute.type === 'int' || attribute.type === 'decay' || attribute.type === 'sinusoidal'" class="form-group">
                                                 <label for="intmin" class="form-control-label">Minimum value:</label>
-                                                <input type="number" class="form-control form-control-line" name="min" id="min" #min="ngModel" [(ngModel)]="attribute.min" required ngModel>
+                                                <input type="number" class="form-control form-control-line" name="min" id="min" #min="ngModel" onkeypress='return (event.charCode >= 48 && event.charCode <= 57) || event.charCode === 45' [(ngModel)]="attribute.min" required ngModel>
                                                 <div class="form-control-feedback">
-                                                    <small>The minimum value of the random integer generated.</small>
-                                                </div>
+                                                    <small *ngIf="attribute.type === 'int'">The minimum value of the random integer generated.</small>
+                                                    <small *ngIf="attribute.type === 'sinusoidal'">The floor value for the sinusoidal curve.</small>
+                                                    <small *ngIf="attribute.type === 'decay'">The floor value for the decay.</small>
+                                                </div>                                                
                                             </div>
-                                            <div *ngIf="attribute.type === 'int'" class="form-group">
+                                            <div *ngIf="attribute.type === 'int' || attribute.type === 'decay' || attribute.type === 'sinusoidal'" class="form-group">
                                                 <label for="intmax" class="form-control-label">Maximum value:</label>
-                                                <input type="number" class="form-control form-control-line" name="max" id="max" #max="ngModel" [(ngModel)]="attribute.max" required ngModel>
+                                                <input type="number" class="form-control form-control-line" name="max" id="max" #max="ngModel" onkeypress='return (event.charCode >= 48 && event.charCode <= 57) || event.charCode === 45' [(ngModel)]="attribute.max" required ngModel>
                                                 <div class="form-control-feedback">
-                                                    <small>The maximum value of the random integer generated.</small>
+                                                    <small *ngIf="attribute.type === 'int'">The maximum value of the random integer generated.</small>
+                                                    <small *ngIf="attribute.type === 'sinusoidal'">The ceiling (starting point) for the sinusoidal curve.</small>
+                                                    <small *ngIf="attribute.type === 'decay'">The ceiling (starting point) for the decay.</small>                                                
+                                                </div>
+                                                <div class="alert alert-danger" *ngIf="intMinError">
+                                                    Minimum value must be less than the maximum value.
                                                 </div>
                                             </div>
-                                            <div *ngIf="attribute.type === 'shortid' || attribute.type === 'string' || attribute.type === 'uuid'" class="form-group">
+                                            <div *ngIf="attribute.type === 'shortid' || attribute.type === 'string' || attribute.type === 'uuid' || attribute.type === 'pickOne'" class="form-group">
                                                 <label for="static" class="form-control-label">Static:</label>
                                                 <select class="custom-select col-12" name="static" id="static" #static="ngModel" [(ngModel)]="attribute.static" required ngModel>
                                                     <option value="true">true</option>
@@ -213,16 +243,19 @@
                                             </div>
                                             <div *ngIf="attribute.type === 'float'" class="form-group">
                                                 <label for="imin" class="form-control-label">Integer minimum value:</label>
-                                                <input type="number" class="form-control form-control-line" name="imin" id="imin" #imin="ngModel" [(ngModel)]="attribute.imin" required ngModel>
+                                                <input type="number" class="form-control form-control-line" onkeypress='return (event.charCode >= 48 && event.charCode <= 57) || event.charCode === 45' name="imin" id="imin" #imin="ngModel" [(ngModel)]="attribute.imin" required ngModel>
                                                 <div class="form-control-feedback">
                                                     <small>Minimum value for the integer precision.</small>
                                                 </div>
                                             </div>
                                             <div *ngIf="attribute.type === 'float'" class="form-group">
                                                 <label for="imax" class="form-control-label">Integer maximum value:</label>
-                                                <input type="number" class="form-control form-control-line" name="imax" id="imax" #dmax="ngModel" [(ngModel)]="attribute.imax" required ngModel>
+                                                <input type="number" class="form-control form-control-line" onkeypress='return (event.charCode >= 48 && event.charCode <= 57) || event.charCode === 45' name="imax" id="imax" #dmax="ngModel" [(ngModel)]="attribute.imax" required ngModel>
                                                 <div class="form-control-feedback">
                                                     <small>Maximum value for the integer precision.</small>
+                                                </div>
+                                                <div class="alert alert-danger" *ngIf="floatIntMinError">
+                                                    Minimum integer value must be less than the maximum integer value.
                                                 </div>
                                             </div>
                                             <div *ngIf="attribute.type === 'float'" class="form-group">
@@ -238,8 +271,11 @@
                                                 <div class="form-control-feedback">
                                                     <small>Maximum value for the decimal precision.</small>
                                                 </div>
+                                                <div class="alert alert-danger" *ngIf="floatDecMinError">
+                                                    Minimum decimal value must be less than the maximum decimal value.
+                                                </div>
                                             </div>
-                                            <div *ngIf="attribute.type !== 'rstring' && attribute.type !== 'location' && attribute.type !== 'pickOne' && attribute.type !== 'id'" class="form-group">
+                                            <div *ngIf="attribute.type !== 'rstring' && attribute.type !== 'location' && attribute.type !== 'pickOne' && attribute.type !== 'id' && attribute.type !== 'object'" class="form-group">
                                                 <label for="default" class="form-control-label">Default Value (Optional):</label>
                                                 <input type="text" class="form-control form-control-line" name="default" id="default" #default="ngModel" [(ngModel)]="attribute.default" required ngModel>
                                                 <div class="form-control-feedback">
@@ -257,45 +293,74 @@
                         </div>
                         <!-- .modal -->
                         <div class="table-responsive m-t-20">
-                            <table id="message-tbl" class="table stylish-table" style="text-transform:uppercase;">
-                                <thead>
-                                    <tr>
-                                        <th>Message Attribute</th>
-                                        <th>Data Type</th>
-                                        <th>Static Value</th>
-                                        <th></th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr *ngFor="let item of dtype.spec.payload">
-                                        <td>
-                                            <h6>{{item.name}}</h6>
-                                        </td>
-                                        <td>{{item.type}}</td>
-                                        <td>{{item.static}}</td>
-                                        <td>
-                                            <div class="pull-right" role="group">
-                                                <button type="button" class="btn btn-success btn-sm m-r-15" data-toggle="tooltip" title="View Attribute" (click)="viewSchemaAttribute(item._id_)"><i class="mdi mdi-information"></i> View Config</button>
-                                                <button type="button" class="btn btn-danger btn-sm m-r-15" data-toggle="tooltip" title="Delete Attribute" (click)="removeSchemaAttribute(item._id_)"><i class="mdi mdi-pencil"></i> Remove</button>
+                            <div class="row" style="margin-left: 0px; margin-right: 0px;">
+                                <div class="col-md-5 b-b" style="font-weight: 400;color: #99abb4; text-transform:uppercase; padding: .75rem;">Message Attribute</div>
+                                <div class="col-md-2 b-b" style="font-weight: 400;color: #99abb4; text-transform:uppercase; padding: .75rem;">Data Type</div>
+                                <div class="col-md-2 b-b" style="font-weight: 400;color: #99abb4; text-transform:uppercase; padding: .75rem;">Static Value</div>
+                                <div class="col-md-3 b-b" style="font-weight: 400;color: #99abb4; text-transform:uppercase; padding: .75rem; text-align: right; padding-right:30px;">Actions</div>
+                            </div>
+                            <div class="row" style="margin-left: 0px; margin-right: 0px;" *ngFor="let item of dtype.spec.payload">
+                                <div class="col-md-5 b-b" style="font-weight: 400;color: #455a64; font-weight: 500; text-transform:uppercase; padding: .75rem; text-transform: none;">{{item.name}}</div>
+                                <div class="col-md-2 b-b" style="font-weight: 400;color: #67757c; text-transform:uppercase; padding: .75rem;">{{item.type}}</div>
+                                <div class="col-md-2 b-b" style="font-weight: 400;color: #67757c; text-transform:uppercase; padding: .75rem;">{{item.static}}</div>
+                                <div class="col-md-3 b-b" style="font-weight: 400;color: #67757c; text-transform:uppercase; padding: .75rem;">   
+                                    <div class="pull-right" role="group">                                                         
+                                        <button *ngIf="item.type !== 'object'" type="button" class="btn btn-success btn-sm m-r-15" data-toggle="tooltip" title="View Attribute" (click)="viewSchemaAttribute(item._id_)"><i class="mdi mdi-information"></i> View Config</button>
+                                        <button *ngIf="item.type === 'object' && !readOnly" type="button" class="btn btn-success-alt btn-sm m-r-15" data-toggle="tooltip" title="View Attribute" (click)="addSchemaAttribute(item, 1)"><i class="mdi mdi-plus"></i> Add Attribute</button>
+                                        <button *ngIf="!readOnly" type="button" class="btn btn-danger btn-sm m-r-15" data-toggle="tooltip" title="Delete Attribute" (click)="removeSchemaAttribute(item._id_)"><i class="mdi mdi-delete-circle"></i> Remove</button>
+                                    </div>
+                                </div>
+                                <div *ngIf="item.type === 'object'" class="col-md-12">
+                                    <div class="row" *ngFor="let i of item.payload">
+                                        <div class="col-md-5 b-b" style="font-weight: 400;color: #455a64; font-weight: 500; text-transform:uppercase; padding: .75rem; border-left: 15px solid #60c84c; text-transform: none;">{{i.name}}</div>
+                                        <div class="col-md-2 b-b" style="font-weight: 400;color: #67757c; text-transform:uppercase; padding: .75rem;">{{i.type}}</div>
+                                        <div class="col-md-2 b-b" style="font-weight: 400;color: #67757c; text-transform:uppercase; padding: .75rem;">{{i.static}}</div>
+                                        <div class="col-md-3 b-b" style="font-weight: 400;color: #67757c; text-transform:uppercase; padding: .75rem;">   
+                                            <div class="pull-right" role="group">                                                         
+                                                <button *ngIf="i.type !== 'object'" type="button" class="btn btn-success btn-sm m-r-15" data-toggle="tooltip" title="View Attribute" (click)="viewSchemaAttribute(i._id_)"><i class="mdi mdi-information"></i> View Config</button>
+                                                <button *ngIf="i.type === 'object' && !readOnly" type="button" class="btn btn-success-alt btn-sm m-r-15" data-toggle="tooltip" title="View Attribute" (click)="addSchemaAttribute(i, 2)"><i class="mdi mdi-plus"></i> Add Attribute</button>
+                                                <button *ngIf="!readOnly" type="button" class="btn btn-danger btn-sm m-r-15" data-toggle="tooltip" title="Delete Attribute" (click)="removeSchemaAttribute(i._id_)"><i class="mdi mdi-delete-circle"></i> Remove</button>
                                             </div>
-                                        </td>
-                                    </tr>
-                                    <tr *ngIf="dtype.spec.payload.length === 0">
-                                        <td colspan="4">
-                                            <h6>No message payload attributes have been defined.</h6>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                                        </div>
+                                        <div *ngIf="i.type === 'object'" class="col-md-12">
+                                            <div class="row" *ngFor="let k of i.payload">
+                                                <div class="col-md-5 b-b" style="font-weight: 400;color: #455a64; font-weight: 500; text-transform:uppercase; padding: .75rem; border-left: 15px solid #60c84c; margin-left: 15px; margin-right: -15px; text-transform: none;">{{k.name}}</div>
+                                                <div class="col-md-2 b-b" style="font-weight: 400;color: #67757c; text-transform:uppercase; padding: .75rem;">{{k.type}}</div>
+                                                <div class="col-md-2 b-b" style="font-weight: 400;color: #67757c; text-transform:uppercase; padding: .75rem;">{{k.static}}</div>
+                                                <div class="col-md-3 b-b" style="font-weight: 400;color: #67757c; text-transform:uppercase; padding: .75rem;">   
+                                                    <div class="pull-right" role="group">                                                         
+                                                        <button *ngIf="k.type !== 'object'" type="button" class="btn btn-success btn-sm m-r-15" data-toggle="tooltip" title="View Attribute" (click)="viewSchemaAttribute(k._id_)"><i class="mdi mdi-information"></i> View Config</button>
+                                                        <button *ngIf="k.type === 'object' && !readOnly" type="button" class="btn btn-success-alt btn-sm m-r-15" data-toggle="tooltip" title="View Attribute" (click)="addSchemaAttribute(k, 3)"><i class="mdi mdi-plus"></i> Add Attribute</button>
+                                                        <button *ngIf="!readOnly" type="button" class="btn btn-danger btn-sm m-r-15" data-toggle="tooltip" title="Delete Attribute" (click)="removeSchemaAttribute(k._id_)"><i class="mdi mdi-delete-circle"></i> Remove</button>
+                                                    </div>
+                                                </div>
+                                                <div *ngIf="k.type === 'object'" class="col-md-12">
+                                                    <div class="row" *ngFor="let j of k.payload">
+                                                        <div class="col-md-5 b-b" style="font-weight: 400;color: #455a64; font-weight: 500; text-transform:uppercase; padding: .75rem; border-left: 15px solid #60c84c; margin-left: 30px; margin-right: -30px; text-transform: none;">{{j.name}}</div>
+                                                        <div class="col-md-2 b-b" style="font-weight: 400;color: #67757c; text-transform:uppercase; padding: .75rem;">{{j.type}}</div>
+                                                        <div class="col-md-2 b-b" style="font-weight: 400;color: #67757c; text-transform:uppercase; padding: .75rem;">{{j.static}}</div>
+                                                        <div class="col-md-3 b-b" style="font-weight: 400;color: #67757c; text-transform:uppercase; padding: .75rem;">   
+                                                            <div class="pull-right" role="group">                                                         
+                                                                <button type="button" class="btn btn-success btn-sm m-r-15" data-toggle="tooltip" title="View Attribute" (click)="viewSchemaAttribute(j._id_)"><i class="mdi mdi-information"></i> View Config</button>
+                                                                <button *ngIf="!readOnly" type="button" class="btn btn-danger btn-sm m-r-15" data-toggle="tooltip" title="Delete Attribute" (click)="removeSchemaAttribute(j._id_)"><i class="mdi mdi-delete-circle"></i> Remove</button>
+                                                            </div>
+                                                        </div>
+                                                    </div>                                                
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <button type="button" class="btn btn-success btn-sm m-t-20" (click)="addSchemaAttribute()" >Add Attribute</button>
+                        <button *ngIf="!readOnly" type="button" class="btn btn-success btn-sm m-t-20" (click)="addSchemaAttribute(null, 0)" ><i class="mdi mdi-plus"></i> Add Attribute</button>
                     </div>
                     <div>
                         <label>Sample Message Payload</label>
                     </div>
                     <pre style="font-size: 14px;">{{getDataSample()}}</pre>
                     <div class="m-t-20 m-b-20">
-                        <button type="button" class="btn btn-success-alt btn-rounded m-r-15" (click)="saveDeviceType()">Save</button>
+                        <button *ngIf="!readOnly" type="button" class="btn btn-success-alt btn-rounded m-r-15" (click)="saveDeviceType()">Save</button>
                         <button type="button" class="btn btn-secondary btn-rounded" (click)="cancel()">Cancel</button>
                     </div>
                     <div *ngIf="hasError" class="alert alert-danger alert-rounded"> <i class="mdi mdi-exclamation"></i> {{errorMsg}}</div>

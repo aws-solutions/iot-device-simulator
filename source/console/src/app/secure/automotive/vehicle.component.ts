@@ -181,6 +181,8 @@ export class VehicleComponent implements OnInit, OnDestroy { // implements Logge
                 this.logger.error(err);
                 this.loadDevice();
             });
+        } else {
+            this.blockUI.stop();
         }
     }
 

@@ -27,13 +27,20 @@ class Device {
 
     constructor(options) {
         this.options = options;
+        this.id = '';
         this.uid = shortid.generate();
+        this.userId = '';
         this.sendInterval = null;
         this.stage = 'provisioning';
         this.iotdata = new AWS.IotData({
             endpoint: options.iotEndpoint,
             region: options.targetIotRegion
         });
+
+        //v2 - added stage poller internal to check for stopping status
+        this.stagePoller = null;
+        this.stagePollerInterval = 30000;
+
     }
 
     run(interval, metadata) {
@@ -41,8 +48,12 @@ class Device {
         this.sendInterval = setInterval(function() {
             _self._generateMessage();
         }, interval);
-        this.stage = 'hydrated';
 
+        this.stagePoller = setInterval(function() {
+            _self._pollDeviceStage();
+        }, this.stagePollerInterval);
+
+        this.stage = 'hydrated';
         let _self = this;
         return new Promise((resolve, reject) => {
             let _metadata = {};
@@ -66,6 +77,7 @@ class Device {
         let _self = this;
         return new Promise((resolve, reject) => {
             clearInterval(_self.sendInterval);
+            clearInterval(_self.stagePoller);
             _self.stage = 'sleeping';
             _self.update().then((result) => {
                 _self._updateMetrics('updateDuration', result).then(() => {
@@ -161,8 +173,6 @@ class Device {
             });
         });
     }
-
-    _generateMessage() {}
 
     _sendUsageMetrics(payload) {
         let _self = this;
@@ -393,13 +403,51 @@ class Device {
         return metric;
     }
 
+    _pollDeviceStage() {
+        let _self = this;
+        let params = {
+            TableName: this.options.deviceTable,
+            Key: {
+                userId: this.userId,
+                id: this.id
+            }
+        };
+
+        let docClient = new AWS.DynamoDB.DocumentClient(this.dynamoConfig);
+        docClient.get(params, function(err, device) {
+            if (err) {
+                _self.options.logger.log(err, _self.options.logger.levels.ROBUST);
+                _self.options.logger.log(`Error retrieving device from ddb to check stage change, id:, ${_self.id}, userId: ${_self.userId}`, _self.options.logger.levels.INFO);
+            } else {
+                if (!_.isEmpty(device)) {
+                    if (device.Item.stage === 'stopping') {
+                        _self.options.logger.log(`Device id:, ${_self.id}, userId: ${_self.userId} stage set to stopping. Attempting to stop.`, _self.options.logger.levels.INFO);
+                        _self.stop().then((result) => {
+                            _self.options.logger.log(result, _self.options.logger.levels.INFO);
+                        }).catch((err2) => {
+                            _self.options.logger.log(err2, _self.options.logger.levels.INFO);
+                        });
+                    }
+                } else {
+                    _self.options.logger.log(`Device id: ${_self.id}, userId: ${_self.userId} not found, unable to check stage change.`, _self.options.logger.levels.INFO);
+                }
+            }
+        });
+    }
+
+    /**
+     * Generates and publish simulated device data.
+     */
+    _generateMessage() {}
+
+
     /**
      * Start device simulation.
      */
     start() {}
 
     /**
-     * Stop device.
+     * Stop device simulation.
      */
     stop() {}
 };

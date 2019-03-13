@@ -1,4 +1,5 @@
 @import url("https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700");
+@import url("https://fonts.googleapis.com/css?family=Source+Code+Pro:300,400,500,600,700");
 /*Theme Colors*/
 /*bootstrap Color*/
 /*Light colors*/
@@ -7958,3 +7959,62 @@ div.blockUI.blockMsg h4 {
   position: relative;
   left: 0px;
   opacity: 100; }
+
+  .filter-select {
+    font-size: 14px;
+    position: relative;
+    display: block;
+  }
+
+  .filter-select select {
+    outline: none;
+    -webkit-appearance: none;
+    display: block;
+    padding: .5em;
+    margin: 0;
+    width: 100%;
+  
+    transition: border-color 0.2s;
+    border: 2px solid #d9d9d9;
+    border-radius: 5px;
+  
+    background: #fff;
+    color: #555;
+    line-height: normal;
+    font-family: inherit;
+    font-size: inherit;
+    line-height: inherit;
+  }
+
+  .filter-select .arr {
+    background: #fff;
+    bottom: 5px;
+    position: absolute;
+    right: 5px;
+    top: 5px;
+    width: 50px;
+    pointer-events: none;
+  }
+  .filter-select .arr:before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    margin-top: -5px;
+    pointer-events: none;
+    border-top: 10px solid #d9d9d9;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+  }
+  
+  .filter-select .arr:after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    right: 14px;
+    margin-top: -5px;
+    pointer-events: none;
+    border-top: 6px solid #fff;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+  }

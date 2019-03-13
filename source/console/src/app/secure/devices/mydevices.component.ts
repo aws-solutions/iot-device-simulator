@@ -26,8 +26,8 @@ export class MyDevicesComponent implements OnInit { // implements LoggedInCallba
     public devices: Device[] = [];
     public pages: any = {
         current: 1,
-        total: 2,
-        pageSize: 20
+        total: 0,
+        pageSize: 100
     };
     public metrics: any = {
         total: 0,
