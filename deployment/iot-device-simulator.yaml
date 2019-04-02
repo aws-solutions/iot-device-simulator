@@ -481,6 +481,32 @@ Resources:
                 -
                     Ref: "IotDeviceSimEngineTaskRole"
 
+    IotDeviceSimPrincipalPolicy:
+        Type: "AWS::IoT::Policy" 
+        DeletionPolicy: Retain
+        Properties:
+            PolicyDocument: 
+                Version: "2012-10-17"
+                Statement: 
+                    - 
+                        Effect: "Allow"
+                        Action: 
+                            - "iot:Connect"
+                        Resource: 
+                            - "*" 
+                    - 
+                        Effect: "Allow"
+                        Action: 
+                            - "iot:Subscribe"
+                        Resource: 
+                            - "*"  
+                    - 
+                        Effect: "Allow"
+                        Action: 
+                            - "iot:Receive"
+                        Resource: 
+                            - "*"                                                                    
+
     IotDeviceSimIdentityPoolAuthRole:
         Type: "AWS::IAM::Role"
         Properties:
@@ -520,6 +546,7 @@ Resources:
                             - "iot:Connect"
                             - "iot:Subscribe"
                             - "iot:Receive"
+                            - "iot:AttachPrincipalPolicy"
                         Resource:
                             - "*"
             Roles:
@@ -531,50 +558,6 @@ Resources:
                     - 
                         id: F5
                         reason: "This is a policy for subscribing to any iot topic because users can simulator to any topic"
-
-    IotDeviceSimIdentityPoolUnauthRole:
-        Type: "AWS::IAM::Role"
-        Properties:
-            AssumeRolePolicyDocument:
-                Version: "2012-10-17"
-                Statement:
-                    -
-                        Effect: "Allow"
-                        Principal:
-                            Federated:
-                                - "cognito-identity.amazonaws.com"
-                        Action:
-                                - "sts:AssumeRoleWithWebIdentity"
-                        Condition:
-                            StringEquals:
-                                "cognito-identity.amazonaws.com:aud": !Sub "${IotDeviceSimIdentityPool}"
-                            "ForAnyValue:StringLike":
-                                "cognito-identity.amazonaws.com:amr": "unauthenticated"
-            Path: "/"
-
-    IotDeviceSimIdentityPoolUnauthPolicy:
-        Type: "AWS::IAM::ManagedPolicy"
-        Properties:
-            Description: "Policy for the iot device simulator identity pool unauthorized identities."
-            PolicyDocument:
-                Version: "2012-10-17"
-                Statement:
-                    -
-                        Effect: "Allow"
-                        Action:
-                            - "mobileanalytics:PutEvents"
-                        Resource: !Sub "arn:aws:cognito-identity:${AWS::Region}:${AWS::AccountId}:identitypool/${IotDeviceSimIdentityPool}"
-                    -
-                        Effect: "Allow"
-                        Action:
-                            - "iot:Connect"
-                            - "iot:Subscribe"
-                            - "iot:Receive"
-                        Resource:
-                            - "*"
-            Roles:
-                -
-                    Ref: "IotDeviceSimIdentityPoolUnauthRole"
 
     # Permissions & Policies [end]
 
@@ -1364,7 +1347,7 @@ Resources:
             CognitoIdentityProviders:
               - ClientId: !Ref IotDeviceSimConsoleClient
                 ProviderName: !GetAtt IotDeviceSimUserPool.ProviderName
-            AllowUnauthenticatedIdentities: true
+            AllowUnauthenticatedIdentities: false
 
 
     IotDeviceSimIdentityPoolRoleAttachment:
@@ -1372,7 +1355,6 @@ Resources:
         Properties:
             IdentityPoolId: !Sub "${IotDeviceSimIdentityPool}"
             Roles:
-                unauthenticated: !GetAtt IotDeviceSimIdentityPoolUnauthRole.Arn
                 authenticated: !GetAtt IotDeviceSimIdentityPoolAuthRole.Arn
 
     # Userpool [end]
@@ -1496,6 +1478,8 @@ Resources:
                     Fn::Sub: "${IotDeviceSimIdentityPool}"
                 COGNITO_IDP_ENDPOINT: ""
                 COGNITO_IDENTITY_ENDPOINT: ""
+                PRINCIPAL_POLICY: 
+                    Fn::Sub: "${IotDeviceSimPrincipalPolicy}"
                 APIG_ENDPOINT: !Join ["", ["https://", Ref: IotDeviceSimApi, ".execute-api.", Ref: "AWS::Region", ".amazonaws.com/prod"]]
                 IOT_ENDPOINT: !GetAtt IotDeviceSimAppEndpoint.endpoint
                 REGION:

@@ -5,7 +5,7 @@ import 'rxjs/add/operator/map';
 import { Message } from '../model/message';
 import { LoggerService } from './logger.service';
 import { CognitoUtil } from './cognito.service';
-import * as CognitoIdentity from 'aws-sdk/clients/cognitoidentity';
+import * as IotClient from 'aws-sdk/clients/iot';
 import * as moment from 'moment';
 declare var AWS: any;
 declare var AWSIoT: any;
@@ -30,6 +30,10 @@ export class MQTTService {
 
         AWS.config.region = appVariables.REGION;
 
+        this.MQTTClient = {};
+
+        this.subscriptions = [];
+
         this.MQTTClient = AWSIoT.device({
             region: AWS.config.region,
             host: appVariables.IOT_ENDPOINT,
@@ -41,8 +45,6 @@ export class MQTTService {
             secretKey: '',
             sessionToken: ''
         });
-
-        this.subscriptions = [];
 
         this.MQTTClient.on('message', (topic: string, payload: any) => {
             const content = JSON.parse(String.fromCharCode.apply(null, payload));
@@ -63,14 +65,7 @@ export class MQTTService {
             callback() {
             },
             callbackWithParam(token: any) {
-                // const url = 'cognito-idp.' + appVariables.REGION.toLowerCase() + '.amazonaws.com/' + appVariables.USER_POOL_ID;
-                // const logins: CognitoIdentity.LoginsMap = {};
-                // logins[url] = token;
-                const params = {
-                    IdentityPoolId: CognitoUtil._IDENTITY_POOL_ID,
-                    // Logins: logins
-                };
-
+                let params = _self.cognito.buildCognitoCredParams(token);
                 AWS.config.credentials = new AWS.CognitoIdentityCredentials(params);
                 _self.connect();
             }
@@ -80,13 +75,23 @@ export class MQTTService {
     connect() {
 
         let self = this;
+        console.log(AWS.config.credentials)
         AWS.config.credentials.get(function(err: any, cred: any) {
             if (!err) {
+                console.log(cred)
                 self.logger.info(AWS.config.credentials);
                 self.logger.info('retrieved identity: ' + AWS.config.credentials.identityId);
-                self.MQTTClient.updateWebSocketCredentials(AWS.config.credentials.accessKeyId,
-                    AWS.config.credentials.secretAccessKey,
-                    AWS.config.credentials.sessionToken);
+                
+                new IotClient({ region: appVariables.REGION }).attachPrincipalPolicy({ policyName: appVariables.PRINCIPAL_POLICY, principal: AWS.config.credentials.identityId }, function (err, data) {
+                    if (err) {
+                            console.error(err); // an error occurred
+                        }
+
+                        self.MQTTClient.updateWebSocketCredentials(AWS.config.credentials.accessKeyId,
+                            AWS.config.credentials.secretAccessKey,
+                            AWS.config.credentials.sessionToken);
+                  });
+
             } else {
                 self.logger.error('error retrieving identity:' + err);
                 alert('error retrieving identity: ' + err);

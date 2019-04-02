@@ -23,6 +23,7 @@ const appVariables = {
     IDENTITY_POOL_ID: '',
     COGNITO_IDP_ENDPOINT: '',
     COGNITO_IDENTITY_ENDPOINT: '',
+    PRINCIPAL_POLICY: '',
     IOT_ENDPOINT: '',
     APIG_ENDPOINT: '',
     REGION: ''
