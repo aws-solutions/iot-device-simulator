@@ -2,8 +2,8 @@
     "name": "iot-sim-profile-service",
     "description": "The profile microservice for the iot device simulator",
     "main": "index.js",
-    "license": "Amazon Software License (ASL)",
-    "version": "0.0.1",
+    "license": "Apache 2.0",
+    "version": "2.1.1",
     "private": "true",
     "dependencies": {
         "moment": "*",

@@ -1,10 +1,10 @@
 /*********************************************************************************************************************
- *  Copyright 2016 Amazon.com, Inc. or its affiliates. All Rights Reserved.                                           *
+ *  Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.                                           *
  *                                                                                                                    *
- *  Licensed under the Amazon Software License (the 'License'). You may not use this file except in compliance        *
+ *  Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance    *
  *  with the License. A copy of the License is located at                                                             *
  *                                                                                                                    *
- *      http://aws.amazon.com/asl/                                                                                    *
+ *      http://www.apache.org/licenses/LICENSE-2.0                                                                    *
  *                                                                                                                    *
  *  or in the 'license' file accompanying this file. This file is distributed on an 'AS IS' BASIS, WITHOUT WARRANTIES *
  *  OR CONDITIONS OF ANY KIND, express or implied. See the License for the specific language governing permissions    *
@@ -65,7 +65,7 @@ class User {
                 };
 
                 let cognitoidentityserviceprovider = new AWS.CognitoIdentityServiceProvider();
-                cognitoidentityserviceprovider.listUsers(params, function(err, data) {
+                cognitoidentityserviceprovider.listUsers(params, function (err, data) {
                     if (err) {
                         Logger.error(Logger.levels.INFO, err.message);
                         reject({
@@ -134,7 +134,7 @@ class User {
                     UserPoolId: poolinfo,
                     Username: userId
                 };
-                cognitoidentityserviceprovider.adminDisableUser(params, function(err, data) {
+                cognitoidentityserviceprovider.adminDisableUser(params, function (err, data) {
                     if (err) {
                         Logger.error(Logger.levels.INFO, err.message);
                         Logger.error(Logger.levels.INFO, 'Error occurred while attempting to disable a user.');
@@ -169,7 +169,7 @@ class User {
                     UserPoolId: poolinfo,
                     Username: userId
                 };
-                cognitoidentityserviceprovider.adminEnableUser(params, function(err, data) {
+                cognitoidentityserviceprovider.adminEnableUser(params, function (err, data) {
                     if (err) {
                         Logger.error(Logger.levels.INFO, err.message);
                         Logger.error(Logger.levels.INFO, 'Error occurred while attempting to enable a user.');
@@ -205,7 +205,7 @@ class User {
                     Username: userId
                 };
 
-                cognitoidentityserviceprovider.adminDeleteUser(params, function(err, data) {
+                cognitoidentityserviceprovider.adminDeleteUser(params, function (err, data) {
                     if (err) {
                         Logger.error(Logger.levels.INFO, err.message);
                         Logger.error(Logger.levels.INFO, 'Error occurred while attempting to delete a user.');
@@ -286,7 +286,7 @@ class User {
                     }]
                 };
 
-                cognitoidentityserviceprovider.adminCreateUser(params, function(err, data) {
+                cognitoidentityserviceprovider.adminCreateUser(params, function (err, data) {
                     if (err) {
                         Logger.error(Logger.levels.INFO, err.message);
                         throw err;
@@ -327,7 +327,7 @@ class User {
                 };
 
                 let cognitoidentityserviceprovider = new AWS.CognitoIdentityServiceProvider();
-                cognitoidentityserviceprovider.adminGetUser(params, function(err, data) {
+                cognitoidentityserviceprovider.adminGetUser(params, function (err, data) {
                     if (err) {
                         Logger.error(Logger.levels.INFO, 'Error occurred while attempting to get user.');
                         Logger.error(Logger.levels.INFO, err.message);
@@ -361,7 +361,7 @@ class User {
                         UserPoolId: poolinfo
                     };
 
-                    cognitoidentityserviceprovider.adminListGroupsForUser(params, function(err, grps) {
+                    cognitoidentityserviceprovider.adminListGroupsForUser(params, function (err, grps) {
                         if (err) {
                             Logger.error(Logger.levels.INFO, 'Error occurred while attempting to list groups for user.');
                             Logger.error(Logger.levels.INFO, err.message);
@@ -401,7 +401,7 @@ class User {
                 let params = {
                     UserPoolId: poolinfo
                 };
-                cognitoidentityserviceprovider.listGroups(params, function(err, data) {
+                cognitoidentityserviceprovider.listGroups(params, function (err, data) {
                     if (err) {
                         Logger.error(Logger.levels.INFO, 'Error occurred while attempting to get cognito groups.');
                         Logger.error(Logger.levels.INFO, err.message);
@@ -441,7 +441,7 @@ class User {
                 let cognitoidentityserviceprovider = new AWS.CognitoIdentityServiceProvider();
 
                 if (groups[index]._state === 'new') {
-                    cognitoidentityserviceprovider.adminAddUserToGroup(params, function(err, data) {
+                    cognitoidentityserviceprovider.adminAddUserToGroup(params, function (err, data) {
                         if (err) {
                             Logger.error(Logger.levels.INFO, err.message);
                             throw err;
@@ -456,7 +456,7 @@ class User {
                         });
                     });
                 } else if (groups[index]._state === 'deleted') {
-                    cognitoidentityserviceprovider.adminRemoveUserFromGroup(params, function(err, data) {
+                    cognitoidentityserviceprovider.adminRemoveUserFromGroup(params, function (err, data) {
                         if (err) {
                             Logger.error(Logger.levels.INFO, err.message);
                             throw err;
@@ -503,7 +503,7 @@ class User {
             };
 
             const docClient = new AWS.DynamoDB.DocumentClient(this.dynamoConfig);
-            docClient.get(params, function(err, config) {
+            docClient.get(params, function (err, config) {
                 if (err) {
                     Logger.error(Logger.levels.INFO, err);
                     reject({

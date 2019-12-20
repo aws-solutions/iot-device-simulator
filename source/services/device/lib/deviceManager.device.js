@@ -1,10 +1,10 @@
 /*********************************************************************************************************************
- *  Copyright 2016 Amazon.com, Inc. or its affiliates. All Rights Reserved.                                           *
+ *  Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.                                           *
  *                                                                                                                    *
- *  Licensed under the Amazon Software License (the 'License'). You may not use this file except in compliance        *
+ *  Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance    *
  *  with the License. A copy of the License is located at                                                             *
  *                                                                                                                    *
- *      http://aws.amazon.com/asl/                                                                                    *
+ *      http://www.apache.org/licenses/LICENSE-2.0                                                                    *
  *                                                                                                                    *
  *  or in the 'license' file accompanying this file. This file is distributed on an 'AS IS' BASIS, WITHOUT WARRANTIES *
  *  OR CONDITIONS OF ANY KIND, express or implied. See the License for the specific language governing permissions    *
@@ -160,7 +160,7 @@ class DeviceManager {
             };
 
             let docClient = new AWS.DynamoDB.DocumentClient(_self.dynamoConfig);
-            docClient.get(params, function(err, data) {
+            docClient.get(params, function (err, data) {
                 if (err) {
                     Logger.error(Logger.levels.INFO, err);
                     return reject({
@@ -233,7 +233,7 @@ class DeviceManager {
             };
 
             let docClient = new AWS.DynamoDB.DocumentClient(_self.dynamoConfig);
-            docClient.get(params, function(err, device) {
+            docClient.get(params, function (err, device) {
                 if (err) {
                     Logger.error(Logger.levels.INFO, err);
                     return reject({
@@ -244,7 +244,7 @@ class DeviceManager {
                 }
 
                 if (!_.isEmpty(device)) {
-                    docClient.delete(params, function(err, data) {
+                    docClient.delete(params, function (err, data) {
                         if (err) {
                             Logger.error(Logger.levels.INFO, err);
                             return reject({
@@ -322,7 +322,7 @@ class DeviceManager {
             };
 
             let docClient = new AWS.DynamoDB.DocumentClient(_self.dynamoConfig);
-            docClient.get(_params, function(err, device) {
+            docClient.get(_params, function (err, device) {
                 if (err) {
                     Logger.error(Logger.levels.INFO, err);
                     return reject({
@@ -382,7 +382,7 @@ class DeviceManager {
                                     error: 'DeviceUpdateFailure',
                                     message: `Error occurred while attempting to update device ${deviceId} for user ${ticket.userid}.`
                                 });
-                            });                            
+                            });
                         }
                     } else {
                         _self._saveDevice(device.Item).then((resp) => {
@@ -416,7 +416,7 @@ class DeviceManager {
             };
 
             let docClient = new AWS.DynamoDB.DocumentClient(_self.dynamoConfig);
-            docClient.put(_params, function(err, data) {
+            docClient.put(_params, function (err, data) {
                 if (err) {
                     Logger.error(Logger.levels.INFO, err);
                     return reject({
@@ -449,7 +449,7 @@ class DeviceManager {
             };
 
             let docClient = new AWS.DynamoDB.DocumentClient(_self.dynamoConfig);
-            docClient.get(params, function(err, data) {
+            docClient.get(params, function (err, data) {
                 if (err) {
                     Logger.error(Logger.levels.INFO, err);
                     return reject({
@@ -472,7 +472,7 @@ class DeviceManager {
                         }
                     };
 
-                    docClient.get(params, function(err, defaultData) {
+                    docClient.get(params, function (err, defaultData) {
                         if (err) {
                             Logger.error(Logger.levels.INFO, err);
                             return reject({
@@ -496,7 +496,7 @@ class DeviceManager {
                                 },
                                 Limit: 100
                             };
-                            docClient.scan(params, function(err, sharedData) {
+                            docClient.scan(params, function (err, sharedData) {
                                 if (err) {
                                     Logger.error(Logger.levels.INFO, err);
                                     return reject({
@@ -602,13 +602,13 @@ class DeviceManager {
                 params.ExclusiveStartKey = lastevalkey;
             }
             let docClient = new AWS.DynamoDB.DocumentClient(_self.dynamoConfig);
-            docClient.query(params, function(err, result) {
+            docClient.query(params, function (err, result) {
                 if (err) {
                     Logger.error(Logger.levels.INFO, err);
                     return reject(`Error occurred while attempting to retrieve stats for ${process.env.DEVICES_TBL}.`);
                 }
 
-                let _status = _.countBy(result.Items, function(o) {
+                let _status = _.countBy(result.Items, function (o) {
                     return o.stage;
                 });
 
@@ -683,13 +683,13 @@ class DeviceManager {
                 params.ExclusiveStartKey = lastevalkey;
             }
             let docClient = new AWS.DynamoDB.DocumentClient(_self.dynamoConfig);
-            docClient.query(params, function(err, result) {
+            docClient.query(params, function (err, result) {
                 if (err) {
                     Logger.error(Logger.levels.INFO, err);
                     return reject(`Error occurred while attempting to retrieve stats by subCategory for ${process.env.DEVICES_TBL}.`);
                 }
 
-                let _status = _.countBy(result.Items, function(o) {
+                let _status = _.countBy(result.Items, function (o) {
                     return o.subCategory;
                 });
 
@@ -726,7 +726,7 @@ class DeviceManager {
      * @param {int} targetpage - target page of devices to Retrieves
      */
     _getDevicePage(ticket, filter, lastevalkey, targetpage, collatedResults) {
-            const _self = this;
+        const _self = this;
         return new Promise((resolve, reject) => {
 
             let _filter = '';
@@ -780,13 +780,13 @@ class DeviceManager {
             }
 
             let docClient = new AWS.DynamoDB.DocumentClient(_self.dynamoConfig);
-            docClient.query(params, function(err, result) {
+            docClient.query(params, function (err, result) {
                 if (err) {
                     Logger.error(Logger.levels.INFO, err);
                     return reject(`Error occurred while attempting to retrieve page ${targetpage} from devices.`);
                 }
 
-                let _collatedResults = _self._collatePage(result.Items, collatedResults, targetpage); 
+                let _collatedResults = _self._collatePage(result.Items, collatedResults, targetpage);
                 if (_collatedResults.page === targetpage && _collatedResults.count === PAGE_SIZE) {
                     Logger.log(Logger.levels.INFO, `Collating results page.  results count: ${_collatedResults.count}, result page: ${_collatedResults.page}, result items count: ${_collatedResults.items.length}`);
                     return resolve(_collatedResults.items);
@@ -886,7 +886,7 @@ class DeviceManager {
                 };
 
                 let sqs = new AWS.SQS();
-                sqs.sendMessage(sqsParams, function(err, resp) {
+                sqs.sendMessage(sqsParams, function (err, resp) {
                     if (err) {
                         Logger.error(Logger.levels.INFO, err);
                         Logger.error(Logger.levels.INFO, `Error occurred while attempting to send action request to simulator queue.`);
@@ -955,7 +955,7 @@ class DeviceManager {
                 params.RequestItems[`${process.env.DEVICES_TBL}`] = _requestItems;
 
                 let docClient = new AWS.DynamoDB.DocumentClient(_self.dynamoConfig);
-                docClient.batchWrite(params, function(err, data) {
+                docClient.batchWrite(params, function (err, data) {
                     if (err) {
                         Logger.error(Logger.levels.INFO, err);
                         return reject({
@@ -967,7 +967,7 @@ class DeviceManager {
 
                     _self._queueBulkSimulatorActions(_requestItems, 0).then((resp) => {
                         _self._bulkCreateDevices(ticket, request, dtype, index).then((createResp) => {
-                            _count =  _count + createResp.processedItems
+                            _count = _count + createResp.processedItems
                             resolve({
                                 processedItems: _count
                             });
@@ -1002,7 +1002,7 @@ class DeviceManager {
             };
 
             let sqs = new AWS.SQS();
-            sqs.sendMessage(sqsParams, function(err, resp) {
+            sqs.sendMessage(sqsParams, function (err, resp) {
                 if (err) {
                     Logger.error(Logger.levels.INFO, err);
                     return reject(`Error occurred while attempting to send action request to simulator queue.`);
@@ -1048,7 +1048,7 @@ class DeviceManager {
             };
 
             const docClient = new AWS.DynamoDB.DocumentClient(this.dynamoConfig);
-            docClient.get(params, function(err, resp) {
+            docClient.get(params, function (err, resp) {
                 if (err) {
                     Logger.error(Logger.levels.INFO, 'Error occurred while attempting to retrieve application settings.');
                     Logger.error(Logger.levels.INFO, err.message);

@@ -1,12 +1,12 @@
 /*********************************************************************************************************************
- *  Copyright 2016 Amazon.com, Inc. or its affiliates. All Rights Reserved.                                           *
+ *  Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.                                           *
  *                                                                                                                    *
- *  Licensed under the Amazon Software License (the "License"). You may not use this file except in compliance        *
+ *  Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance    *
  *  with the License. A copy of the License is located at                                                             *
  *                                                                                                                    *
- *      http://aws.amazon.com/asl/                                                                                    *
+ *      http://www.apache.org/licenses/LICENSE-2.0                                                                    *
  *                                                                                                                    *
- *  or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES *
+ *  or in the 'license' file accompanying this file. This file is distributed on an 'AS IS' BASIS, WITHOUT WARRANTIES *
  *  OR CONDITIONS OF ANY KIND, express or implied. See the License for the specific language governing permissions    *
  *  and limitations under the License.                                                                                *
  *********************************************************************************************************************/
@@ -71,7 +71,7 @@ class s3Helper {
             let s3 = new AWS.S3({
                 signatureVersion: 'v4'
             });
-            s3.putObject(params, function(err, data) {
+            s3.putObject(params, function (err, data) {
                 if (err) {
                     console.log(err);
                     reject(`Error creating ${destS3Bucket}/${destS3key} content \n${err}`);
@@ -93,7 +93,7 @@ class s3Helper {
 
             this._downloadManifest(sourceS3Bucket, manifestKey).then((data) => {
 
-                fs.readFile(_self.downloadLocation, 'utf8', function(err, data) {
+                fs.readFile(_self.downloadLocation, 'utf8', function (err, data) {
                     if (err) {
                         console.log(err);
                         reject(err);
@@ -160,7 +160,7 @@ class s3Helper {
                 let s3 = new AWS.S3({
                     signatureVersion: 'v4'
                 });
-                s3.copyObject(params, function(err, data) {
+                s3.copyObject(params, function (err, data) {
                     if (err) {
                         console.log(err);
                         reject(`error copying ${sourceS3prefix}/${filelist[index]}\n${err}`);
@@ -204,7 +204,7 @@ class s3Helper {
             let s3 = new AWS.S3({
                 signatureVersion: 'v4'
             });
-            s3.headObject(params, function(err, metadata) {
+            s3.headObject(params, function (err, metadata) {
                 if (err) {
                     console.log(err);
                 }
@@ -219,15 +219,15 @@ class s3Helper {
                     let file = require('fs').createWriteStream(_self.downloadLocation);
 
                     s3.getObject(params).
-                    on('httpData', function(chunk) {
-                        file.write(chunk);
-                    }).
-                    on('httpDone', function() {
-                        file.end();
-                        console.log('manifest downloaded for processing...');
-                        resolve('success');
-                    }).
-                    send();
+                        on('httpData', function (chunk) {
+                            file.write(chunk);
+                        }).
+                        on('httpDone', function () {
+                            file.end();
+                            console.log('manifest downloaded for processing...');
+                            resolve('success');
+                        }).
+                        send();
                 }
             });
         });

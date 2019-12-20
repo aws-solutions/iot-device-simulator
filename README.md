@@ -1,11 +1,9 @@
 ## IoT Device Simulator
-IoT is a sprawling set of technologies and use cases that has no clear, single definition. Despite enormous advances, we’ve only seen a fraction of what the Internet revolution has yet to deliver. That’s because many powerful technological forces are now converging — poised to magnify, multiply, and exponentially increase the opportunities that software and the Internet can deliver by connecting the devices, or “things”, in the physical world around us. These devices are able to convert valuable information into digital data that provides increased visibility to businesses of how users interact with the world around them. The backend services required to process and uncover these valuable insights can be expensive to prove without a large pool of physical devices for full end to end integration setup or time-consuming development of scripts. 
+IoT is a sprawling set of technologies and use cases that has no clear, single definition. Despite enormous advances, we’ve only seen a fraction of what the Internet revolution has yet to deliver. That’s because many powerful technological forces are now converging — poised to magnify, multiply, and exponentially increase the opportunities that software and the Internet can deliver by connecting the devices, or “things”, in the physical world around us. Each of these devices is able to convert valuable information from the real world into digital data that provides increased visibility to businesses of how users interact their products or services. The backend services required to process and uncover these valuable insights can be expensive to prove without a large pool of physical devices for full end to end integration setup or time-consuming development of scripts.
 
 Often times, teams constantly have the need to quickly replicate the behavior of their devices interacting with AWS IoT to assess their backend services. The IoT Device Simulator solution is a Graphical User Interface (GUI) based engine designed to enable customers to get started quickly assessing AWS IoT services without an existing pool of devices. The IoT Device Simulator leverages managed, highly available, highly scalable AWS-native services to effortlessly create and simulate thousands of connected devices that are defined by the customer.
 
 For more information and a detailed deployment guide visit the IoT Device Simulator solution at https://aws.amazon.com/answers/iot/iot-device-simulator/.
-
-__NOTE:__ Amazon Elastic Container Service (ECS) uses AWS Identity and Access Management (IAM) service-linked roles. A service-linked role is a unique type of IAM role that is linked directly to Amazon ECS. Service-linked roles are predefined by Amazon ECS and include all the permissions that the service requires to call other AWS services on your behalf. Amazon ECS uses the service-linked role named AWSServiceRoleForECS – Role to enable Amazon ECS to manage your cluster. Under some circumstances, you need to manually create the service-linked role. Please follow the instructions outlined [here](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/using-service-linked-roles.html#create-service-linked-role) to provision your service-linked role for ECS.
 
 ## Running unit tests for customization
 * Clone the repository, then make the desired code changes
@@ -122,48 +120,25 @@ Each microservice follows the structure of:
 * [New] Added new data generation algorithms: Sinusoidal and Decay
 * [New] Added new attribute type for nested (JSON) objects (up to 3 deep) for device type payloads
 * [New] Added ability to share Device Templates between users of the same installation
-* [new] Update user interface paging size for widget and fleet listings to 100
-* [new] Update launch and start limits for widgets and fleets to 100
-* [new] Added ability for users to stop simulations (single or in bulk of 100) for widgets and vehicles.
-* [new] Add search ability for widgets (or vehicles) by device id, device type and status
-* [new] DynamoDB tables switched to be created with PAY_PER_REQUEST billing mode vice PROVISIONED capacity
-* [new] Added ability for device attributes to be included in the topic as variables
-You can use tier 1 attribute values from your defined payload as variables in the topic definition. For example, if you define a Device ID attribute with a name deviceId in your payload. 
-{
-  "deviceId": "dICxo8dI_B",
-  "data": {
-    "outdoorTemp": 35.14,
-    "indoorTemp": 43.99,
-    "speed": 450.0000000000001
-  },
-  "info": {
-    "serialNumber": "1903aac6-2e3a-4567-8513-d48087cecebe",
-    "manufacturerId": "PJVx0fxjJ",
-    "plant": {
-      "plantId": "5-wxbxJJFH",
-      "lineId": "xxjwbjidhmmwgijefc",
-      "location": "detroit"
-    }
-  },
-  "timestamp": "2019-02-04T14:52:53",
-  "_id_": "dICxo8dI_B"
-}
-You can use that attribute as a variable in the data topic you define by adding ${attribute} around the attribute name. ex. /sample/${deviceId}/data ( translates to /sample/dICxo8dI_B/data )
-* [fix] Resolved availability zone offset issue with Fargate cluster VPC
 
 ```
 
-#### v2.1.0 changes
+#### v2.1.1 changes
 
 ```
-* Removed unauthenticated role from the Amazon Cognito Identity Pool
+* Lambda runtime updated to Node.js 12
+* CloudFront distribution access log enabled
+* S3 access log enabled
+* Public access and public ACLs denied on S3 buckets
+* Encryption at rest enabled for S3 and SQS using AWS default keys
+* Docker build image updated to Node.js 12 on ECR
 ```
+
 ***
 
 Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 
-Licensed under the Amazon Software License (the "License"). You may not use this file except in compliance with the License. A copy of the License is located at
+Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with the License. A copy of the License is located at
 
-    http://aws.amazon.com/asl/
-
-or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, express or implied. See the License for the specific language governing permissions and limitations under the License.
+http://www.apache.org/licenses/LICENSE-2.0 
+or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.

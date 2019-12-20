@@ -2,8 +2,8 @@
     "name": "iot-sim-engine",
     "description": "The simulation engine for the iot device simulation solution",
     "main": "index.js",
-    "license": "ASL",
-    "version": "2.0.0",
+    "license": "Apache 2.0",
+    "version": "2.1.1",
     "private": true,
     "dependencies": {
         "aws-sdk": "*",

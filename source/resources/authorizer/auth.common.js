@@ -1,12 +1,12 @@
 /*********************************************************************************************************************
- *  Copyright 2016 Amazon.com, Inc. or its affiliates. All Rights Reserved.                                           *
+ *  Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.                                           *
  *                                                                                                                    *
- *  Licensed under the Amazon Software License (the "License"). You may not use this file except in compliance        *
+ *  Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance    *
  *  with the License. A copy of the License is located at                                                             *
  *                                                                                                                    *
- *      http://aws.amazon.com/asl/                                                                                    *
+ *      http://www.apache.org/licenses/LICENSE-2.0                                                                    *
  *                                                                                                                    *
- *  or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES *
+ *  or in the 'license' file accompanying this file. This file is distributed on an 'AS IS' BASIS, WITHOUT WARRANTIES *
  *  OR CONDITIONS OF ANY KIND, express or implied. See the License for the specific language governing permissions    *
  *  and limitations under the License.                                                                                *
  *********************************************************************************************************************/
@@ -40,7 +40,7 @@ class Auth {
      * @class Auth
      * @constructor
      */
-    constructor() {}
+    constructor() { }
 
     /**
      * Control logic for validating if the user represented in the request Auth header has the
@@ -62,7 +62,7 @@ class Auth {
                     request({
                         url: iss + '/.well-known/jwks.json',
                         json: true
-                    }, function(error, response, body) {
+                    }, function (error, response, body) {
                         if (!error && response.statusCode === 200) {
                             pems = {};
                             let keys = body['keys'];
@@ -170,7 +170,7 @@ class Auth {
             //Verify the signature of the JWT token to ensure it's really coming from your User Pool
             jwt.verify(token, pem, {
                 issuer: iss
-            }, function(err, payload) {
+            }, function (err, payload) {
                 if (err) {
                     Logger.error(Logger.levels.INFO, err);
                     throw new Error('Unable to verify the signature of the JWT token to ensure it was generated from application User Pool');
@@ -231,7 +231,7 @@ class Auth {
             };
 
             let cognitoidentityserviceprovider = new AWS.CognitoIdentityServiceProvider();
-            cognitoidentityserviceprovider.adminGetUser(params, function(err, data) {
+            cognitoidentityserviceprovider.adminGetUser(params, function (err, data) {
                 if (err) {
                     Logger.error(1, err.message);
                     Logger.error(1, 'Error occurred while attempting to retrieve user from user pool.');
@@ -252,7 +252,7 @@ class Auth {
                     _user.sub = _sub[0].Value;
                 }
 
-                cognitoidentityserviceprovider.adminListGroupsForUser(params, function(err, data) {
+                cognitoidentityserviceprovider.adminListGroupsForUser(params, function (err, data) {
                     if (err) {
                         Logger.error(1, err.message);
                         Logger.error(1, 'Error occurred while attempting to retrieve user\'s groups from user pool.');
@@ -288,7 +288,7 @@ class Auth {
                 }
             };
             console.log(params)
-            docClient.get(params, function(err, config) {
+            docClient.get(params, function (err, config) {
                 if (err) {
                     Logger.error(Logger.levels.INFO, err);
                     throw new Error('Error retrieving app configuration settings [ddb].');

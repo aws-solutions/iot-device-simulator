@@ -1,12 +1,12 @@
 /*********************************************************************************************************************
- *  Copyright 2016 Amazon.com, Inc. or its affiliates. All Rights Reserved.                                           *
+ *  Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.                                           *
  *                                                                                                                    *
- *  Licensed under the Amazon Software License (the "License"). You may not use this file except in compliance        *
+ *  Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance    *
  *  with the License. A copy of the License is located at                                                             *
  *                                                                                                                    *
- *      http://aws.amazon.com/asl/                                                                                    *
+ *      http://www.apache.org/licenses/LICENSE-2.0                                                                    *
  *                                                                                                                    *
- *  or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES *
+ *  or in the 'license' file accompanying this file. This file is distributed on an 'AS IS' BASIS, WITHOUT WARRANTIES *
  *  OR CONDITIONS OF ANY KIND, express or implied. See the License for the specific language governing permissions    *
  *  and limitations under the License.                                                                                *
  *********************************************************************************************************************/
@@ -45,11 +45,11 @@ class Device {
 
     run(interval, metadata) {
         this.started = moment();
-        this.sendInterval = setInterval(function() {
+        this.sendInterval = setInterval(function () {
             _self._generateMessage();
         }, interval);
 
-        this.stagePoller = setInterval(function() {
+        this.stagePoller = setInterval(function () {
             _self._pollDeviceStage();
         }, this.stagePollerInterval);
 
@@ -106,7 +106,7 @@ class Device {
                 return reject(err);
             }
 
-            this.iotdata.publish(params, function(err, data) {
+            this.iotdata.publish(params, function (err, data) {
                 if (err) {
                     _self.options.logger.log('Error occurred while attempting to publish generated payload to AWS IoT.', _self.options.logger.levels.ROBUST);
                     _self.options.logger.log(err, _self.options.logger.levels.ROBUST);
@@ -132,7 +132,7 @@ class Device {
             };
 
             let docClient = new AWS.DynamoDB.DocumentClient(_self.dynamoConfig);
-            docClient.get(params, function(err, device) {
+            docClient.get(params, function (err, device) {
                 if (err) {
                     _self.options.logger.log(err, _self.options.logger.levels.ROBUST);
                     reject(['Error loading device from ddb to update, id:', _self.id, ', userId: ', _self.userId].join(' '));
@@ -158,7 +158,7 @@ class Device {
                         Item: device.Item
                     };
 
-                    docClient.put(params, function(err, data) {
+                    docClient.put(params, function (err, data) {
                         if (err) {
                             _self.options.logger.log(err, _self.options.logger.levels.ROBUST);
                             reject(['Error updating device to ddb, id:', _self.id, ', userId: ', _self.userId].join(' '));
@@ -212,7 +212,7 @@ class Device {
             };
 
             let docClient = new AWS.DynamoDB.DocumentClient(_self.dynamoConfig);
-            docClient.get(params, function(err, metric) {
+            docClient.get(params, function (err, metric) {
                 if (err) {
                     _self.options.logger.log(err, _self.options.logger.levels.ROBUST);
                     _self.options.logger.log(`Error loading metrics from ddb to update for userId: ${_self.userId}`, _self.options.logger.levels.INFO);
@@ -266,7 +266,7 @@ class Device {
                     Item: _metric
                 };
 
-                docClient.put(params, function(err, data) {
+                docClient.put(params, function (err, data) {
                     if (err) {
                         _self.options.logger.log(err, _self.options.logger.levels.ROBUST);
                         _self.options.logger.log(`Error updating metric to ddb for userId: ${_self.userId}`, _self.options.logger.levels.INFO);
@@ -414,7 +414,7 @@ class Device {
         };
 
         let docClient = new AWS.DynamoDB.DocumentClient(this.dynamoConfig);
-        docClient.get(params, function(err, device) {
+        docClient.get(params, function (err, device) {
             if (err) {
                 _self.options.logger.log(err, _self.options.logger.levels.ROBUST);
                 _self.options.logger.log(`Error retrieving device from ddb to check stage change, id:, ${_self.id}, userId: ${_self.userId}`, _self.options.logger.levels.INFO);
@@ -438,18 +438,18 @@ class Device {
     /**
      * Generates and publish simulated device data.
      */
-    _generateMessage() {}
+    _generateMessage() { }
 
 
     /**
      * Start device simulation.
      */
-    start() {}
+    start() { }
 
     /**
      * Stop device simulation.
      */
-    stop() {}
+    stop() { }
 };
 
 module.exports = Device;

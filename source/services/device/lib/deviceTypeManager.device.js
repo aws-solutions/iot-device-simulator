@@ -1,10 +1,10 @@
 /*********************************************************************************************************************
- *  Copyright 2016 Amazon.com, Inc. or its affiliates. All Rights Reserved.                                           *
+ *  Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.                                           *
  *                                                                                                                    *
- *  Licensed under the Amazon Software License (the 'License'). You may not use this file except in compliance        *
+ *  Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance    *
  *  with the License. A copy of the License is located at                                                             *
  *                                                                                                                    *
- *      http://aws.amazon.com/asl/                                                                                    *
+ *      http://www.apache.org/licenses/LICENSE-2.0                                                                    *
  *                                                                                                                    *
  *  or in the 'license' file accompanying this file. This file is distributed on an 'AS IS' BASIS, WITHOUT WARRANTIES *
  *  OR CONDITIONS OF ANY KIND, express or implied. See the License for the specific language governing permissions    *
@@ -112,7 +112,7 @@ class DeviceTypeManager {
             };
 
             let docClient = new AWS.DynamoDB.DocumentClient(_self.dynamoConfig);
-            docClient.get(params, function(err, data) {
+            docClient.get(params, function (err, data) {
                 if (err) {
                     Logger.error(Logger.levels.INFO, err);
                     return reject({
@@ -134,7 +134,7 @@ class DeviceTypeManager {
                             typeId: deviceTypeId
                         }
                     };
-                    docClient.get(params, function(err, defaultData) {
+                    docClient.get(params, function (err, defaultData) {
                         if (err) {
                             Logger.error(Logger.levels.INFO, err);
                             return reject({
@@ -159,7 +159,7 @@ class DeviceTypeManager {
                                 Limit: 100
                             };
                             console.log(params)
-                            docClient.scan(params, function(err, sharedData) {
+                            docClient.scan(params, function (err, sharedData) {
                                 if (err) {
                                     Logger.error(Logger.levels.INFO, err);
                                     return reject({
@@ -236,7 +236,7 @@ class DeviceTypeManager {
             };
 
             let docClient = new AWS.DynamoDB.DocumentClient(_self.dynamoConfig);
-            docClient.put(params, function(err, data) {
+            docClient.put(params, function (err, data) {
                 if (err) {
                     Logger.error(Logger.levels.INFO, err);
                     return reject({
@@ -273,7 +273,7 @@ class DeviceTypeManager {
             };
 
             let docClient = new AWS.DynamoDB.DocumentClient(_self.dynamoConfig);
-            docClient.get(params, function(err, deviceType) {
+            docClient.get(params, function (err, deviceType) {
                 if (err) {
                     Logger.error(Logger.levels.INFO, err);
                     return reject({
@@ -284,7 +284,7 @@ class DeviceTypeManager {
                 }
 
                 if (!_.isEmpty(deviceType)) {
-                    docClient.delete(params, function(err, data) {
+                    docClient.delete(params, function (err, data) {
                         if (err) {
                             Logger.error(Logger.levels.INFO, err);
                             return reject({
@@ -327,7 +327,7 @@ class DeviceTypeManager {
             };
 
             let docClient = new AWS.DynamoDB.DocumentClient(_self.dynamoConfig);
-            docClient.get(_params, function(err, deviceType) {
+            docClient.get(_params, function (err, deviceType) {
                 if (err) {
                     Logger.error(Logger.levels.INFO, err);
                     return reject({
@@ -348,7 +348,7 @@ class DeviceTypeManager {
                         Item: deviceType.Item
                     };
 
-                    docClient.put(_updateParams, function(err, data) {
+                    docClient.put(_updateParams, function (err, data) {
                         if (err) {
                             Logger.error(Logger.levels.INFO, err);
                             return reject({
@@ -409,7 +409,7 @@ class DeviceTypeManager {
             let docClient = new AWS.DynamoDB.DocumentClient(_self.dynamoConfig);
             // v2.0 - moving to scan to retrieve 'shared' device types as well
             //docClient.query(params, function(err, result) {
-            docClient.scan(params, function(err, result) {
+            docClient.scan(params, function (err, result) {
                 if (err) {
                     Logger.error(Logger.levels.INFO, err);
                     return reject(`Error occurred while attempting to retrieve page ${targetpage} from device types.`);
@@ -457,7 +457,7 @@ class DeviceTypeManager {
             }
 
             let docClient = new AWS.DynamoDB.DocumentClient(_self.dynamoConfig);
-            docClient.query(params, function(err, result) {
+            docClient.query(params, function (err, result) {
                 if (err) {
                     Logger.error(Logger.levels.INFO, err);
                     return reject(`Error occurred while attempting to retrieve stats for ${process.env.DEVICE_TYPES_TBL}.`);

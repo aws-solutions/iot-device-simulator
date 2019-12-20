@@ -4,6 +4,8 @@
 **/.zip
 **/tmp
 **/out-tsc
+**/global-s3-assets
+**/regional-s3-assets
 
 # dependencies
 **/node_modules
@@ -16,7 +18,8 @@
 **/npm-debug.log
 **/testem.log
 **/package-lock.json
+**/.vscode/settings.json
 
 # System Files
 **/.DS_Store
-**/.sonarlint
+**/.vscode

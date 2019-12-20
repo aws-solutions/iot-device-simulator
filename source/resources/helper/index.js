@@ -1,12 +1,12 @@
 /*********************************************************************************************************************
- *  Copyright 2016 Amazon.com, Inc. or its affiliates. All Rights Reserved.                                           *
+ *  Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.                                           *
  *                                                                                                                    *
- *  Licensed under the Amazon Software License (the "License"). You may not use this file except in compliance        *
+ *  Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance    *
  *  with the License. A copy of the License is located at                                                             *
  *                                                                                                                    *
- *      http://aws.amazon.com/asl/                                                                                    *
+ *      http://www.apache.org/licenses/LICENSE-2.0                                                                    *
  *                                                                                                                    *
- *  or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES *
+ *  or in the 'license' file accompanying this file. This file is distributed on an 'AS IS' BASIS, WITHOUT WARRANTIES *
  *  OR CONDITIONS OF ANY KIND, express or implied. See the License for the specific language governing permissions    *
  *  and limitations under the License.                                                                                *
  *********************************************************************************************************************/
@@ -107,16 +107,16 @@ exports.handler = (event, context, callback) => {
             _s3Helper.copyAssets(event.ResourceProperties.manifestKey,
                 event.ResourceProperties.sourceS3Bucket, event.ResourceProperties.sourceS3key,
                 event.ResourceProperties.destS3Bucket).then((data) => {
-                responseStatus = 'SUCCESS';
-                responseData = {};
-                sendResponse(event, callback, context.logStreamName, responseStatus, responseData);
-            }).catch((err) => {
-                responseData = {
-                    Error: `Copy of website assets failed`
-                };
-                console.log([responseData.Error, ':\n', err].join(''));
-                sendResponse(event, callback, context.logStreamName, responseStatus, responseData);
-            });
+                    responseStatus = 'SUCCESS';
+                    responseData = {};
+                    sendResponse(event, callback, context.logStreamName, responseStatus, responseData);
+                }).catch((err) => {
+                    responseData = {
+                        Error: `Copy of website assets failed`
+                    };
+                    console.log([responseData.Error, ':\n', err].join(''));
+                    sendResponse(event, callback, context.logStreamName, responseStatus, responseData);
+                });
 
         } else if (event.ResourceProperties.customAction === 'createUuid') {
             responseStatus = 'SUCCESS';
@@ -182,16 +182,16 @@ exports.handler = (event, context, callback) => {
             _s3Helper.copyAssets(event.ResourceProperties.manifestKey,
                 event.ResourceProperties.sourceS3Bucket, event.ResourceProperties.sourceS3key,
                 event.ResourceProperties.destS3Bucket).then((data) => {
-                responseStatus = 'SUCCESS';
-                responseData = {};
-                sendResponse(event, callback, context.logStreamName, responseStatus, responseData);
-            }).catch((err) => {
-                responseData = {
-                    Error: `Copy of website assets failed`
-                };
-                console.log([responseData.Error, ':\n', err].join(''));
-                sendResponse(event, callback, context.logStreamName, responseStatus, responseData);
-            });
+                    responseStatus = 'SUCCESS';
+                    responseData = {};
+                    sendResponse(event, callback, context.logStreamName, responseStatus, responseData);
+                }).catch((err) => {
+                    responseData = {
+                        Error: `Copy of website assets failed`
+                    };
+                    console.log([responseData.Error, ':\n', err].join(''));
+                    sendResponse(event, callback, context.logStreamName, responseStatus, responseData);
+                });
 
         } else if (event.ResourceProperties.customAction === 'getIotEndpoint') {
             let _iotHelper = new IotHelper();
@@ -233,7 +233,7 @@ exports.handler = (event, context, callback) => {
 /**
  * Sends a response to the pre-signed S3 URL
  */
-let sendResponse = function(event, callback, logStreamName, responseStatus, responseData) {
+let sendResponse = function (event, callback, logStreamName, responseStatus, responseData) {
     const responseBody = JSON.stringify({
         Status: responseStatus,
         Reason: `See the details in CloudWatch Log Stream: ${logStreamName}`,

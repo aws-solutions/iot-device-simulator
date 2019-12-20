@@ -1,12 +1,12 @@
 /*********************************************************************************************************************
- *  Copyright 2016 Amazon.com, Inc. or its affiliates. All Rights Reserved.                                           *
+ *  Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.                                           *
  *                                                                                                                    *
- *  Licensed under the Amazon Software License (the "License"). You may not use this file except in compliance        *
+ *  Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance    *
  *  with the License. A copy of the License is located at                                                             *
  *                                                                                                                    *
- *      http://aws.amazon.com/asl/                                                                                    *
+ *      http://www.apache.org/licenses/LICENSE-2.0                                                                    *
  *                                                                                                                    *
- *  or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES *
+ *  or in the 'license' file accompanying this file. This file is distributed on an 'AS IS' BASIS, WITHOUT WARRANTIES *
  *  OR CONDITIONS OF ANY KIND, express or implied. See the License for the specific language governing permissions    *
  *  and limitations under the License.                                                                                *
  *********************************************************************************************************************/
@@ -62,7 +62,7 @@ class Generator {
 
         min = this._checkLessThanValue('min', 'max', min, max);
 
-        let _sin = Math.sin(2 * Math.PI * step/100 * 5) * Math.random();
+        let _sin = Math.sin(2 * Math.PI * step / 100 * 5) * Math.random();
         let _sinWithNoise = this._median([min, max]) + this._median([0, max - min]) * _sin;
 
         return _sinWithNoise;
@@ -74,7 +74,7 @@ class Generator {
         step = this._isValidInteger('step', step, 1);
 
         //P20941158 - allow inverse decay - remove min validation
-        let _decay = max - ((max - min) * (1 - Math.exp(-(0.05 * step))));  
+        let _decay = max - ((max - min) * (1 - Math.exp(-(0.05 * step))));
 
         return _decay;
     }
@@ -260,19 +260,19 @@ class Generator {
         return val;
     }
 
-    _median(values){
-        values.sort(function(a,b){
-        return a-b;
-      });
-    
-      if(values.length ===0) return 0
-    
-      var half = Math.floor(values.length / 2);
-    
-      if (values.length % 2)
-        return values[half];
-      else
-        return (values[half - 1] + values[half]) / 2.0;
+    _median(values) {
+        values.sort(function (a, b) {
+            return a - b;
+        });
+
+        if (values.length === 0) return 0
+
+        var half = Math.floor(values.length / 2);
+
+        if (values.length % 2)
+            return values[half];
+        else
+            return (values[half - 1] + values[half]) / 2.0;
     }
 
 };

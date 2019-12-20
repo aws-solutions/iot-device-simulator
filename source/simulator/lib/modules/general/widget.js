@@ -1,12 +1,12 @@
 /*********************************************************************************************************************
- *  Copyright 2016 Amazon.com, Inc. or its affiliates. All Rights Reserved.                                           *
+ *  Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.                                           *
  *                                                                                                                    *
- *  Licensed under the Amazon Software License (the "License"). You may not use this file except in compliance        *
+ *  Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance    *
  *  with the License. A copy of the License is located at                                                             *
  *                                                                                                                    *
- *      http://aws.amazon.com/asl/                                                                                    *
+ *      http://www.apache.org/licenses/LICENSE-2.0                                                                    *
  *                                                                                                                    *
- *  or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES *
+ *  or in the 'license' file accompanying this file. This file is distributed on an 'AS IS' BASIS, WITHOUT WARRANTIES *
  *  OR CONDITIONS OF ANY KIND, express or implied. See the License for the specific language governing permissions    *
  *  and limitations under the License.                                                                                *
  *********************************************************************************************************************/
@@ -125,7 +125,7 @@ class Widget extends Device {
 
         const varRegex = /\$\{(\w+)\}/g; // matches ${name}
         const attributesToRemove = {};
-        _message.topic = this.messageSpec.topic.replace(varRegex, function(match, capture) {
+        _message.topic = this.messageSpec.topic.replace(varRegex, function (match, capture) {
             attributesToRemove[capture] = 0;
             return _message.payload[capture];
         });
@@ -167,8 +167,8 @@ class Widget extends Device {
             }
         }
 
-        if(!this.currentState.hasOwnProperty(attribute.name)){
-            this.currentState[attribute.name] = { 
+        if (!this.currentState.hasOwnProperty(attribute.name)) {
+            this.currentState[attribute.name] = {
                 value: _value,
                 cnt: 1
             };
@@ -233,21 +233,21 @@ class Widget extends Device {
                     break;
                 case 'sinusoidal':
                     _value = this.generator.sin(attribute.min, attribute.max, this.currentState[attribute.name].cnt);
-                    break;   
+                    break;
                 case 'decay':
                     _value = this.generator.decay(attribute.min, attribute.max, this.currentState[attribute.name].cnt);
-                    break;      
+                    break;
                 case 'object':
-                    _value = this._generateMessagePayload(attribute.payload);  
-                    break;                             
+                    _value = this._generateMessagePayload(attribute.payload);
+                    break;
                 default:
                     _value = '';
                     break;
             }
         }
 
-        if(this.currentState.hasOwnProperty(attribute.name)){
-            this.currentState[attribute.name] = { 
+        if (this.currentState.hasOwnProperty(attribute.name)) {
+            this.currentState[attribute.name] = {
                 value: _value,
                 cnt: this.currentState[attribute.name].cnt + 1
             };

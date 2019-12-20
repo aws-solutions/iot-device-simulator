@@ -1,12 +1,12 @@
 /*********************************************************************************************************************
- *  Copyright 2016 Amazon.com, Inc. or its affiliates. All Rights Reserved.                                           *
+ *  Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.                                           *
  *                                                                                                                    *
- *  Licensed under the Amazon Software License (the "License"). You may not use this file except in compliance        *
+ *  Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance    *
  *  with the License. A copy of the License is located at                                                             *
  *                                                                                                                    *
- *      http://aws.amazon.com/asl/                                                                                    *
+ *      http://www.apache.org/licenses/LICENSE-2.0                                                                    *
  *                                                                                                                    *
- *  or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES *
+ *  or in the 'license' file accompanying this file. This file is distributed on an 'AS IS' BASIS, WITHOUT WARRANTIES *
  *  OR CONDITIONS OF ANY KIND, express or implied. See the License for the specific language governing permissions    *
  *  and limitations under the License.                                                                                *
  *********************************************************************************************************************/
@@ -53,7 +53,7 @@ class VehicleFactory extends DeviceFactory {
                 Key: _self.config.routeManifestPath
             };
 
-            s3.getObject(params, function(err, data) {
+            s3.getObject(params, function (err, data) {
                 if (err) {
                     _self.options.logger.log(`Error retrieving routes manifest from ${_self.config.routeBucket}/${_self.config.routeManifestPath}`, _self.options.logger.levels.INFO);
                     reject('Unable to load routes for automotive simulation engine.');
@@ -218,7 +218,7 @@ class VehicleFactory extends DeviceFactory {
                     Key: routes[index].s3path
                 };
 
-                s3.getObject(params, function(err, data) {
+                s3.getObject(params, function (err, data) {
                     if (err) {
                         _self.options.logger.log(`Error retrieving route data from ${_self.config.routeBucket}/${routes[index].s3path}`, _self.options.logger.levels.INFO);
                         reject('Unable to load all routes for vehicle factory');

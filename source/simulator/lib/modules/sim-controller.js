@@ -1,12 +1,12 @@
 /*********************************************************************************************************************
- *  Copyright 2016 Amazon.com, Inc. or its affiliates. All Rights Reserved.                                           *
+ *  Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.                                           *
  *                                                                                                                    *
- *  Licensed under the Amazon Software License (the "License"). You may not use this file except in compliance        *
+ *  Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance    *
  *  with the License. A copy of the License is located at                                                             *
  *                                                                                                                    *
- *      http://aws.amazon.com/asl/                                                                                    *
+ *      http://www.apache.org/licenses/LICENSE-2.0                                                                    *
  *                                                                                                                    *
- *  or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES *
+ *  or in the 'license' file accompanying this file. This file is distributed on an 'AS IS' BASIS, WITHOUT WARRANTIES *
  *  OR CONDITIONS OF ANY KIND, express or implied. See the License for the specific language governing permissions    *
  *  and limitations under the License.                                                                                *
  *********************************************************************************************************************/
@@ -37,12 +37,12 @@ class SimController {
         this.devices = [];
     }
 
-    prepModule() {}
+    prepModule() { }
 
     runGC() {
         const _self = this;
         this.options.logger.log(`Setting garbage collection internal for ${this.name} to ${this.gcInterval} ms`, this.options.logger.levels.INFO);
-        this.sendInterval = setInterval(function() {
+        this.sendInterval = setInterval(function () {
             _self.GC();
         }, this.gcInterval);
     }
@@ -57,7 +57,7 @@ class SimController {
         if (_removals.length > 0) {
             for (var j = 0; j < _removals.length; j++) {
                 this.options.logger.log([`Attempting to remove ${this.name} device`, _removals[j].id].join(' '), this.options.logger.levels.INFO);
-                let _index = _.findIndex(this.devices, function(o) {
+                let _index = _.findIndex(this.devices, function (o) {
                     o.id === _removals[j].id
                 });
                 this.devices.splice(_index, 1);
@@ -77,20 +77,20 @@ class SimController {
                 this._processCreate(request);
             } else if (request.action === 'hydrate') {
                 this._processHydrate(request);
-            } else if (request.action === 'delete') {} else
-            if (request.action === 'stop') {
-                this._processStop(request);
-            }
+            } else if (request.action === 'delete') { } else
+                if (request.action === 'stop') {
+                    this._processStop(request);
+                }
         } else {
             this.options.logger.warn(`The ${this.name} module did not properly initiate and will not process requests.`, this.options.logger.levels.ROBUST);
         }
     }
 
-    _processCreate(request) {}
+    _processCreate(request) { }
 
-    _processHydrate(request) {}
+    _processHydrate(request) { }
 
-    _processStop(request) {}
+    _processStop(request) { }
 
     _updateCurrentSimulationCount(op) {
         let _self = this;
@@ -110,7 +110,7 @@ class SimController {
             };
 
             let docClient = new AWS.DynamoDB.DocumentClient(_self.dynamoConfig);
-            docClient.update(params, function(err, data) {
+            docClient.update(params, function (err, data) {
                 if (err) {
                     _self.options.logger.error(err, _self.options.logger.levels.ROBUST);
                     reject(`Unable to update configuration entry current-sims from ${_self.options.settingsTable} ddb table.`);

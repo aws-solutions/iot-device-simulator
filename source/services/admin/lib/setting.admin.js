@@ -1,16 +1,15 @@
 /*********************************************************************************************************************
- *  Copyright 2016 Amazon.com, Inc. or its affiliates. All Rights Reserved.                                           *
+ *  Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.                                           *
  *                                                                                                                    *
- *  Licensed under the Amazon Software License (the 'License'). You may not use this file except in compliance        *
+ *  Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance    *
  *  with the License. A copy of the License is located at                                                             *
  *                                                                                                                    *
- *      http://aws.amazon.com/asl/                                                                                    *
+ *      http://www.apache.org/licenses/LICENSE-2.0                                                                    *
  *                                                                                                                    *
  *  or in the 'license' file accompanying this file. This file is distributed on an 'AS IS' BASIS, WITHOUT WARRANTIES *
  *  OR CONDITIONS OF ANY KIND, express or implied. See the License for the specific language governing permissions    *
  *  and limitations under the License.                                                                                *
  *********************************************************************************************************************/
-
 /**
  * @author Solution Builders
  */
@@ -58,7 +57,7 @@ class Setting {
             };
 
             const docClient = new AWS.DynamoDB.DocumentClient(this.dynamoConfig);
-            docClient.get(params, function(err, data) {
+            docClient.get(params, function (err, data) {
                 if (err) {
                     Logger.error(Logger.levels.INFO, 'Error occurred while attempting to retrieve application settings.');
                     Logger.error(Logger.levels.INFO, err.message);
@@ -103,7 +102,7 @@ class Setting {
 
             const docClient = new AWS.DynamoDB.DocumentClient(_self.dynamoConfig);
             // get the current app-config settings
-            docClient.get(params, function(err, resp) {
+            docClient.get(params, function (err, resp) {
                 if (err) {
                     Logger.error(Logger.levels.INFO, 'Error occurred while attempting to retrieve the application settings.');
                     Logger.error(Logger.levels.INFO, err.message);
@@ -124,7 +123,7 @@ class Setting {
                         Item: resp.Item
                     };
 
-                    docClient.put(params, function(err, data) {
+                    docClient.put(params, function (err, data) {
                         if (err) {
                             Logger.error(Logger.levels.INFO, 'Error occurred while attempting to update the application settings.');
                             Logger.error(Logger.levels.INFO, err.message);

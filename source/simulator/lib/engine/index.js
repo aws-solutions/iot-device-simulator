@@ -1,12 +1,12 @@
 /*********************************************************************************************************************
- *  Copyright 2016 Amazon.com, Inc. or its affiliates. All Rights Reserved.                                           *
+ *  Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.                                           *
  *                                                                                                                    *
- *  Licensed under the Amazon Software License (the "License"). You may not use this file except in compliance        *
+ *  Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance    *
  *  with the License. A copy of the License is located at                                                             *
  *                                                                                                                    *
- *      http://aws.amazon.com/asl/                                                                                    *
+ *      http://www.apache.org/licenses/LICENSE-2.0                                                                    *
  *                                                                                                                    *
- *  or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES *
+ *  or in the 'license' file accompanying this file. This file is distributed on an 'AS IS' BASIS, WITHOUT WARRANTIES *
  *  OR CONDITIONS OF ANY KIND, express or implied. See the License for the specific language governing permissions    *
  *  and limitations under the License.                                                                                *
  *********************************************************************************************************************/
@@ -41,7 +41,7 @@ class Engine {
         this.options.logger.log(['simulation engine: polling device queue every', this.options.queuePollerInterval, 'ms'].join(' '), this.options.logger.levels.INFO);
         this._prepModules(0).then((result) => {
             _self.options.logger.log(result, _self.options.logger.levels.INFO);
-            this.pollerInterval = setInterval(function() {
+            this.pollerInterval = setInterval(function () {
                 _self._processQueue();
             }, this.options.queuePollerInterval);
         }).catch((err) => {
@@ -89,7 +89,7 @@ class Engine {
             ],
             WaitTimeSeconds: 10
         };
-        sqs.receiveMessage(params, function(err, data) {
+        sqs.receiveMessage(params, function (err, data) {
             if (err) {
                 _self.options.logger.log([err, err.stack].join('\n'), _self.options.logger.levels.INFO);
             } else {
@@ -183,7 +183,7 @@ class Engine {
                 QueueUrl: this.options.deviceQueueUrl,
                 ReceiptHandle: receiptHandle
             };
-            sqs.deleteMessage(params, function(err, data) {
+            sqs.deleteMessage(params, function (err, data) {
                 if (err) {
                     _self.options.logger.log([err, err.stack].join('\n'), _self.options.logger.levels.INFO);
                     _self.options.logger.log(['[Error] Failed to delete message from queue:', receiptHandle].join(' '), _self.options.logger.levels.INFO);
@@ -209,7 +209,7 @@ class Engine {
             };
 
             const docClient = new AWS.DynamoDB.DocumentClient(this.dynamoConfig);
-            docClient.get(params, function(err, config) {
+            docClient.get(params, function (err, config) {
                 if (err) {
                     _self.options.logger.error(err);
                     _self.options.logger.error(`Unable to load configuration entry current-sims from ${_self.options.settingsTable} ddb table. Holding hydration requests.`, _self.options.logger.levels.INFO);

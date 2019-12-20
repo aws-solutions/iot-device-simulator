@@ -1,10 +1,10 @@
 /*********************************************************************************************************************
- *  Copyright 2016 Amazon.com, Inc. or its affiliates. All Rights Reserved.                                           *
+ *  Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.                                           *
  *                                                                                                                    *
- *  Licensed under the Amazon Software License (the 'License'). You may not use this file except in compliance        *
+ *  Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance    *
  *  with the License. A copy of the License is located at                                                             *
  *                                                                                                                    *
- *      http://aws.amazon.com/asl/                                                                                    *
+ *      http://www.apache.org/licenses/LICENSE-2.0                                                                    *
  *                                                                                                                    *
  *  or in the 'license' file accompanying this file. This file is distributed on an 'AS IS' BASIS, WITHOUT WARRANTIES *
  *  OR CONDITIONS OF ANY KIND, express or implied. See the License for the specific language governing permissions    *
@@ -84,7 +84,7 @@ class ProfileManager {
             };
 
             let cognitoidentityserviceprovider = new AWS.CognitoIdentityServiceProvider();
-            cognitoidentityserviceprovider.adminGetUser(params, function(err, data) {
+            cognitoidentityserviceprovider.adminGetUser(params, function (err, data) {
                 if (err) {
                     Logger.error(Logger.levels.INFO, 'Error occurred while attempting to get user from cognito.');
                     Logger.error(Logger.levels.INFO, err.message);
@@ -119,7 +119,7 @@ class ProfileManager {
                     _user.email = _em[0].Value;
                 }
 
-                cognitoidentityserviceprovider.adminListGroupsForUser(params, function(err, data) {
+                cognitoidentityserviceprovider.adminListGroupsForUser(params, function (err, data) {
                     if (err) {
                         Logger.error(Logger.levels.INFO, 'Error occurred while attempting to list groups for user from cognito.');
                         Logger.error(Logger.levels.INFO, err.message);
@@ -155,7 +155,7 @@ class ProfileManager {
             };
 
             const docClient = new AWS.DynamoDB.DocumentClient(this.dynamoConfig);
-            docClient.get(params, function(err, resp) {
+            docClient.get(params, function (err, resp) {
                 if (err) {
                     Logger.error(Logger.levels.INFO, err.message);
                     reject({
