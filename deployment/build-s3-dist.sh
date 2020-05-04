@@ -15,9 +15,9 @@
 #  - version-code: version of the package
 
 # Check to see if input has been provided:
-if [ -z "$1" ] || [ -z "$2" ] || [ -z "$3" ] || [ -z "$4" ]; then
-    echo "Please provide the base source bucket name, open-source bucket name, trademark approved solution name and version where the lambda code will eventually reside."
-    echo "For example: ./build-s3-dist.sh solutions solutions-github trademarked-solution-name v1.0.0"
+if [ -z "$1" ] || [ -z "$2" ] || [ -z "$3" ]; then
+    echo "Please provide the base source bucket name, trademark approved solution name and version where the lambda code will eventually reside."
+    echo "For example: ./build-s3-dist.sh solutions trademarked-solution-name v1.0.0"
     exit 1
 fi
 
@@ -26,6 +26,9 @@ template_dir="$PWD"
 template_dist_dir="$template_dir/global-s3-assets"
 build_dist_dir="$template_dir/regional-s3-assets"
 source_dir="$template_dir/../source"
+input_bucket_name="$1"
+input_solution_name="$2"
+input_version_number="$3"
 
 echo "------------------------------------------------------------------------------"
 echo "[Init] Clean old dist folders"
@@ -49,14 +52,14 @@ echo "--------------------------------------------------------------------------
 echo "cp $template_dir/iot-device-simulator.yaml $template_dist_dir/iot-device-simulator.template"
 cp $template_dir/iot-device-simulator.yaml $template_dist_dir/iot-device-simulator.template
 
-echo "Updating code source bucket in template with $1"
-replace="s/%%BUCKET_NAME%%/$1/g"
+echo "Updating code source bucket in template with $input_bucket_name"
+replace="s/%%BUCKET_NAME%%/$input_bucket_name/g"
 echo "sed -i '' -e $replace $template_dist_dir/iot-device-simulator.template"
 sed -i '' -e $replace $template_dist_dir/iot-device-simulator.template
-replace="s/%%VERSION%%/$4/g"
+replace="s/%%VERSION%%/$input_version_number/g"
 echo "sed -i '' -e $replace $template_dist_dir/iot-device-simulator.template"
 sed -i '' -e $replace $template_dist_dir/iot-device-simulator.template
-replace="s/%%SOLUTION_NAME%%/$3/g"
+replace="s/%%SOLUTION_NAME%%/$input_solution_name/g"
 echo "sed -i '' -e $replace $template_dist_dir/iot-device-simulator.template"
 sed -i '' -e $replace $template_dist_dir/iot-device-simulator.template
 

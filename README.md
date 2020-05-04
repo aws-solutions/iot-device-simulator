@@ -30,7 +30,7 @@ chmod +x ./build-s3-dist.sh \n
 
 * Deploy the distributable to an Amazon S3 bucket in your account. _Note:_ you must have the AWS Command Line Interface installed.
 ```
-aws s3 cp ./dist/ s3://my-bucket-name-<aws_region>/iot-device-simulator/<my-version>/ --recursive --acl bucket-owner-full-control --profile aws-cred-profile-name \n
+aws s3 cp ./regional-s3-assets/ s3://my-bucket-name-<aws_region>/iot-device-simulator/<my-version>/ --recursive --acl bucket-owner-full-control --profile <your-profile> \n
 ```
 
 * Get the link of the iot-device-simulator.template uploaded to your Amazon S3 bucket.
