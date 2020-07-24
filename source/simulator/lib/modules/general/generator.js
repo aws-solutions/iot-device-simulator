@@ -23,7 +23,7 @@
 const random = require('generate-random-data');
 const moment = require('moment');
 const shortid = require('shortid');
-const uuidV4 = require('uuid/v4');
+const { v4: uuidV4 } = require('uuid');
 const validate = require('validate.js');
 const grp = require('generate-random-points');
 
