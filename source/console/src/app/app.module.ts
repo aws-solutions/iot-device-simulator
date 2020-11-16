@@ -1,7 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { HttpModule } from '@angular/http';
 import { AppComponent } from './app.component';
 import { UserRegistrationService } from './service/user-registration.service';
 import { UserLoginService } from './service/user-login.service';
@@ -76,7 +75,6 @@ import { BlockUIModule } from 'ng-block-ui';
         HttpClientModule,
         FormsModule,
         ReactiveFormsModule,
-        HttpModule,
         routing,
         AsyncLocalStorageModule,
         BlockUIModule.forRoot()
