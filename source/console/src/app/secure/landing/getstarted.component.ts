@@ -2,7 +2,7 @@ import { Component, Input, OnInit, ViewChild, NgZone } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, NgForm } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { ProfileInfo } from '../../model/profileInfo';
-import { Subscription } from 'rxjs/Subscription';
+import { Subscription } from 'rxjs';
 import { DeviceService } from '../../service/device.service';
 import { StatsService } from '../../service/stats.service';
 import * as _ from 'underscore';

@@ -2,7 +2,7 @@ import { Component, Input, OnInit, ViewChild, NgZone } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { SwalComponent } from '@toverux/ngx-sweetalert2';
 import { ProfileInfo } from '../../model/profileInfo';
-import { Subscription } from 'rxjs/Subscription';
+import { Subscription } from 'rxjs';
 import * as _ from 'underscore';
 import { AsyncLocalStorage } from 'angular-async-local-storage';
 import { DeviceType } from '../../model/deviceType';

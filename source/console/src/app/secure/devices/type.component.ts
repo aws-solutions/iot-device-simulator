@@ -8,7 +8,7 @@ import { ProfileInfo } from '../../model/profileInfo';
 import { LoggerService } from '../../service/logger.service';
 import { StatsService } from '../../service/stats.service';
 import { Attribute } from '../../model/attribute';
-import { Subscription } from 'rxjs/Subscription';
+import { Subscription } from 'rxjs';
 import * as _ from 'underscore';
 import { AsyncLocalStorage } from 'angular-async-local-storage';
 import { BlockUI, NgBlockUI } from 'ng-block-ui';

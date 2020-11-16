@@ -1,5 +1,6 @@
+
+import {throwError as observableThrowError,  Observable } from 'rxjs';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs/Observable';
 import { HttpClient, HttpHeaders, HttpParams, HttpErrorResponse } from '@angular/common/http';
 import { CognitoUtil } from './cognito.service';
 import { User } from '../model/user';
@@ -7,10 +8,10 @@ import { Invitation } from '../model/invitation';
 import { Group } from '../model/group';
 import { Setting } from '../model/setting';
 import { LoggerService } from './logger.service';
-import 'rxjs/add/operator/map';
-import 'rxjs/add/operator/catch';
-import 'rxjs/add/observable/throw';
-import 'rxjs/add/operator/toPromise';
+
+
+
+
 declare var appVariables: any;
 
 @Injectable()
@@ -401,7 +402,7 @@ export class AdminService {
 
     private handleError(error: Response | any) {
         console.error('ApiService::handleError', error);
-        return Observable.throw(error);
+        return observableThrowError(error);
     }
 
 }

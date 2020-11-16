@@ -1,15 +1,15 @@
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs/Observable';
+import { Observable } from 'rxjs';
 import { HttpClient, HttpHeaders, HttpParams, HttpErrorResponse } from '@angular/common/http';
 import { CognitoUtil } from './cognito.service';
 import { Device } from '../model/device';
 import { DeviceType } from '../model/deviceType';
 import { WidgetRequest } from '../model/widgetRequest';
 import { LoggerService } from './logger.service';
-import 'rxjs/add/operator/map';
-import 'rxjs/add/operator/catch';
-import 'rxjs/add/observable/throw';
-import 'rxjs/add/operator/toPromise';
+
+
+
+
 import * as _ from 'underscore';
 declare var appVariables: any;
 

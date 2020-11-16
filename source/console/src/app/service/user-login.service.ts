@@ -7,9 +7,9 @@ import { AsyncLocalStorage } from 'angular-async-local-storage';
 import { LoggerService } from './logger.service';
 import * as AWS from 'aws-sdk/global';
 import * as STS from 'aws-sdk/clients/sts';
-import 'rxjs/add/operator/catch';
-import 'rxjs/add/observable/throw';
-import 'rxjs/add/operator/toPromise';
+
+
+
 declare var appVariables: any;
 
 @Injectable()

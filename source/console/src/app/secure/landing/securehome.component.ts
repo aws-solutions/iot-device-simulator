@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { UserLoginService } from '../../service/user-login.service';
 import { LoggedInCallback } from '../../service/cognito.service';
 import { ProfileInfo } from '../../model/profileInfo';
-import { Subscription } from 'rxjs/Subscription';
+import { Subscription } from 'rxjs';
 import { AsyncLocalStorage } from 'angular-async-local-storage';
 import { DeviceService } from '../../service/device.service';
 import { LoggerService } from '../../service/logger.service';

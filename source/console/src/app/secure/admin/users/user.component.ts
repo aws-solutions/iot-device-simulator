@@ -5,7 +5,7 @@ import { Group } from '../../../model/group';
 import { AdminService } from '../../../service/admin.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { ProfileInfo } from '../../../model/profileInfo';
-import { Subscription } from 'rxjs/Subscription';
+import { Subscription } from 'rxjs';
 import * as _ from 'underscore';
 import { AsyncLocalStorage } from 'angular-async-local-storage';
 import { LoggerService } from '../../../service/logger.service';

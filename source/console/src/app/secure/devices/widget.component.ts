@@ -9,7 +9,7 @@ import { AsyncLocalStorage } from 'angular-async-local-storage';
 import { LoggerService } from '../../service/logger.service';
 import { MQTTService } from '../../service/mqtt.service';
 import { BlockUI, NgBlockUI } from 'ng-block-ui';
-import { Subscription } from 'rxjs/Subscription';
+import { Subscription } from 'rxjs';
 import { Message } from '../../model/message';
 import { environment } from '../../../environments/environment';
 import { StatsService } from '../../service/stats.service';

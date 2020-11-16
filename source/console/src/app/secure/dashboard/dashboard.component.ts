@@ -3,7 +3,7 @@ import { FormGroup, FormBuilder, Validators, NgForm } from '@angular/forms';
 import { UserLoginService } from '../../service/user-login.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { ProfileInfo } from '../../model/profileInfo';
-import { Subscription } from 'rxjs/Subscription';
+import { Subscription } from 'rxjs';
 import { DeviceService } from '../../service/device.service';
 import { MetricsService } from '../../service/metrics.service';
 import { StatsService } from '../../service/stats.service';

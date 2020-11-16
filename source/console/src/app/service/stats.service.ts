@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { Subject } from 'rxjs/Subject';
+import { Subject } from 'rxjs';
 
-import 'rxjs/add/operator/map';
+
 import { LoggerService } from './logger.service';
 import { CognitoUtil } from './cognito.service';
 import { environment } from '../../environments/environment';

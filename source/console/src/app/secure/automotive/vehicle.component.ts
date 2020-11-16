@@ -8,7 +8,7 @@ import { Device } from '../../model/device';
 import { DeviceType } from '../../model/deviceType';
 import { AsyncLocalStorage } from 'angular-async-local-storage';
 import { LoggerService } from '../../service/logger.service';
-import { Subscription } from 'rxjs/Subscription';
+import { Subscription } from 'rxjs';
 import { Message } from '../../model/message';
 import { MQTTService } from '../../service/mqtt.service';
 import { StatsService } from '../../service/stats.service';
