@@ -6,21 +6,21 @@
     "version": "2.1.1",
     "private": "true",
     "dependencies": {
+        "authorizer": "file:../../resources/authorizer/",
+        "logger": "file:../../resources/logger/",
         "moment": "*",
         "randomstring": "*",
-        "underscore": "*",
         "shortid": "*",
-        "authorizer": "file:../../resources/authorizer/",
-        "logger": "file:../../resources/logger/"
+        "underscore": "*"
     },
     "devDependencies": {
         "aws-sdk": "*",
-        "chai": "*",
-        "sinon": "*",
-        "sinon-chai": "*",
-        "mocha": "*",
         "aws-sdk-mock": "*",
-        "proxyquire": "*"
+        "chai": "*",
+        "mocha": "*",
+        "proxyquire": "*",
+        "sinon": "*",
+        "sinon-chai": "*"
     },
     "scripts": {
         "pretest": "rm -rf package-lock.json && rm -rf node_modules && npm install",
@@ -34,7 +34,7 @@
         "local:depfix": "rm -rf ./node_modules/authorizer && rm -rf ./node_modules/logger && cp -R ../../resources/authorizer ./node_modules/authorizer && cp -R ../../resources/logger ./node_modules/logger",
         "local:api": "npm run local:depfix && sam local start-api --env-vars ../tests/env-vars.json"
     },
-    "bundledDependencies": [
+    "bundleDependencies": [
         "moment",
         "underscore"
     ]

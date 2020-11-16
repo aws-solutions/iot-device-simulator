@@ -9,20 +9,20 @@
     "private": "true",
     "dependencies": {
         "moment": "*",
-        "underscore": "*",
-        "password-generator": "*",
         "node-uuid": "*",
+        "password-generator": "*",
+        "underscore": "*",
         "usage-metrics": "file:../usage-metrics/"
     },
     "devDependencies": {
         "aws-sdk": "*",
-        "chai": "*",
-        "sinon": "*",
-        "sinon-chai": "*",
-        "mocha": "*",
         "aws-sdk-mock": "*",
+        "chai": "*",
+        "mocha": "*",
         "npm-run-all": "*",
-        "proxyquire": "*"
+        "proxyquire": "*",
+        "sinon": "*",
+        "sinon-chai": "*"
     },
     "scripts": {
         "pretest": "npm install",
@@ -32,7 +32,7 @@
         "build:dist": "mkdir dist && mv iot-sim-helper.zip dist/",
         "build": "npm run build:init && npm install --production && npm run build:zip && npm run build:dist"
     },
-    "bundledDependencies": [
+    "bundleDependencies": [
         "moment",
         "underscore",
         "password-generator",

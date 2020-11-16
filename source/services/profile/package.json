@@ -6,11 +6,11 @@
     "version": "2.1.1",
     "private": "true",
     "dependencies": {
+        "authorizer": "file:../../resources/authorizer/",
+        "logger": "file:../../resources/logger/",
         "moment": "*",
         "randomstring": "*",
-        "underscore": "*",
-        "authorizer": "file:../../resources/authorizer/",
-        "logger": "file:../../resources/logger/"
+        "underscore": "*"
     },
     "devDependencies": {
         "aws-sdk": "*",
@@ -33,7 +33,7 @@
         "build": "npm run build:init && npm install --production && npm run build:zip && npm run build:dist",
         "local:api": "sam local start-api --env-vars ../tests/env-vars.json"
     },
-    "bundledDependencies": [
+    "bundleDependencies": [
         "moment",
         "underscore",
         "colors"

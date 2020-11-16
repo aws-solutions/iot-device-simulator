@@ -21,13 +21,13 @@
         "validate.js": "*"
     },
     "devDependencies": {
-        "chai": "*",
-        "sinon": "*",
-        "sinon-chai": "*",
-        "mocha": "*",
         "aws-sdk-mock": "*",
+        "chai": "*",
+        "mocha": "*",
         "npm-run-all": "*",
-        "proxyquire": "*"
+        "proxyquire": "*",
+        "sinon": "*",
+        "sinon-chai": "*"
     },
     "scripts": {
         "pretest": "npm install",
@@ -40,7 +40,7 @@
         "build": "npm-run-all -s build-init build:copy build:install",
         "zip": "cd dist && zip -rq fleet-simulator-build.zip ."
     },
-    "bundledDependencies": [
+    "bundleDependencies": [
         "aws-sdk",
         "aws-iot-device-sdk",
         "moment",

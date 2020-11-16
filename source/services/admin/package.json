@@ -6,21 +6,21 @@
     "version": "2.1.1",
     "private": "true",
     "dependencies": {
-        "moment": "*",
-        "randomstring": "*",
-        "underscore": "*",
-        "password-generator": "*",
         "authorizer": "file:../../resources/authorizer/",
-        "logger": "file:../../resources/logger/"
+        "logger": "file:../../resources/logger/",
+        "moment": "*",
+        "password-generator": "*",
+        "randomstring": "*",
+        "underscore": "*"
     },
     "devDependencies": {
         "aws-sdk": "*",
-        "chai": "*",
-        "sinon": "*",
-        "sinon-chai": "*",
-        "mocha": "*",
         "aws-sdk-mock": "*",
-        "proxyquire": "*"
+        "chai": "*",
+        "mocha": "*",
+        "proxyquire": "*",
+        "sinon": "*",
+        "sinon-chai": "*"
     },
     "scripts": {
         "pretest": "rm -rf package-lock.json && rm -rf node_modules && npm install",
@@ -34,7 +34,7 @@
         "local:test": "sam local invoke 'AdminService' -e ../tests/admin/get-user-event.json --env-vars ../tests/env-vars.json",
         "local:api": "sam local start-api --env-vars ../tests/env-vars.json"
     },
-    "bundledDependencies": [
+    "bundleDependencies": [
         "moment",
         "underscore",
         "colors",
