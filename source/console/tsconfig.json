@@ -1,21 +1,24 @@
+/* To learn more about this file see: https://angular.io/config/tsconfig. */
 {
   "compileOnSave": false,
   "compilerOptions": {
+    "baseUrl": "./",
     "outDir": "./dist/out-tsc",
     "sourceMap": true,
     "declaration": false,
-    "moduleResolution": "node",
-    "emitDecoratorMetadata": true,
+    "downlevelIteration": true,
     "experimentalDecorators": true,
-    "target": "es5",
+    "emitDecoratorMetadata": true,
+    "moduleResolution": "node",
+    "importHelpers": true,
     "typeRoots": [
-      "node_modules/@types"
+      "./node_modules/@types"
     ],
+    "target": "es5",
+    "module": "commonjs",
     "lib": [
       "es2017",
       "dom"
-    ],
-    "module": "es2015",
-    "baseUrl": "./"
+    ]
   }
 }
