@@ -49,7 +49,7 @@ jquery sparkline under the New BSD license
 sticky-kit under the Massachusetts Institute of Technology (MIT) license
 sweetalert2 under the Massachusetts Institute of Technology (MIT) license
 amazon-cognito-identity-js under the Amazon Software License
-angular-async-local-storage under the Massachusetts Institute of Technology (MIT) license
+@ngx-pwa/local-storage under the Massachusetts Institute of Technology (MIT) license
 core-js under the Massachusetts Institute of Technology (MIT) license
 debug under the Massachusetts Institute of Technology (MIT) license
 ejs under the Apache License Version 2.0
