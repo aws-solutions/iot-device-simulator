@@ -10,7 +10,7 @@ import { StatsService } from '../../service/stats.service';
 import { Attribute } from '../../model/attribute';
 import { Subscription } from 'rxjs';
 import * as _ from 'underscore';
-import { AsyncLocalStorage } from 'angular-async-local-storage';
+import { LocalStorage } from '@ngx-pwa/local-storage';
 import { BlockUI, NgBlockUI } from 'ng-block-ui';
 import * as moment from 'moment';
 import * as shortid from 'shortid';
@@ -50,7 +50,7 @@ export class DeviceTypeComponent implements OnInit {
     constructor(public router: Router,
         public route: ActivatedRoute,
         private deviceService: DeviceService,
-        protected localStorage: AsyncLocalStorage,
+        protected localStorage: LocalStorage,
         private logger: LoggerService,
         private statsService: StatsService,
         private _ngZone: NgZone) {

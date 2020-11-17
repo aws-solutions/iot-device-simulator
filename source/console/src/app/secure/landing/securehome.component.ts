@@ -4,7 +4,7 @@ import { UserLoginService } from '../../service/user-login.service';
 import { LoggedInCallback } from '../../service/cognito.service';
 import { ProfileInfo } from '../../model/profileInfo';
 import { Subscription } from 'rxjs';
-import { AsyncLocalStorage } from 'angular-async-local-storage';
+import { LocalStorage } from '@ngx-pwa/local-storage';
 import { DeviceService } from '../../service/device.service';
 import { LoggerService } from '../../service/logger.service';
 declare let jquery: any;
@@ -27,7 +27,7 @@ export class SecureHomeComponent implements OnInit, LoggedInCallback {
         public router: Router,
         public userService: UserLoginService,
         private deviceService: DeviceService,
-        protected localStorage: AsyncLocalStorage,
+        protected localStorage: LocalStorage,
         private logger: LoggerService) {
         this.logger.info('SecureHomeComponent: checking if user is authenticated');
         this.isAdminUser = false;

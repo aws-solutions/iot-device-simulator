@@ -3,7 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { UserRegistrationService } from '../../../service/user-registration.service';
 import { UserLoginService } from '../../../service/user-login.service';
 import { ProfileInfo } from '../../../model/profileInfo';
-import { AsyncLocalStorage } from 'angular-async-local-storage';
+import { LocalStorage } from '@ngx-pwa/local-storage';
 declare var jquery: any;
 declare var $: any;
 
@@ -13,7 +13,7 @@ declare var $: any;
 })
 export class LogoutComponent implements OnInit {
 
-    constructor(public router: Router, protected localStorage: AsyncLocalStorage, public userService: UserLoginService) {
+    constructor(public router: Router, protected localStorage: LocalStorage, public userService: UserLoginService) {
     }
 
     ngOnInit() {

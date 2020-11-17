@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import {
     AuthenticationDetails,
-    CognitoIdentityServiceProvider,
     CognitoUser,
     CognitoUserAttribute,
     CognitoUserPool

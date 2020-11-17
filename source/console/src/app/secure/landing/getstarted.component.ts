@@ -6,7 +6,7 @@ import { Subscription } from 'rxjs';
 import { DeviceService } from '../../service/device.service';
 import { StatsService } from '../../service/stats.service';
 import * as _ from 'underscore';
-import { AsyncLocalStorage } from 'angular-async-local-storage';
+import { LocalStorage } from '@ngx-pwa/local-storage';
 import { BlockUI, NgBlockUI } from 'ng-block-ui';
 import { LoggerService } from '../../service/logger.service';
 import * as moment from 'moment';
@@ -36,7 +36,7 @@ export class GetStartedComponent implements OnInit {
     constructor(public router: Router,
         public route: ActivatedRoute,
         private deviceService: DeviceService,
-        protected localStorage: AsyncLocalStorage,
+        protected localStorage: LocalStorage,
         private statsService: StatsService,
         private logger: LoggerService,
         private _ngZone: NgZone) {

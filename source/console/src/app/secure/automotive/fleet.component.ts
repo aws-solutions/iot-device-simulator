@@ -6,7 +6,7 @@ import { SwalComponent } from '@toverux/ngx-sweetalert2';
 import { ProfileInfo } from '../../model/profileInfo';
 import { Device } from '../../model/device';
 import { WidgetRequest } from '../../model/widgetRequest';
-import { AsyncLocalStorage } from 'angular-async-local-storage';
+import { LocalStorage } from '@ngx-pwa/local-storage';
 import { LoggerService } from '../../service/logger.service';
 import { StatsService } from '../../service/stats.service';
 import { BlockUI, NgBlockUI } from 'ng-block-ui';
@@ -28,7 +28,7 @@ export class FleetComponent implements OnInit, OnDestroy {
     public deviceStats: any = {};
     private profile: ProfileInfo;
     public fleet: Device[] = [];
-    private allSelected: boolean = false;
+    public allSelected: boolean = false;
     public widgetRequest: WidgetRequest = new WidgetRequest();
     private pollerInterval: any = null;
     public provisionCountError: boolean = false;
@@ -55,7 +55,7 @@ export class FleetComponent implements OnInit, OnDestroy {
 
     constructor(public router: Router,
         private deviceService: DeviceService,
-        protected localStorage: AsyncLocalStorage,
+        protected localStorage: LocalStorage,
         private logger: LoggerService,
         private statsService: StatsService,
         private _ngZone: NgZone) {

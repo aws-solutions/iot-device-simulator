@@ -36,7 +36,6 @@ import { LogoutComponent, RegistrationConfirmationComponent } from './public/aut
 import { ResendCodeComponent } from './public/auth/resend/resendCode.component';
 import { NewPasswordComponent } from './public/auth/newpassword/newpassword.component';
 import { HttpClientModule } from '@angular/common/http';
-import { AsyncLocalStorageModule } from 'angular-async-local-storage';
 import { EqualValidator } from './shared/equal-validator.directive';
 import { BlockUIModule } from 'ng-block-ui';
 
@@ -76,7 +75,6 @@ import { BlockUIModule } from 'ng-block-ui';
         FormsModule,
         ReactiveFormsModule,
         routing,
-        AsyncLocalStorageModule,
         BlockUIModule.forRoot()
     ],
     providers: [

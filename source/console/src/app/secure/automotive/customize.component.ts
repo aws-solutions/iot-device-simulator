@@ -4,7 +4,7 @@ import { SwalComponent } from '@toverux/ngx-sweetalert2';
 import { ProfileInfo } from '../../model/profileInfo';
 import { Subscription } from 'rxjs';
 import * as _ from 'underscore';
-import { AsyncLocalStorage } from 'angular-async-local-storage';
+import { LocalStorage } from '@ngx-pwa/local-storage';
 import { DeviceType } from '../../model/deviceType';
 import { AutoConfiguration } from '../../model/autoConfiguration';
 import { DeviceService } from '../../service/device.service';
@@ -35,7 +35,7 @@ export class CustomizeAutomotiveComponent implements OnInit {
     constructor(public router: Router,
         public route: ActivatedRoute,
         private deviceService: DeviceService,
-        protected localStorage: AsyncLocalStorage,
+        protected localStorage: LocalStorage,
         private logger: LoggerService,
         private statsService: StatsService,
         private _ngZone: NgZone) {

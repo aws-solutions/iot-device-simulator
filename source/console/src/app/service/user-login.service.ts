@@ -3,7 +3,7 @@ import { CognitoCallback, CognitoUtil, LoggedInCallback } from './cognito.servic
 import { AuthenticationDetails, CognitoUser } from 'amazon-cognito-identity-js';
 import { HttpClient, HttpHeaders, HttpParams, HttpErrorResponse } from '@angular/common/http';
 import { ProfileInfo } from '../model/profileInfo';
-import { AsyncLocalStorage } from 'angular-async-local-storage';
+import { LocalStorage } from '@ngx-pwa/local-storage';
 import { LoggerService } from './logger.service';
 import * as AWS from 'aws-sdk/global';
 import * as STS from 'aws-sdk/clients/sts';
@@ -18,7 +18,7 @@ export class UserLoginService {
     constructor(
         public cognitoUtil: CognitoUtil,
         private http: HttpClient,
-        protected localStorage: AsyncLocalStorage,
+        protected localStorage: LocalStorage,
         private logger: LoggerService) {
     }
 

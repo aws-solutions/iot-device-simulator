@@ -5,7 +5,7 @@ import { Device } from '../../model/device';
 import { DeviceType } from '../../model/deviceType';
 import { Router, ActivatedRoute } from '@angular/router';
 import { ProfileInfo } from '../../model/profileInfo';
-import { AsyncLocalStorage } from 'angular-async-local-storage';
+import { LocalStorage } from '@ngx-pwa/local-storage';
 import { LoggerService } from '../../service/logger.service';
 import { MQTTService } from '../../service/mqtt.service';
 import { BlockUI, NgBlockUI } from 'ng-block-ui';
@@ -40,7 +40,7 @@ export class WidgetComponent implements OnInit, OnDestroy { // implements Logged
     constructor(public router: Router,
         public route: ActivatedRoute,
         private deviceService: DeviceService,
-        protected localStorage: AsyncLocalStorage,
+        protected localStorage: LocalStorage,
         private logger: LoggerService,
         private mqttService: MQTTService,
         private statsService: StatsService,

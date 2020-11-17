@@ -6,7 +6,7 @@ import { SwalComponent } from '@toverux/ngx-sweetalert2';
 import { ProfileInfo } from '../../model/profileInfo';
 import { Device } from '../../model/device';
 import { DeviceType } from '../../model/deviceType';
-import { AsyncLocalStorage } from 'angular-async-local-storage';
+import { LocalStorage } from '@ngx-pwa/local-storage';
 import { LoggerService } from '../../service/logger.service';
 import { Subscription } from 'rxjs';
 import { Message } from '../../model/message';
@@ -62,7 +62,7 @@ export class VehicleComponent implements OnInit, OnDestroy { // implements Logge
     constructor(public router: Router,
         public route: ActivatedRoute,
         private deviceService: DeviceService,
-        protected localStorage: AsyncLocalStorage,
+        protected localStorage: LocalStorage,
         private logger: LoggerService,
         private mqttService: MQTTService,
         private statsService: StatsService,

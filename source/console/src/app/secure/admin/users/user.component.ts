@@ -7,7 +7,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { ProfileInfo } from '../../../model/profileInfo';
 import { Subscription } from 'rxjs';
 import * as _ from 'underscore';
-import { AsyncLocalStorage } from 'angular-async-local-storage';
+import { LocalStorage } from '@ngx-pwa/local-storage';
 import { LoggerService } from '../../../service/logger.service';
 import { StatsService } from '../../../service/stats.service';
 import { BlockUI, NgBlockUI } from 'ng-block-ui';
@@ -38,7 +38,7 @@ export class UserComponent implements OnInit {
         public route: ActivatedRoute,
         public userService: UserLoginService,
         private adminService: AdminService,
-        protected localStorage: AsyncLocalStorage,
+        protected localStorage: LocalStorage,
         private logger: LoggerService,
         private statsService: StatsService,
         private _ngZone: NgZone) {

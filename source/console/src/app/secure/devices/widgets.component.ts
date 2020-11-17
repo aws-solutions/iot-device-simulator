@@ -7,7 +7,7 @@ import { ProfileInfo } from '../../model/profileInfo';
 import { Device } from '../../model/device';
 import { DeviceType } from '../../model/deviceType';
 import { WidgetRequest } from '../../model/widgetRequest';
-import { AsyncLocalStorage } from 'angular-async-local-storage';
+import { LocalStorage } from '@ngx-pwa/local-storage';
 import { environment } from '../../../environments/environment';
 import { LoggerService } from '../../service/logger.service';
 import { StatsService } from '../../service/stats.service';
@@ -29,7 +29,7 @@ export class WidgetsComponent implements OnInit, OnDestroy { // implements Logge
     private profile: ProfileInfo;
     public devices: Device[] = [];
     public deviceTypes: DeviceType[] = [];
-    private allSelected: boolean = false;
+    public allSelected: boolean = false;
     private pollerInterval: any = null;
     public widgetRequest: WidgetRequest = new WidgetRequest();
     public provisionCountError: boolean = false;
@@ -57,7 +57,7 @@ export class WidgetsComponent implements OnInit, OnDestroy { // implements Logge
 
     constructor(public router: Router,
         private deviceService: DeviceService,
-        protected localStorage: AsyncLocalStorage,
+        protected localStorage: LocalStorage,
         private logger: LoggerService,
         private statsService: StatsService,
         private _ngZone: NgZone) {

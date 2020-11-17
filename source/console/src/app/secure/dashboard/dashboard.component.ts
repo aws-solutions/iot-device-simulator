@@ -8,7 +8,7 @@ import { DeviceService } from '../../service/device.service';
 import { MetricsService } from '../../service/metrics.service';
 import { StatsService } from '../../service/stats.service';
 import * as _ from 'underscore';
-import { AsyncLocalStorage } from 'angular-async-local-storage';
+import { LocalStorage } from '@ngx-pwa/local-storage';
 import { LoggerService } from '../../service/logger.service';
 import { BlockUI, NgBlockUI } from 'ng-block-ui';
 import * as moment from 'moment';
@@ -61,7 +61,7 @@ export class DashboardComponent implements OnInit {
         public userService: UserLoginService,
         private deviceService: DeviceService,
         private metricsService: MetricsService,
-        protected localStorage: AsyncLocalStorage,
+        protected localStorage: LocalStorage,
         private logger: LoggerService,
         private statsService: StatsService,
         private _ngZone: NgZone) {

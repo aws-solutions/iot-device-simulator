@@ -6,7 +6,7 @@ import { AdminService } from '../../../service/admin.service';
 import { Router } from '@angular/router';
 import { ProfileInfo } from '../../../model/profileInfo';
 import { Invitation } from '../../../model/invitation';
-import { AsyncLocalStorage } from 'angular-async-local-storage';
+import { LocalStorage } from '@ngx-pwa/local-storage';
 import { LoggerService } from '../../../service/logger.service';
 import { StatsService } from '../../../service/stats.service';
 import { BlockUI, NgBlockUI } from 'ng-block-ui';
@@ -35,7 +35,7 @@ export class UsersComponent implements OnInit { // implements LoggedInCallback {
     constructor(public router: Router,
         public userService: UserLoginService,
         private adminService: AdminService,
-        protected localStorage: AsyncLocalStorage,
+        protected localStorage: LocalStorage,
         private logger: LoggerService,
         private statsService: StatsService,
         private _ngZone: NgZone) {

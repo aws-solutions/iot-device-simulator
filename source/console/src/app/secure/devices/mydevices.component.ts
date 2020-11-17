@@ -7,7 +7,7 @@ import { ProfileInfo } from '../../model/profileInfo';
 import { Device } from '../../model/device';
 import { LoggerService } from '../../service/logger.service';
 import { StatsService } from '../../service/stats.service';
-import { AsyncLocalStorage } from 'angular-async-local-storage';
+import { LocalStorage } from '@ngx-pwa/local-storage';
 import { BlockUI, NgBlockUI } from 'ng-block-ui';
 import * as moment from 'moment';
 declare var jquery: any;
@@ -40,7 +40,7 @@ export class MyDevicesComponent implements OnInit { // implements LoggedInCallba
 
     constructor(public router: Router,
         private deviceService: DeviceService,
-        protected localStorage: AsyncLocalStorage,
+        protected localStorage: LocalStorage,
         private logger: LoggerService,
         private statsService: StatsService,
         private _ngZone: NgZone) {

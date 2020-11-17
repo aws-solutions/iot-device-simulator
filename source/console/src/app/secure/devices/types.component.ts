@@ -5,7 +5,7 @@ import { Router } from '@angular/router';
 import { SwalComponent } from '@toverux/ngx-sweetalert2';
 import { ProfileInfo } from '../../model/profileInfo';
 import { DeviceType } from '../../model/deviceType';
-import { AsyncLocalStorage } from 'angular-async-local-storage';
+import { LocalStorage } from '@ngx-pwa/local-storage';
 import { LoggerService } from '../../service/logger.service';
 import { StatsService } from '../../service/stats.service';
 import { BlockUI, NgBlockUI } from 'ng-block-ui';
@@ -40,7 +40,7 @@ export class DeviceTypesComponent implements OnInit { // implements LoggedInCall
 
     constructor(public router: Router,
         private deviceService: DeviceService,
-        protected localStorage: AsyncLocalStorage,
+        protected localStorage: LocalStorage,
         private logger: LoggerService,
         private statsService: StatsService,
         private _ngZone: NgZone) {
