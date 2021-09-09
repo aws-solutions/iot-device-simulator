@@ -134,6 +134,10 @@ Each microservice follows the structure of:
 * Docker build image updated to Node.js 12 on ECR
 ```
 
+## Collection of operational metrics
+This solution collects anonymous operational metrics to help AWS improve the quality and features of the solution. For more information, including how to disable this capability, please see the [implementation guide](https://docs.aws.amazon.com/solutions/latest/iot-device-simulator/appendix-f.html).
+
+
 ***
 
 Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
