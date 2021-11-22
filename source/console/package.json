@@ -1,64 +1,60 @@
 {
-    "name": "iot-device-simulator-console",
-    "version": "2.1.1",
-    "license": "Apache 2.0",
-    "scripts": {
-        "ng": "ng",
-        "start": "ng serve --open",
-        "build": "npm install && ng build --prod ",
-        "test": "ng test",
-        "lint": "ng lint",
-        "e2e": "ng e2e"
-    },
-    "private": true,
-    "dependencies": {
-        "@angular/animations": "^5.0.0",
-        "@angular/common": "^5.0.0",
-        "@angular/compiler": "^5.0.0",
-        "@angular/core": "^5.0.0",
-        "@angular/forms": "^5.0.0",
-        "@angular/http": "^5.0.0",
-        "@angular/platform-browser": "^5.0.0",
-        "@angular/platform-browser-dynamic": "^5.0.0",
-        "@angular/router": "^5.0.0",
-        "@toverux/ngx-sweetalert2": "3.0.1",
-        "amazon-cognito-identity-js": "^1.10.0",
-        "angular-async-local-storage": "^3.1.0",
-        "aws-sdk": "2.67.0",
-        "core-js": "^2.4.1",
-        "debug": "~> 2.6.9",
-        "ejs": "^2.5.2",
-        "enhanced-resolve": "^3.3.0",
-        "moment": "^2.19.3",
-        "ng-block-ui": "^1.0.0",
-        "rxjs": "^5.5.8",
-        "shortid": "*",
-        "sweetalert2": "7.0.0",
-        "ts-helpers": "1.1.1",
-        "underscore": "^1.8.3",
-        "zone.js": "^0.8.14"
-    },
-    "devDependencies": {
-        "@angular-devkit/core": "^0.4.3",
-        "@angular/cli": "^1.7.0",
-        "@angular/compiler-cli": "^5.0.0",
-        "@angular/language-service": "^5.0.0",
-        "@types/jasmine": "~2.5.53",
-        "@types/jasminewd2": "~2.0.2",
-        "@types/node": "~6.0.60",
-        "@types/selenium-webdriver": "2.44.26",
-        "codelyzer": "~3.2.0",
-        "jasmine-core": "~2.6.2",
-        "jasmine-spec-reporter": "~4.1.0",
-        "karma": "~1.7.0",
-        "karma-chrome-launcher": "~2.1.1",
-        "karma-cli": "~1.0.1",
-        "karma-coverage-istanbul-reporter": "^1.2.1",
-        "karma-jasmine": "~1.1.0",
-        "karma-jasmine-html-reporter": "^0.2.2",
-        "protractor": "^5.4.2",
-        "ts-node": "~3.2.0",
-        "tslint": "~5.7.0",
-        "typescript": "~2.4.2"
-    }
+  "name": "iot-device-simulator-console",
+  "version": "3.0.0",
+  "private": true,
+  "dependencies": {
+    "@aws-amplify/api": "^4.0.6",
+    "@aws-amplify/auth": "^4.1.2",
+    "@aws-amplify/core": "^4.3.0",
+    "@aws-amplify/geo": "^1.0.0",
+    "@aws-amplify/interactions": "^4.0.6",
+    "@aws-amplify/storage": "^4.3.1",
+    "@aws-amplify/ui-react": "^1.2.6",
+    "@maplibre/maplibre-gl-geocoder": "^1.1.0",
+    "@testing-library/jest-dom": "^5.11.4",
+    "@testing-library/react": "^12.1.2",
+    "@testing-library/user-event": "^13.3.0",
+    "@types/jest": "^27.0.2",
+    "@types/node": "^16.11.0",
+    "@types/react": "^17.0.30",
+    "@types/react-dom": "^17.0.0",
+    "@types/react-router-dom": "^5.3.1",
+    "aws-sdk": "^2.999.0",
+    "bootstrap": "^4.6.0",
+    "bootstrap-icons": "^1.6.0",
+    "maplibre-gl": "^1.15.2",
+    "maplibre-gl-js-amplify": "^1.1.0",
+    "moment": "^2.29.1",
+    "react": "^17.0.2",
+    "react-bootstrap": "^1.6.4",
+    "react-dom": "^17.0.2",
+    "react-router-dom": "^5.2.0",
+    "react-scripts": "^4.0.3",
+    "typescript": "^4.4.4",
+    "web-vitals": "^2.1.2"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "GENERATE_SOURCEMAP=false INLINE_RUNTIME_CHUNK=false react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
 }

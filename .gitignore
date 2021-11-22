@@ -1,5 +1,6 @@
 # compiled output
 **/dist
+**/build
 **/open-source
 **/.zip
 **/tmp
@@ -19,6 +20,9 @@
 **/testem.log
 **/package-lock.json
 **/.vscode/settings.json
+**/yarn.lock
+**/aws_config.js
+**/coverage
 
 # System Files
 **/.DS_Store
