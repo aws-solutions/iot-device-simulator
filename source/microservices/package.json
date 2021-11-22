@@ -1,0 +1,22 @@
+{
+    "name": "iot-sim-device-service",
+    "description": "The device microservice for the iot device simulator",
+    "main": "index.js",
+    "license": "Apache 2.0",
+    "version": "3.0.0",
+    "private": "true",
+    "dependencies": {
+        "nanoid": "^3.1.25",
+        "axios": "0.23.0"
+    },
+    "devDependencies": {
+        "aws-sdk": "^2.999.0",
+        "jest": "^27.2.3"
+    },
+    "scripts": {
+        "test": "jest lib/*.spec.js --coverage --silent",
+        "clean": "rm -rf node_modules dist coverage package-lock.json",
+        "build": "npm run clean && npm install --production",
+        "package": "npm run build && mkdir dist && zip -q -r9 ./dist/package.zip *"
+    }
+}

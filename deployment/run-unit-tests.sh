@@ -7,70 +7,71 @@
 # ./run-unit-tests.sh
 #
 
+[ "$DEBUG" == 'true' ] && set -x
+set -e
+
+prepare_jest_coverage_report() {
+  local component_name=$1
+
+  if [ ! -d "coverage" ]; then
+      echo "ValidationError: Missing required directory coverage after running unit tests"
+      exit 129
+  fi
+
+  # prepare coverage reports
+  rm -fr coverage/lcov-report
+  mkdir -p $coverage_reports_top_path/jest
+  coverage_report_path=$coverage_reports_top_path/jest/$component_name
+  rm -fr $coverage_report_path
+  mv coverage $coverage_report_path
+}
+
+run_javascript_test() {
+  local component_path=$1
+  local component_name=$2
+
+  echo "------------------------------------------------------------------------------"
+  echo "[Test] Run javascript unit test with coverage for $component_name"
+  echo "------------------------------------------------------------------------------"
+  echo "cd $component_path"
+  cd $component_path
+
+  # clean and install dependencies
+  npm run clean
+  npm install 
+  
+  # run unit tests
+  npm test
+
+  # prepare coverage reports
+  prepare_jest_coverage_report $component_name
+}
+
 # Get reference for all important folders
 template_dir="$PWD"
 source_dir="$template_dir/../source"
+coverage_reports_top_path=$source_dir/test/coverage-reports
 
-echo "------------------------------------------------------------------------------"
-echo "[Init] Clean old dist and node_modules folders"
-echo "------------------------------------------------------------------------------"
-echo "find $source_dir/services -iname "node_modules" -type d -exec rm -r "{}" \; 2> /dev/null"
-find $source_dir/services -iname "node_modules" -type d -exec rm -r "{}" \; 2> /dev/null
-echo "find $source_dir/services -iname "dist" -type d -exec rm -r "{}" \; 2> /dev/null"
-find $source_dir/services -iname "dist" -type d -exec rm -r "{}" \; 2> /dev/null
-echo "find ../ -type f -name 'package-lock.json' -delete"
-find $source_dir/services -type f -name 'package-lock.json' -delete
-echo "find $source_dir/resources -iname "node_modules" -type d -exec rm -r "{}" \; 2> /dev/null"
-find $source_dir/resources -iname "node_modules" -type d -exec rm -r "{}" \; 2> /dev/null
-echo "find $source_dir/resources -iname "dist" -type d -exec rm -r "{}" \; 2> /dev/null"
-find $source_dir/resources -iname "dist" -type d -exec rm -r "{}" \; 2> /dev/null
-echo "find ../ -type f -name 'package-lock.json' -delete"
-find $source_dir/resources -type f -name 'package-lock.json' -delete
-echo "find $source_dir/simulator -iname "node_modules" -type d -exec rm -r "{}" \; 2> /dev/null"
-find $source_dir/simulator -iname "node_modules" -type d -exec rm -r "{}" \; 2> /dev/null
-echo "find $source_dir/simulator -iname "dist" -type d -exec rm -r "{}" \; 2> /dev/null"
-find $source_dir/simulator -iname "dist" -type d -exec rm -r "{}" \; 2> /dev/null
-echo "find ../ -type f -name 'package-lock.json' -delete"
-find $source_dir/simulator -type f -name 'package-lock.json' -delete
+# Test the attached Lambda function
+declare -a lambda_packages=(
+  "custom-resource"
+  "infrastructure"
+  "microservices"
+  "simulator"
+)
 
-echo "------------------------------------------------------------------------------"
-echo "[Test] Services - Admin"
-echo "------------------------------------------------------------------------------"
-cd $source_dir/services/admin
-npm install
-npm test
+for lambda_package in "${lambda_packages[@]}"
+do
+  run_javascript_test $source_dir/$lambda_package $lambda_package
 
-echo "------------------------------------------------------------------------------"
-echo "[Test] Services - Device"
-echo "------------------------------------------------------------------------------"
-cd $source_dir/services/device
-npm install
-npm test
-
-echo "------------------------------------------------------------------------------"
-echo "[Test] Services - Metrics"
-echo "------------------------------------------------------------------------------"
-cd $source_dir/services/metrics
-npm install
-npm test
-
-echo "------------------------------------------------------------------------------"
-echo "[Test] Services - Profile"
-echo "------------------------------------------------------------------------------"
-cd $source_dir/services/profile
-npm install
-npm test
-
-echo "------------------------------------------------------------------------------"
-echo "[Test] Resources - Helper"
-echo "------------------------------------------------------------------------------"
-cd $source_dir/resources/helper
-npm install
-npm test
-
-echo "------------------------------------------------------------------------------"
-echo "[Test] Simulation Engine"
-echo "------------------------------------------------------------------------------"
-cd $source_dir/simulator
-npm install
-npm test
+  # Check the result of the test and exit if a failure is identified
+  if [ $? -eq 0 ]
+  then
+    echo "Test for $lambda_package passed"
+  else
+    echo "******************************************************************************"
+    echo "Lambda test FAILED for $lambda_package"
+    echo "******************************************************************************"
+    exit 1
+  fi
+done

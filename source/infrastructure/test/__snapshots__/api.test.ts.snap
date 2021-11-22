@@ -1,0 +1,825 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`IoT Device Simulator API Test 1`] = `
+Object {
+  "Outputs": Object {
+    "TestAPIIoTDeviceSimulatorApiEndpoint46995246": Object {
+      "Value": Object {
+        "Fn::Join": Array [
+          "",
+          Array [
+            "https://",
+            Object {
+              "Ref": "TestAPIIoTDeviceSimulatorApiC3A3B80A",
+            },
+            ".execute-api.",
+            Object {
+              "Ref": "AWS::Region",
+            },
+            ".",
+            Object {
+              "Ref": "AWS::URLSuffix",
+            },
+            "/",
+            Object {
+              "Ref": "TestAPIIoTDeviceSimulatorApiDeploymentStageprodC04B37CA",
+            },
+            "/",
+          ],
+        ],
+      },
+    },
+  },
+  "Resources": Object {
+    "TestAPIApiRequestValidator82D0421A": Object {
+      "Properties": Object {
+        "RestApiId": Object {
+          "Ref": "TestAPIIoTDeviceSimulatorApiC3A3B80A",
+        },
+        "ValidateRequestBody": true,
+        "ValidateRequestParameters": true,
+      },
+      "Type": "AWS::ApiGateway::RequestValidator",
+    },
+    "TestAPIIoTDeviceSimulatorApiAccount82785D2D": Object {
+      "DependsOn": Array [
+        "TestAPIIoTDeviceSimulatorApiC3A3B80A",
+      ],
+      "Properties": Object {
+        "CloudWatchRoleArn": Object {
+          "Fn::GetAtt": Array [
+            "TestAPIIoTDeviceSimulatorApiCloudWatchRoleCFC7B30A",
+            "Arn",
+          ],
+        },
+      },
+      "Type": "AWS::ApiGateway::Account",
+    },
+    "TestAPIIoTDeviceSimulatorApiC3A3B80A": Object {
+      "Properties": Object {
+        "Description": "IoT Device Simulator Rest API",
+        "EndpointConfiguration": Object {
+          "Types": Array [
+            "REGIONAL",
+          ],
+        },
+        "Name": "IoTDeviceSimulatorApi",
+      },
+      "Type": "AWS::ApiGateway::RestApi",
+    },
+    "TestAPIIoTDeviceSimulatorApiCloudWatchRoleCFC7B30A": Object {
+      "Properties": Object {
+        "AssumeRolePolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": Object {
+                "Service": "apigateway.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": Array [
+          Object {
+            "Fn::Join": Array [
+              "",
+              Array [
+                "arn:",
+                Object {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs",
+              ],
+            ],
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "TestAPIIoTDeviceSimulatorApiDeployment3A74DC1E3c7dd2f9e436a94d66869e594ca783f9": Object {
+      "DependsOn": Array [
+        "TestAPIApiRequestValidator82D0421A",
+        "TestAPIIoTDeviceSimulatorApidevicetypestypeidANY4D6798F4",
+        "TestAPIIoTDeviceSimulatorApidevicetypestypeidOPTIONSBF875997",
+        "TestAPIIoTDeviceSimulatorApidevicetypestypeid1C099FE9",
+        "TestAPIIoTDeviceSimulatorApidevicetypesANYF01AB86C",
+        "TestAPIIoTDeviceSimulatorApidevicetypesOPTIONS5A349397",
+        "TestAPIIoTDeviceSimulatorApidevicetypesDD1A2F70",
+        "TestAPIIoTDeviceSimulatorApiOPTIONSD9601DAF",
+        "TestAPIIoTDeviceSimulatorApisimulationsimidANYC92E520A",
+        "TestAPIIoTDeviceSimulatorApisimulationsimidOPTIONS1BF0EF9E",
+        "TestAPIIoTDeviceSimulatorApisimulationsimidA3307693",
+        "TestAPIIoTDeviceSimulatorApisimulationANY1BDBB626",
+        "TestAPIIoTDeviceSimulatorApisimulationOPTIONS143B09FD",
+        "TestAPIIoTDeviceSimulatorApisimulation4C784757",
+      ],
+      "Metadata": Object {
+        "cfn_nag": Object {
+          "rules_to_suppress": Array [
+            Object {
+              "id": "W68",
+              "reason": "The solution does not require the usage plan.",
+            },
+          ],
+        },
+      },
+      "Properties": Object {
+        "Description": "Automatically created by the RestApi construct",
+        "RestApiId": Object {
+          "Ref": "TestAPIIoTDeviceSimulatorApiC3A3B80A",
+        },
+      },
+      "Type": "AWS::ApiGateway::Deployment",
+    },
+    "TestAPIIoTDeviceSimulatorApiDeploymentStageprodC04B37CA": Object {
+      "Metadata": Object {
+        "cfn_nag": Object {
+          "rules_to_suppress": Array [
+            Object {
+              "id": "W64",
+              "reason": "The solution does not require the usage plan.",
+            },
+          ],
+        },
+      },
+      "Properties": Object {
+        "AccessLogSetting": Object {
+          "DestinationArn": Object {
+            "Fn::GetAtt": Array [
+              "TestAPILogs4797D844",
+              "Arn",
+            ],
+          },
+          "Format": "{\\"requestId\\":\\"$context.requestId\\",\\"ip\\":\\"$context.identity.sourceIp\\",\\"user\\":\\"$context.identity.user\\",\\"caller\\":\\"$context.identity.caller\\",\\"requestTime\\":\\"$context.requestTime\\",\\"httpMethod\\":\\"$context.httpMethod\\",\\"resourcePath\\":\\"$context.resourcePath\\",\\"status\\":\\"$context.status\\",\\"protocol\\":\\"$context.protocol\\",\\"responseLength\\":\\"$context.responseLength\\"}",
+        },
+        "DeploymentId": Object {
+          "Ref": "TestAPIIoTDeviceSimulatorApiDeployment3A74DC1E3c7dd2f9e436a94d66869e594ca783f9",
+        },
+        "MethodSettings": Array [
+          Object {
+            "HttpMethod": "*",
+            "LoggingLevel": "INFO",
+            "ResourcePath": "/*",
+          },
+        ],
+        "RestApiId": Object {
+          "Ref": "TestAPIIoTDeviceSimulatorApiC3A3B80A",
+        },
+        "StageName": "prod",
+        "TracingEnabled": true,
+      },
+      "Type": "AWS::ApiGateway::Stage",
+    },
+    "TestAPIIoTDeviceSimulatorApiOPTIONSD9601DAF": Object {
+      "Properties": Object {
+        "AuthorizationType": "NONE",
+        "HttpMethod": "OPTIONS",
+        "Integration": Object {
+          "IntegrationResponses": Array [
+            Object {
+              "ResponseParameters": Object {
+                "method.response.header.Access-Control-Allow-Headers": "'Authorization,Content-Type,X-Amz-Date,X-Amz-Security-Token,X-Api-Key'",
+                "method.response.header.Access-Control-Allow-Methods": "'GET,POST,PUT,DELETE,OPTIONS'",
+                "method.response.header.Access-Control-Allow-Origin": "'*'",
+              },
+              "StatusCode": "200",
+            },
+          ],
+          "RequestTemplates": Object {
+            "application/json": "{ statusCode: 200 }",
+          },
+          "Type": "MOCK",
+        },
+        "MethodResponses": Array [
+          Object {
+            "ResponseParameters": Object {
+              "method.response.header.Access-Control-Allow-Headers": true,
+              "method.response.header.Access-Control-Allow-Methods": true,
+              "method.response.header.Access-Control-Allow-Origin": true,
+            },
+            "StatusCode": "200",
+          },
+        ],
+        "ResourceId": Object {
+          "Fn::GetAtt": Array [
+            "TestAPIIoTDeviceSimulatorApiC3A3B80A",
+            "RootResourceId",
+          ],
+        },
+        "RestApiId": Object {
+          "Ref": "TestAPIIoTDeviceSimulatorApiC3A3B80A",
+        },
+      },
+      "Type": "AWS::ApiGateway::Method",
+    },
+    "TestAPIIoTDeviceSimulatorApidevicetypesANYF01AB86C": Object {
+      "Properties": Object {
+        "AuthorizationType": "AWS_IAM",
+        "HttpMethod": "ANY",
+        "Integration": Object {
+          "ContentHandling": "CONVERT_TO_TEXT",
+          "IntegrationHttpMethod": "POST",
+          "IntegrationResponses": Array [
+            Object {
+              "StatusCode": "200",
+            },
+          ],
+          "PassthroughBehavior": "WHEN_NO_MATCH",
+          "Type": "AWS_PROXY",
+          "Uri": Object {
+            "Fn::Join": Array [
+              "",
+              Array [
+                "arn:",
+                Object {
+                  "Ref": "AWS::Partition",
+                },
+                ":apigateway:",
+                Object {
+                  "Ref": "AWS::Region",
+                },
+                ":lambda:path/2015-03-31/functions/",
+                Object {
+                  "Fn::GetAtt": Array [
+                    "testFunction483F4CBE",
+                    "Arn",
+                  ],
+                },
+                "/invocations",
+              ],
+            ],
+          },
+        },
+        "MethodResponses": Array [
+          Object {
+            "ResponseModels": Object {
+              "application/json": "Empty",
+            },
+            "StatusCode": "200",
+          },
+        ],
+        "RequestParameters": Object {
+          "method.request.querystring.nextToken": false,
+        },
+        "RequestValidatorId": Object {
+          "Ref": "TestAPIApiRequestValidator82D0421A",
+        },
+        "ResourceId": Object {
+          "Ref": "TestAPIIoTDeviceSimulatorApidevicetypesDD1A2F70",
+        },
+        "RestApiId": Object {
+          "Ref": "TestAPIIoTDeviceSimulatorApiC3A3B80A",
+        },
+      },
+      "Type": "AWS::ApiGateway::Method",
+    },
+    "TestAPIIoTDeviceSimulatorApidevicetypesDD1A2F70": Object {
+      "Properties": Object {
+        "ParentId": Object {
+          "Fn::GetAtt": Array [
+            "TestAPIIoTDeviceSimulatorApiC3A3B80A",
+            "RootResourceId",
+          ],
+        },
+        "PathPart": "devicetypes",
+        "RestApiId": Object {
+          "Ref": "TestAPIIoTDeviceSimulatorApiC3A3B80A",
+        },
+      },
+      "Type": "AWS::ApiGateway::Resource",
+    },
+    "TestAPIIoTDeviceSimulatorApidevicetypesOPTIONS5A349397": Object {
+      "Properties": Object {
+        "AuthorizationType": "NONE",
+        "HttpMethod": "OPTIONS",
+        "Integration": Object {
+          "IntegrationResponses": Array [
+            Object {
+              "ResponseParameters": Object {
+                "method.response.header.Access-Control-Allow-Headers": "'Authorization,Content-Type,X-Amz-Date,X-Amz-Security-Token,X-Api-Key'",
+                "method.response.header.Access-Control-Allow-Methods": "'GET,POST,PUT,DELETE,OPTIONS'",
+                "method.response.header.Access-Control-Allow-Origin": "'*'",
+              },
+              "StatusCode": "200",
+            },
+          ],
+          "RequestTemplates": Object {
+            "application/json": "{ statusCode: 200 }",
+          },
+          "Type": "MOCK",
+        },
+        "MethodResponses": Array [
+          Object {
+            "ResponseParameters": Object {
+              "method.response.header.Access-Control-Allow-Headers": true,
+              "method.response.header.Access-Control-Allow-Methods": true,
+              "method.response.header.Access-Control-Allow-Origin": true,
+            },
+            "StatusCode": "200",
+          },
+        ],
+        "ResourceId": Object {
+          "Ref": "TestAPIIoTDeviceSimulatorApidevicetypesDD1A2F70",
+        },
+        "RestApiId": Object {
+          "Ref": "TestAPIIoTDeviceSimulatorApiC3A3B80A",
+        },
+      },
+      "Type": "AWS::ApiGateway::Method",
+    },
+    "TestAPIIoTDeviceSimulatorApidevicetypestypeid1C099FE9": Object {
+      "Properties": Object {
+        "ParentId": Object {
+          "Ref": "TestAPIIoTDeviceSimulatorApidevicetypesDD1A2F70",
+        },
+        "PathPart": "{typeid}",
+        "RestApiId": Object {
+          "Ref": "TestAPIIoTDeviceSimulatorApiC3A3B80A",
+        },
+      },
+      "Type": "AWS::ApiGateway::Resource",
+    },
+    "TestAPIIoTDeviceSimulatorApidevicetypestypeidANY4D6798F4": Object {
+      "Properties": Object {
+        "AuthorizationType": "AWS_IAM",
+        "HttpMethod": "ANY",
+        "Integration": Object {
+          "ContentHandling": "CONVERT_TO_TEXT",
+          "IntegrationHttpMethod": "POST",
+          "IntegrationResponses": Array [
+            Object {
+              "StatusCode": "200",
+            },
+          ],
+          "PassthroughBehavior": "WHEN_NO_MATCH",
+          "Type": "AWS_PROXY",
+          "Uri": Object {
+            "Fn::Join": Array [
+              "",
+              Array [
+                "arn:",
+                Object {
+                  "Ref": "AWS::Partition",
+                },
+                ":apigateway:",
+                Object {
+                  "Ref": "AWS::Region",
+                },
+                ":lambda:path/2015-03-31/functions/",
+                Object {
+                  "Fn::GetAtt": Array [
+                    "testFunction483F4CBE",
+                    "Arn",
+                  ],
+                },
+                "/invocations",
+              ],
+            ],
+          },
+        },
+        "MethodResponses": Array [
+          Object {
+            "ResponseModels": Object {
+              "application/json": "Empty",
+            },
+            "StatusCode": "200",
+          },
+        ],
+        "RequestParameters": Object {
+          "method.request.querystring.nextToken": false,
+        },
+        "RequestValidatorId": Object {
+          "Ref": "TestAPIApiRequestValidator82D0421A",
+        },
+        "ResourceId": Object {
+          "Ref": "TestAPIIoTDeviceSimulatorApidevicetypestypeid1C099FE9",
+        },
+        "RestApiId": Object {
+          "Ref": "TestAPIIoTDeviceSimulatorApiC3A3B80A",
+        },
+      },
+      "Type": "AWS::ApiGateway::Method",
+    },
+    "TestAPIIoTDeviceSimulatorApidevicetypestypeidOPTIONSBF875997": Object {
+      "Properties": Object {
+        "AuthorizationType": "NONE",
+        "HttpMethod": "OPTIONS",
+        "Integration": Object {
+          "IntegrationResponses": Array [
+            Object {
+              "ResponseParameters": Object {
+                "method.response.header.Access-Control-Allow-Headers": "'Authorization,Content-Type,X-Amz-Date,X-Amz-Security-Token,X-Api-Key'",
+                "method.response.header.Access-Control-Allow-Methods": "'GET,POST,PUT,DELETE,OPTIONS'",
+                "method.response.header.Access-Control-Allow-Origin": "'*'",
+              },
+              "StatusCode": "200",
+            },
+          ],
+          "RequestTemplates": Object {
+            "application/json": "{ statusCode: 200 }",
+          },
+          "Type": "MOCK",
+        },
+        "MethodResponses": Array [
+          Object {
+            "ResponseParameters": Object {
+              "method.response.header.Access-Control-Allow-Headers": true,
+              "method.response.header.Access-Control-Allow-Methods": true,
+              "method.response.header.Access-Control-Allow-Origin": true,
+            },
+            "StatusCode": "200",
+          },
+        ],
+        "ResourceId": Object {
+          "Ref": "TestAPIIoTDeviceSimulatorApidevicetypestypeid1C099FE9",
+        },
+        "RestApiId": Object {
+          "Ref": "TestAPIIoTDeviceSimulatorApiC3A3B80A",
+        },
+      },
+      "Type": "AWS::ApiGateway::Method",
+    },
+    "TestAPIIoTDeviceSimulatorApisimulation4C784757": Object {
+      "Properties": Object {
+        "ParentId": Object {
+          "Fn::GetAtt": Array [
+            "TestAPIIoTDeviceSimulatorApiC3A3B80A",
+            "RootResourceId",
+          ],
+        },
+        "PathPart": "simulation",
+        "RestApiId": Object {
+          "Ref": "TestAPIIoTDeviceSimulatorApiC3A3B80A",
+        },
+      },
+      "Type": "AWS::ApiGateway::Resource",
+    },
+    "TestAPIIoTDeviceSimulatorApisimulationANY1BDBB626": Object {
+      "Properties": Object {
+        "AuthorizationType": "AWS_IAM",
+        "HttpMethod": "ANY",
+        "Integration": Object {
+          "ContentHandling": "CONVERT_TO_TEXT",
+          "IntegrationHttpMethod": "POST",
+          "IntegrationResponses": Array [
+            Object {
+              "StatusCode": "200",
+            },
+          ],
+          "PassthroughBehavior": "WHEN_NO_MATCH",
+          "Type": "AWS_PROXY",
+          "Uri": Object {
+            "Fn::Join": Array [
+              "",
+              Array [
+                "arn:",
+                Object {
+                  "Ref": "AWS::Partition",
+                },
+                ":apigateway:",
+                Object {
+                  "Ref": "AWS::Region",
+                },
+                ":lambda:path/2015-03-31/functions/",
+                Object {
+                  "Fn::GetAtt": Array [
+                    "testFunction483F4CBE",
+                    "Arn",
+                  ],
+                },
+                "/invocations",
+              ],
+            ],
+          },
+        },
+        "MethodResponses": Array [
+          Object {
+            "ResponseModels": Object {
+              "application/json": "Empty",
+            },
+            "StatusCode": "200",
+          },
+        ],
+        "RequestParameters": Object {
+          "method.request.querystring.nextToken": false,
+        },
+        "RequestValidatorId": Object {
+          "Ref": "TestAPIApiRequestValidator82D0421A",
+        },
+        "ResourceId": Object {
+          "Ref": "TestAPIIoTDeviceSimulatorApisimulation4C784757",
+        },
+        "RestApiId": Object {
+          "Ref": "TestAPIIoTDeviceSimulatorApiC3A3B80A",
+        },
+      },
+      "Type": "AWS::ApiGateway::Method",
+    },
+    "TestAPIIoTDeviceSimulatorApisimulationOPTIONS143B09FD": Object {
+      "Properties": Object {
+        "AuthorizationType": "NONE",
+        "HttpMethod": "OPTIONS",
+        "Integration": Object {
+          "IntegrationResponses": Array [
+            Object {
+              "ResponseParameters": Object {
+                "method.response.header.Access-Control-Allow-Headers": "'Authorization,Content-Type,X-Amz-Date,X-Amz-Security-Token,X-Api-Key'",
+                "method.response.header.Access-Control-Allow-Methods": "'GET,POST,PUT,DELETE,OPTIONS'",
+                "method.response.header.Access-Control-Allow-Origin": "'*'",
+              },
+              "StatusCode": "200",
+            },
+          ],
+          "RequestTemplates": Object {
+            "application/json": "{ statusCode: 200 }",
+          },
+          "Type": "MOCK",
+        },
+        "MethodResponses": Array [
+          Object {
+            "ResponseParameters": Object {
+              "method.response.header.Access-Control-Allow-Headers": true,
+              "method.response.header.Access-Control-Allow-Methods": true,
+              "method.response.header.Access-Control-Allow-Origin": true,
+            },
+            "StatusCode": "200",
+          },
+        ],
+        "ResourceId": Object {
+          "Ref": "TestAPIIoTDeviceSimulatorApisimulation4C784757",
+        },
+        "RestApiId": Object {
+          "Ref": "TestAPIIoTDeviceSimulatorApiC3A3B80A",
+        },
+      },
+      "Type": "AWS::ApiGateway::Method",
+    },
+    "TestAPIIoTDeviceSimulatorApisimulationsimidA3307693": Object {
+      "Properties": Object {
+        "ParentId": Object {
+          "Ref": "TestAPIIoTDeviceSimulatorApisimulation4C784757",
+        },
+        "PathPart": "{simid}",
+        "RestApiId": Object {
+          "Ref": "TestAPIIoTDeviceSimulatorApiC3A3B80A",
+        },
+      },
+      "Type": "AWS::ApiGateway::Resource",
+    },
+    "TestAPIIoTDeviceSimulatorApisimulationsimidANYC92E520A": Object {
+      "Properties": Object {
+        "AuthorizationType": "AWS_IAM",
+        "HttpMethod": "ANY",
+        "Integration": Object {
+          "ContentHandling": "CONVERT_TO_TEXT",
+          "IntegrationHttpMethod": "POST",
+          "IntegrationResponses": Array [
+            Object {
+              "StatusCode": "200",
+            },
+          ],
+          "PassthroughBehavior": "WHEN_NO_MATCH",
+          "Type": "AWS_PROXY",
+          "Uri": Object {
+            "Fn::Join": Array [
+              "",
+              Array [
+                "arn:",
+                Object {
+                  "Ref": "AWS::Partition",
+                },
+                ":apigateway:",
+                Object {
+                  "Ref": "AWS::Region",
+                },
+                ":lambda:path/2015-03-31/functions/",
+                Object {
+                  "Fn::GetAtt": Array [
+                    "testFunction483F4CBE",
+                    "Arn",
+                  ],
+                },
+                "/invocations",
+              ],
+            ],
+          },
+        },
+        "MethodResponses": Array [
+          Object {
+            "ResponseModels": Object {
+              "application/json": "Empty",
+            },
+            "StatusCode": "200",
+          },
+        ],
+        "RequestParameters": Object {
+          "method.request.querystring.nextToken": false,
+        },
+        "RequestValidatorId": Object {
+          "Ref": "TestAPIApiRequestValidator82D0421A",
+        },
+        "ResourceId": Object {
+          "Ref": "TestAPIIoTDeviceSimulatorApisimulationsimidA3307693",
+        },
+        "RestApiId": Object {
+          "Ref": "TestAPIIoTDeviceSimulatorApiC3A3B80A",
+        },
+      },
+      "Type": "AWS::ApiGateway::Method",
+    },
+    "TestAPIIoTDeviceSimulatorApisimulationsimidOPTIONS1BF0EF9E": Object {
+      "Properties": Object {
+        "AuthorizationType": "NONE",
+        "HttpMethod": "OPTIONS",
+        "Integration": Object {
+          "IntegrationResponses": Array [
+            Object {
+              "ResponseParameters": Object {
+                "method.response.header.Access-Control-Allow-Headers": "'Authorization,Content-Type,X-Amz-Date,X-Amz-Security-Token,X-Api-Key'",
+                "method.response.header.Access-Control-Allow-Methods": "'GET,POST,PUT,DELETE,OPTIONS'",
+                "method.response.header.Access-Control-Allow-Origin": "'*'",
+              },
+              "StatusCode": "200",
+            },
+          ],
+          "RequestTemplates": Object {
+            "application/json": "{ statusCode: 200 }",
+          },
+          "Type": "MOCK",
+        },
+        "MethodResponses": Array [
+          Object {
+            "ResponseParameters": Object {
+              "method.response.header.Access-Control-Allow-Headers": true,
+              "method.response.header.Access-Control-Allow-Methods": true,
+              "method.response.header.Access-Control-Allow-Origin": true,
+            },
+            "StatusCode": "200",
+          },
+        ],
+        "ResourceId": Object {
+          "Ref": "TestAPIIoTDeviceSimulatorApisimulationsimidA3307693",
+        },
+        "RestApiId": Object {
+          "Ref": "TestAPIIoTDeviceSimulatorApiC3A3B80A",
+        },
+      },
+      "Type": "AWS::ApiGateway::Method",
+    },
+    "TestAPILogs4797D844": Object {
+      "DeletionPolicy": "Delete",
+      "Metadata": Object {
+        "cfn_nag": Object {
+          "rules_to_suppress": Array [
+            Object {
+              "id": "W84",
+              "reason": "CloudWatch Logs are already encrypted by default.",
+            },
+          ],
+        },
+      },
+      "Properties": Object {
+        "RetentionInDays": 90,
+      },
+      "Type": "AWS::Logs::LogGroup",
+      "UpdateReplacePolicy": "Delete",
+    },
+    "TestDTypeTableEB82FCB5": Object {
+      "DeletionPolicy": "Retain",
+      "Properties": Object {
+        "AttributeDefinitions": Array [
+          Object {
+            "AttributeName": "typeId",
+            "AttributeType": "S",
+          },
+        ],
+        "KeySchema": Array [
+          Object {
+            "AttributeName": "typeId",
+            "KeyType": "HASH",
+          },
+        ],
+        "ProvisionedThroughput": Object {
+          "ReadCapacityUnits": 5,
+          "WriteCapacityUnits": 5,
+        },
+      },
+      "Type": "AWS::DynamoDB::Table",
+      "UpdateReplacePolicy": "Retain",
+    },
+    "TestSimTable7336F78A": Object {
+      "DeletionPolicy": "Retain",
+      "Properties": Object {
+        "AttributeDefinitions": Array [
+          Object {
+            "AttributeName": "simId",
+            "AttributeType": "S",
+          },
+        ],
+        "KeySchema": Array [
+          Object {
+            "AttributeName": "simId",
+            "KeyType": "HASH",
+          },
+        ],
+        "ProvisionedThroughput": Object {
+          "ReadCapacityUnits": 5,
+          "WriteCapacityUnits": 5,
+        },
+      },
+      "Type": "AWS::DynamoDB::Table",
+      "UpdateReplacePolicy": "Retain",
+    },
+    "testFunction483F4CBE": Object {
+      "DependsOn": Array [
+        "testFunctionServiceRoleFEC29B6F",
+      ],
+      "Properties": Object {
+        "Code": Object {
+          "S3Bucket": "test-bucket-region",
+          "S3Key": "prefix/custom-resource.zip",
+        },
+        "Handler": "index.handler",
+        "Role": Object {
+          "Fn::GetAtt": Array [
+            "testFunctionServiceRoleFEC29B6F",
+            "Arn",
+          ],
+        },
+        "Runtime": "nodejs14.x",
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "testFunctionApiLambdaInvokePermission15BBCBF8": Object {
+      "Properties": Object {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": Object {
+          "Fn::GetAtt": Array [
+            "testFunction483F4CBE",
+            "Arn",
+          ],
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "arn:",
+              Object {
+                "Ref": "AWS::Partition",
+              },
+              ":execute-api:",
+              Object {
+                "Ref": "AWS::Region",
+              },
+              ":",
+              Object {
+                "Ref": "AWS::AccountId",
+              },
+              ":",
+              Object {
+                "Ref": "TestAPIIoTDeviceSimulatorApiC3A3B80A",
+              },
+              "/*/*/*",
+            ],
+          ],
+        },
+      },
+      "Type": "AWS::Lambda::Permission",
+    },
+    "testFunctionServiceRoleFEC29B6F": Object {
+      "Properties": Object {
+        "AssumeRolePolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": Object {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": Array [
+          Object {
+            "Fn::Join": Array [
+              "",
+              Array [
+                "arn:",
+                Object {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+              ],
+            ],
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
+    },
+  },
+}
+`;

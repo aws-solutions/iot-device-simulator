@@ -1,0 +1,32 @@
+{
+  "name": "iot-device-simulator-custom-resource",
+  "version": "3.0.0",
+  "description": "custom resource lambda for iot-device-simulator",
+  "main": "index.js",
+  "scripts": {
+    "clean": "rm -rf node_modules dist coverage package-lock.json",
+    "compile": "node_modules/typescript/bin/tsc --project tsconfig.json",
+    "build": "npm run clean && npm install && npm run compile",
+    "copy-modules": "npm prune --production && rsync -avrq ./node_modules ./dist",
+    "package": "npm run build && npm run copy-modules && cd dist && zip -q -r9 package.zip * -x '**/test/*' && cd ..",
+    "test": "jest --config jest.config.js --coverage --silent"
+  },
+  "devDependencies": {
+    "@types/node": "^16.10.3",
+    "@types/jest": "^27.0.0",
+    "@types/uuid": "^8.3.1",
+    "jest": "^27.0.0",
+    "ts-jest": "^27.0.0",
+    "ts-node": "^10.2.1",
+    "typescript": "^4.4.3",
+    "aws-sdk": "^2.1001.0"
+  },
+  "dependencies": {
+    "axios": "~0.21.1",
+    "uuid": "^8.3.2"
+  },
+  "author": {
+    "name": "aws-solutions-builder"
+  },
+  "license": "Apache 2.0"
+}

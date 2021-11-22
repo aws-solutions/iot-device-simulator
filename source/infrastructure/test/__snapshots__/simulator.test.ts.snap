@@ -1,0 +1,701 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`IoT Device Simulator SimulatorConstruct Test 1`] = `
+Object {
+  "Resources": Object {
+    "TestDTypeTableEB82FCB5": Object {
+      "DeletionPolicy": "Retain",
+      "Properties": Object {
+        "AttributeDefinitions": Array [
+          Object {
+            "AttributeName": "typeId",
+            "AttributeType": "S",
+          },
+        ],
+        "KeySchema": Array [
+          Object {
+            "AttributeName": "typeId",
+            "KeyType": "HASH",
+          },
+        ],
+        "ProvisionedThroughput": Object {
+          "ReadCapacityUnits": 5,
+          "WriteCapacityUnits": 5,
+        },
+      },
+      "Type": "AWS::DynamoDB::Table",
+      "UpdateReplacePolicy": "Retain",
+    },
+    "TestPolicyCC05E598": Object {
+      "Properties": Object {
+        "PolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "cloudwatch:Get*",
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "TestPolicyCC05E598",
+        "Roles": Array [
+          Object {
+            "Ref": "simulatorEngineLambdaRoleE774CD29",
+          },
+          Object {
+            "Ref": "simulatorMicroservicesRole0AC1A17A",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "TestSimTable7336F78A": Object {
+      "DeletionPolicy": "Retain",
+      "Properties": Object {
+        "AttributeDefinitions": Array [
+          Object {
+            "AttributeName": "simId",
+            "AttributeType": "S",
+          },
+        ],
+        "KeySchema": Array [
+          Object {
+            "AttributeName": "simId",
+            "KeyType": "HASH",
+          },
+        ],
+        "ProvisionedThroughput": Object {
+          "ReadCapacityUnits": 5,
+          "WriteCapacityUnits": 5,
+        },
+      },
+      "Type": "AWS::DynamoDB::Table",
+      "UpdateReplacePolicy": "Retain",
+    },
+    "simulatorEngineLambda17530EFE": Object {
+      "DependsOn": Array [
+        "simulatorEngineLambdaRoleDefaultPolicy9ECE33DE",
+        "simulatorEngineLambdaRoleE774CD29",
+      ],
+      "Properties": Object {
+        "Code": Object {
+          "S3Bucket": "test-bucket-region",
+          "S3Key": "testPrefix//simulator.zip",
+        },
+        "Description": "IoT Device Simulator function",
+        "Environment": Object {
+          "Variables": Object {
+            "IOT_ENDPOINT": "abcd123efg45h-ats.iot.some-region.amazonaws.com",
+            "ROUTE_BUCKET": Object {
+              "Ref": "testRouteBucket64D9BEB5",
+            },
+            "SEND_ANONYMOUS_METRIC": "Yes",
+            "SIM_TABLE": Object {
+              "Ref": "TestSimTable7336F78A",
+            },
+            "SOLUTION_ID": "testId",
+            "UUID": "abc123",
+            "VERSION": "testVersion",
+          },
+        },
+        "Handler": "index.handler",
+        "Role": Object {
+          "Fn::GetAtt": Array [
+            "simulatorEngineLambdaRoleE774CD29",
+            "Arn",
+          ],
+        },
+        "Runtime": "nodejs14.x",
+        "Timeout": 900,
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "simulatorEngineLambdaRoleDefaultPolicy9ECE33DE": Object {
+      "Properties": Object {
+        "PolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": Array [
+                "s3:GetObject*",
+                "s3:GetBucket*",
+                "s3:List*",
+              ],
+              "Effect": "Allow",
+              "Resource": Array [
+                Object {
+                  "Fn::GetAtt": Array [
+                    "testRouteBucket64D9BEB5",
+                    "Arn",
+                  ],
+                },
+                Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      Object {
+                        "Fn::GetAtt": Array [
+                          "testRouteBucket64D9BEB5",
+                          "Arn",
+                        ],
+                      },
+                      "/*",
+                    ],
+                  ],
+                },
+              ],
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "simulatorEngineLambdaRoleDefaultPolicy9ECE33DE",
+        "Roles": Array [
+          Object {
+            "Ref": "simulatorEngineLambdaRoleE774CD29",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "simulatorEngineLambdaRoleE774CD29": Object {
+      "Properties": Object {
+        "AssumeRolePolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": Object {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "Path": "/",
+        "Policies": Array [
+          Object {
+            "PolicyDocument": Object {
+              "Statement": Array [
+                Object {
+                  "Action": "s3:GetObject",
+                  "Effect": "Allow",
+                  "Resource": Object {
+                    "Fn::GetAtt": Array [
+                      "testRouteBucket64D9BEB5",
+                      "Arn",
+                    ],
+                  },
+                },
+              ],
+              "Version": "2012-10-17",
+            },
+            "PolicyName": "S3Policy",
+          },
+          Object {
+            "PolicyDocument": Object {
+              "Statement": Array [
+                Object {
+                  "Action": "dynamodb:GetItem",
+                  "Effect": "Allow",
+                  "Resource": Object {
+                    "Fn::GetAtt": Array [
+                      "TestSimTable7336F78A",
+                      "Arn",
+                    ],
+                  },
+                },
+              ],
+              "Version": "2012-10-17",
+            },
+            "PolicyName": "DynamoDBPolicy",
+          },
+          Object {
+            "PolicyDocument": Object {
+              "Statement": Array [
+                Object {
+                  "Action": "iot:Publish",
+                  "Effect": "Allow",
+                  "Resource": Object {
+                    "Fn::Join": Array [
+                      "",
+                      Array [
+                        "arn:",
+                        Object {
+                          "Ref": "AWS::Partition",
+                        },
+                        ":iot:",
+                        Object {
+                          "Ref": "AWS::Region",
+                        },
+                        ":",
+                        Object {
+                          "Ref": "AWS::AccountId",
+                        },
+                        ":topic/*",
+                      ],
+                    ],
+                  },
+                },
+              ],
+              "Version": "2012-10-17",
+            },
+            "PolicyName": "IoTPolicy",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "simulatorMicroservicesRole0AC1A17A": Object {
+      "Properties": Object {
+        "AssumeRolePolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": Object {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "Path": "/",
+        "Policies": Array [
+          Object {
+            "PolicyDocument": Object {
+              "Statement": Array [
+                Object {
+                  "Action": Array [
+                    "dynamodb:PutItem",
+                    "dynamodb:DeleteItem",
+                    "dynamodb:GetItem",
+                    "dynamodb:Scan",
+                    "dynamodb:Query",
+                    "dynamodb:BatchGetItem",
+                  ],
+                  "Effect": "Allow",
+                  "Resource": Array [
+                    Object {
+                      "Fn::GetAtt": Array [
+                        "TestSimTable7336F78A",
+                        "Arn",
+                      ],
+                    },
+                    Object {
+                      "Fn::GetAtt": Array [
+                        "TestDTypeTableEB82FCB5",
+                        "Arn",
+                      ],
+                    },
+                  ],
+                },
+              ],
+              "Version": "2012-10-17",
+            },
+            "PolicyName": "DynamoDBPolicy",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "simulatorMicroservicesRoleDefaultPolicy8F21950B": Object {
+      "Properties": Object {
+        "PolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "states:StartExecution",
+              "Effect": "Allow",
+              "Resource": Object {
+                "Ref": "simulatorStepFunctionsStateMachineA2150DAB",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "simulatorMicroservicesRoleDefaultPolicy8F21950B",
+        "Roles": Array [
+          Object {
+            "Ref": "simulatorMicroservicesRole0AC1A17A",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "simulatorStepFunctionsExecutionAbortedAlarmC24E8F0E": Object {
+      "Properties": Object {
+        "AlarmDescription": "Alarm for the number of executions that aborted exceeded the threshold of 1. ",
+        "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+        "Dimensions": Array [
+          Object {
+            "Name": "StateMachineArn",
+            "Value": Object {
+              "Ref": "simulatorStepFunctionsStateMachineA2150DAB",
+            },
+          },
+        ],
+        "EvaluationPeriods": 1,
+        "MetricName": "ExecutionsAborted",
+        "Namespace": "AWS/States",
+        "Period": 300,
+        "Statistic": "Maximum",
+        "Threshold": 1,
+      },
+      "Type": "AWS::CloudWatch::Alarm",
+    },
+    "simulatorStepFunctionsExecutionFailedAlarmACE1FB5D": Object {
+      "Properties": Object {
+        "AlarmDescription": "Alarm for the number of executions that failed exceeded the threshold of 1. ",
+        "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+        "Dimensions": Array [
+          Object {
+            "Name": "StateMachineArn",
+            "Value": Object {
+              "Ref": "simulatorStepFunctionsStateMachineA2150DAB",
+            },
+          },
+        ],
+        "EvaluationPeriods": 1,
+        "MetricName": "ExecutionsFailed",
+        "Namespace": "AWS/States",
+        "Period": 300,
+        "Statistic": "Sum",
+        "Threshold": 1,
+      },
+      "Type": "AWS::CloudWatch::Alarm",
+    },
+    "simulatorStepFunctionsExecutionThrottledAlarm542D795D": Object {
+      "Properties": Object {
+        "AlarmDescription": "Alarm for the number of executions that throttled exceeded the threshold of 1. ",
+        "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+        "Dimensions": Array [
+          Object {
+            "Name": "StateMachineArn",
+            "Value": Object {
+              "Ref": "simulatorStepFunctionsStateMachineA2150DAB",
+            },
+          },
+        ],
+        "EvaluationPeriods": 1,
+        "MetricName": "ExecutionThrottled",
+        "Namespace": "AWS/States",
+        "Period": 300,
+        "Statistic": "Sum",
+        "Threshold": 1,
+      },
+      "Type": "AWS::CloudWatch::Alarm",
+    },
+    "simulatorStepFunctionsLogGroupF673A0C9": Object {
+      "DeletionPolicy": "Retain",
+      "Metadata": Object {
+        "cfn_nag": Object {
+          "rules_to_suppress": Array [
+            Object {
+              "id": "W84",
+              "reason": "KMS encryption unnecessary for log group",
+            },
+          ],
+        },
+      },
+      "Properties": Object {
+        "LogGroupName": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "/aws/vendedlogs/states/",
+              Object {
+                "Ref": "AWS::StackName",
+              },
+              "-simulatorStepFunctionsLogGroup-testSuffix",
+            ],
+          ],
+        },
+        "RetentionInDays": 365,
+      },
+      "Type": "AWS::Logs::LogGroup",
+      "UpdateReplacePolicy": "Retain",
+    },
+    "simulatorStepFunctionsStateMachineA2150DAB": Object {
+      "DependsOn": Array [
+        "simulatorStepFunctionsStateMachineRoleDefaultPolicy02630DD3",
+        "simulatorStepFunctionsStateMachineRole6FCF7FE0",
+      ],
+      "Metadata": Object {
+        "cfn_nag": Object {
+          "rules_to_suppress": Array [
+            Object {
+              "id": "W11",
+              "reason": "CloudWatch logs actions do not support resource level permissions",
+            },
+            Object {
+              "id": "W12",
+              "reason": "CloudWatch logs actions do not support resource level permissions",
+            },
+          ],
+        },
+      },
+      "Properties": Object {
+        "DefinitionString": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "{\\"StartAt\\":\\"getDeviceTypeMap\\",\\"States\\":{\\"getDeviceTypeMap\\":{\\"Type\\":\\"Map\\",\\"ResultPath\\":\\"$.simulation.devices\\",\\"Next\\":\\"simulatorInvoke\\",\\"Parameters\\":{\\"typeId.$\\":\\"$$.Map.Item.Value.typeId\\",\\"amount.$\\":\\"$$.Map.Item.Value.amount\\"},\\"Iterator\\":{\\"StartAt\\":\\"getDeviceTypeInfo\\",\\"States\\":{\\"getDeviceTypeInfo\\":{\\"End\\":true,\\"Type\\":\\"Task\\",\\"ResultPath\\":\\"$.info\\",\\"ResultSelector\\":{\\"name.$\\":\\"$.Item.name\\",\\"topic.$\\":\\"$.Item.topic\\",\\"payload.$\\":\\"$.Item.payload\\"},\\"Resource\\":\\"arn:",
+              Object {
+                "Ref": "AWS::Partition",
+              },
+              ":states:::dynamodb:getItem\\",\\"Parameters\\":{\\"Key\\":{\\"typeId\\":{\\"S.$\\":\\"$.typeId\\"}},\\"TableName\\":\\"",
+              Object {
+                "Ref": "TestDTypeTableEB82FCB5",
+              },
+              "\\",\\"ConsistentRead\\":false}}}},\\"ItemsPath\\":\\"$.simulation.devices\\",\\"MaxConcurrency\\":0},\\"simulatorInvoke\\":{\\"Next\\":\\"devicesRunning?\\",\\"Retry\\":[{\\"ErrorEquals\\":[\\"Lambda.ServiceException\\",\\"Lambda.AWSLambdaException\\",\\"Lambda.SdkClientException\\"],\\"IntervalSeconds\\":2,\\"MaxAttempts\\":6,\\"BackoffRate\\":2}],\\"Catch\\":[{\\"ErrorEquals\\":[\\"States.ALL\\"],\\"ResultPath\\":\\"$.error\\",\\"Next\\":\\"UpdateSimTable\\"}],\\"Type\\":\\"Task\\",\\"OutputPath\\":\\"$.Payload\\",\\"Resource\\":\\"arn:",
+              Object {
+                "Ref": "AWS::Partition",
+              },
+              ":states:::lambda:invoke\\",\\"Parameters\\":{\\"FunctionName\\":\\"",
+              Object {
+                "Fn::GetAtt": Array [
+                  "simulatorEngineLambda17530EFE",
+                  "Arn",
+                ],
+              },
+              "\\",\\"Payload.$\\":\\"$\\"}},\\"devicesRunning?\\":{\\"Type\\":\\"Choice\\",\\"Choices\\":[{\\"Variable\\":\\"$.options.restart\\",\\"BooleanEquals\\":true,\\"Next\\":\\"simulatorInvoke\\"}],\\"Default\\":\\"UpdateSimTable\\"},\\"UpdateSimTable\\":{\\"Next\\":\\"Done\\",\\"Catch\\":[{\\"ErrorEquals\\":[\\"DynamoDB.ConditionalCheckFailedException\\"],\\"Next\\":\\"Done\\"}],\\"Type\\":\\"Task\\",\\"Resource\\":\\"arn:",
+              Object {
+                "Ref": "AWS::Partition",
+              },
+              ":states:::dynamodb:updateItem\\",\\"Parameters\\":{\\"Key\\":{\\"simId\\":{\\"S.$\\":\\"$.simulation.simId\\"}},\\"TableName\\":\\"",
+              Object {
+                "Ref": "TestSimTable7336F78A",
+              },
+              "\\",\\"ConditionExpression\\":\\"attribute_exists(simId)\\",\\"ExpressionAttributeValues\\":{\\":stage\\":{\\"S\\":\\"sleeping\\"},\\":time\\":{\\"S.$\\":\\"$$.State.EnteredTime\\"}},\\"UpdateExpression\\":\\"SET stage = :stage, updatedAt = :time\\"}},\\"Done\\":{\\"Type\\":\\"Succeed\\"}}}",
+            ],
+          ],
+        },
+        "LoggingConfiguration": Object {
+          "Destinations": Array [
+            Object {
+              "CloudWatchLogsLogGroup": Object {
+                "LogGroupArn": Object {
+                  "Fn::GetAtt": Array [
+                    "simulatorStepFunctionsLogGroupF673A0C9",
+                    "Arn",
+                  ],
+                },
+              },
+            },
+          ],
+          "IncludeExecutionData": false,
+          "Level": "ALL",
+        },
+        "RoleArn": Object {
+          "Fn::GetAtt": Array [
+            "simulatorStepFunctionsStateMachineRole6FCF7FE0",
+            "Arn",
+          ],
+        },
+      },
+      "Type": "AWS::StepFunctions::StateMachine",
+    },
+    "simulatorStepFunctionsStateMachineRole6FCF7FE0": Object {
+      "Properties": Object {
+        "AssumeRolePolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": Object {
+                "Service": Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      "states.",
+                      Object {
+                        "Ref": "AWS::Region",
+                      },
+                      ".amazonaws.com",
+                    ],
+                  ],
+                },
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "simulatorStepFunctionsStateMachineRoleDefaultPolicy02630DD3": Object {
+      "Metadata": Object {
+        "cfn_nag": Object {
+          "rules_to_suppress": Array [
+            Object {
+              "id": "W12",
+              "reason": "The 'LogDelivery' actions do not support resource-level authorizations",
+            },
+          ],
+        },
+      },
+      "Properties": Object {
+        "PolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": Array [
+                "logs:CreateLogDelivery",
+                "logs:GetLogDelivery",
+                "logs:UpdateLogDelivery",
+                "logs:DeleteLogDelivery",
+                "logs:ListLogDeliveries",
+              ],
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+            Object {
+              "Action": "lambda:InvokeFunction",
+              "Effect": "Allow",
+              "Resource": Object {
+                "Fn::GetAtt": Array [
+                  "simulatorEngineLambda17530EFE",
+                  "Arn",
+                ],
+              },
+            },
+            Object {
+              "Action": "dynamodb:UpdateItem",
+              "Effect": "Allow",
+              "Resource": Object {
+                "Fn::Join": Array [
+                  "",
+                  Array [
+                    "arn:",
+                    Object {
+                      "Ref": "AWS::Partition",
+                    },
+                    ":dynamodb:",
+                    Object {
+                      "Ref": "AWS::Region",
+                    },
+                    ":",
+                    Object {
+                      "Ref": "AWS::AccountId",
+                    },
+                    ":table/",
+                    Object {
+                      "Ref": "TestSimTable7336F78A",
+                    },
+                  ],
+                ],
+              },
+            },
+            Object {
+              "Action": "dynamodb:GetItem",
+              "Effect": "Allow",
+              "Resource": Object {
+                "Fn::Join": Array [
+                  "",
+                  Array [
+                    "arn:",
+                    Object {
+                      "Ref": "AWS::Partition",
+                    },
+                    ":dynamodb:",
+                    Object {
+                      "Ref": "AWS::Region",
+                    },
+                    ":",
+                    Object {
+                      "Ref": "AWS::AccountId",
+                    },
+                    ":table/",
+                    Object {
+                      "Ref": "TestDTypeTableEB82FCB5",
+                    },
+                  ],
+                ],
+              },
+            },
+            Object {
+              "Action": Array [
+                "logs:PutResourcePolicy",
+                "logs:DescribeResourcePolicies",
+                "logs:DescribeLogGroups",
+              ],
+              "Effect": "Allow",
+              "Resource": Object {
+                "Fn::Join": Array [
+                  "",
+                  Array [
+                    "arn:",
+                    Object {
+                      "Ref": "AWS::Partition",
+                    },
+                    ":logs:",
+                    Object {
+                      "Ref": "AWS::Region",
+                    },
+                    ":",
+                    Object {
+                      "Ref": "AWS::AccountId",
+                    },
+                    ":*",
+                  ],
+                ],
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "simulatorStepFunctionsStateMachineRoleDefaultPolicy02630DD3",
+        "Roles": Array [
+          Object {
+            "Ref": "simulatorStepFunctionsStateMachineRole6FCF7FE0",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "simulatormicroservices752C24A5": Object {
+      "DependsOn": Array [
+        "simulatorMicroservicesRoleDefaultPolicy8F21950B",
+        "simulatorMicroservicesRole0AC1A17A",
+      ],
+      "Properties": Object {
+        "Code": Object {
+          "S3Bucket": "test-bucket-region",
+          "S3Key": "testPrefix//microservices.zip",
+        },
+        "Description": "IoT Device Simulator microservices function",
+        "Environment": Object {
+          "Variables": Object {
+            "DEVICE_TYPES_TBL": Object {
+              "Ref": "TestDTypeTableEB82FCB5",
+            },
+            "SEND_ANONYMOUS_METRIC": "Yes",
+            "SIMULATIONS_TBL": Object {
+              "Ref": "TestSimTable7336F78A",
+            },
+            "SIM_STEP_FUNCTION": Object {
+              "Ref": "simulatorStepFunctionsStateMachineA2150DAB",
+            },
+            "SOLUTION_ID": "testId",
+            "UUID": "abc123",
+            "VERSION": "testVersion",
+          },
+        },
+        "Handler": "index.handler",
+        "Role": Object {
+          "Fn::GetAtt": Array [
+            "simulatorMicroservicesRole0AC1A17A",
+            "Arn",
+          ],
+        },
+        "Runtime": "nodejs14.x",
+        "Timeout": 60,
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "testRouteBucket64D9BEB5": Object {
+      "DeletionPolicy": "Retain",
+      "Type": "AWS::S3::Bucket",
+      "UpdateReplacePolicy": "Retain",
+    },
+  },
+}
+`;
