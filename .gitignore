@@ -23,6 +23,7 @@
 **/yarn.lock
 **/aws_config.js
 **/coverage
+**/coverage-reports
 
 # System Files
 **/.DS_Store
