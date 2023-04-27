@@ -1,16 +1,11 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import {
-  App,
-  Aspects,
-  CfnResource,
-  IAspect,
-  IConstruct
-} from '@aws-cdk/core';
-import { CfnFunction } from '@aws-cdk/aws-lambda';
-import { IDSStack } from '../lib/iot-device-simulator-stack';
-import { addCfnSuppressRules } from '../utils/utils';
+import { IDSStack } from "../lib/iot-device-simulator-stack";
+import { addCfnSuppressRules } from "@aws-solutions-constructs/core";
+import { IConstruct } from "constructs";
+import { App, Aspects, CfnResource, IAspect } from "aws-cdk-lib";
+import { CfnFunction } from "aws-cdk-lib/aws-lambda";
 
 /**
  * CDK Aspect implementation to add common metadata to suppress CFN rules

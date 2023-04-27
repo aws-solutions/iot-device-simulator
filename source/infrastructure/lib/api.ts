@@ -2,7 +2,14 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Aws, Construct, RemovalPolicy } from '@aws-cdk/core';
+import { addCfnSuppressRules } from "@aws-solutions-constructs/core";
+import { Policy, ServicePrincipal } from "aws-cdk-lib/aws-iam";
+import { Table } from "aws-cdk-lib/aws-dynamodb";
+import { Function as LambdaFunction } from "aws-cdk-lib/aws-lambda";
+import { IBucket } from "aws-cdk-lib/aws-s3";
+import { Construct } from "constructs";
+import { LogGroup, RetentionDays } from "aws-cdk-lib/aws-logs";
+import { Aws, RemovalPolicy } from "aws-cdk-lib";
 import {
   AccessLogFormat,
   AuthorizationType,
@@ -18,13 +25,7 @@ import {
   RequestValidator,
   RestApi,
   Stage
-} from '@aws-cdk/aws-apigateway';
-import { Policy, ServicePrincipal } from '@aws-cdk/aws-iam';
-import { LogGroup, RetentionDays } from '@aws-cdk/aws-logs';
-import { addCfnSuppressRules } from '../utils/utils';
-import { Function as LambdaFunction } from '@aws-cdk/aws-lambda';
-import { IBucket } from '@aws-cdk/aws-s3';
-import { Table } from '@aws-cdk/aws-dynamodb';
+} from "aws-cdk-lib/aws-apigateway";
 
 /**
  * ApiConstructProps props

@@ -1,36 +1,43 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`IoT Device Simulator CommonResourceConstruct Test 1`] = `
-Object {
-  "Resources": Object {
-    "TestCommonResourceLogBucket0C3C89D7": Object {
+{
+  "Resources": {
+    "TestCommonResourceLogBucket0C3C89D7": {
       "DeletionPolicy": "Retain",
-      "Metadata": Object {
-        "cfn_nag": Object {
-          "rules_to_suppress": Array [
-            Object {
+      "Metadata": {
+        "cfn_nag": {
+          "rules_to_suppress": [
+            {
               "id": "W35",
               "reason": "This bucket is to store S3 logs, so it does not require access logs.",
             },
-            Object {
+            {
               "id": "W51",
               "reason": "This bucket is to store S3 logs, so it does not require S3 policy.",
             },
           ],
         },
       },
-      "Properties": Object {
+      "Properties": {
         "AccessControl": "LogDeliveryWrite",
-        "BucketEncryption": Object {
-          "ServerSideEncryptionConfiguration": Array [
-            Object {
-              "ServerSideEncryptionByDefault": Object {
+        "BucketEncryption": {
+          "ServerSideEncryptionConfiguration": [
+            {
+              "ServerSideEncryptionByDefault": {
                 "SSEAlgorithm": "AES256",
               },
             },
           ],
         },
-        "PublicAccessBlockConfiguration": Object {
+        "OwnershipControls": {
+          "Rules": [
+            {
+              "ObjectOwnership": "ObjectWriter",
+            },
+          ],
+        },
+        "PublicAccessBlockConfiguration": {
           "BlockPublicAcls": true,
           "BlockPublicPolicy": true,
           "IgnorePublicAcls": true,

@@ -1,19 +1,12 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Aws, Construct, CustomResource, Duration, Stack, ArnFormat } from '@aws-cdk/core';
-import {
-  CfnPolicy,
-  Effect,
-  Policy,
-  PolicyDocument,
-  PolicyStatement,
-  Role,
-  ServicePrincipal
-} from '@aws-cdk/aws-iam';
-import { Function as LambdaFunction, Runtime, Code, CfnFunction } from '@aws-cdk/aws-lambda';
-import { IBucket } from '@aws-cdk/aws-s3';
-import { addCfnSuppressRules } from '../utils/utils';
+import { CfnPolicy, Effect, Policy, PolicyDocument, PolicyStatement, Role, ServicePrincipal } from "aws-cdk-lib/aws-iam";
+import { CfnFunction, Code, Function as LambdaFunction, Runtime } from "aws-cdk-lib/aws-lambda";
+import { IBucket } from "aws-cdk-lib/aws-s3";
+import { addCfnSuppressRules } from "@aws-solutions-constructs/core";
+import { Construct } from "constructs";
+import { ArnFormat, Aws, CustomResource, Duration, Stack } from "aws-cdk-lib";
 
 /**
  * CustomResourcesConstruct props
@@ -102,7 +95,7 @@ export class CustomResourcesConstruct extends Construct {
     this.helperLambda = new LambdaFunction(this, 'HelperLambda', {
       description: 'IoT Device Simulator custom resource function',
       handler: 'index.handler',
-      runtime: Runtime.NODEJS_14_X,
+      runtime: Runtime.NODEJS_18_X,
       code: Code.fromBucket(this.sourceCodeBucket, `${this.sourceCodePrefix}/custom-resource.zip`),
       timeout: Duration.seconds(240),
       role: this.helperLambdaRole,
@@ -111,7 +104,7 @@ export class CustomResourcesConstruct extends Construct {
         SOLUTION_VERSION: props.solutionConfig.solutionVersion
       }
     });
-    (this.helperLambda.node.defaultChild as CfnFunction).addDependsOn(props.cloudWatchLogsPolicy.node.defaultChild as CfnPolicy);
+    (this.helperLambda.node.defaultChild as CfnFunction).addDependency(props.cloudWatchLogsPolicy.node.defaultChild as CfnPolicy);
 
     const customIds = new CustomResource(this, 'UUID', {
       serviceToken: this.helperLambda.functionArn,
@@ -234,7 +227,7 @@ export class CustomResourcesConstruct extends Construct {
       document: new PolicyDocument({
         statements: [
           new PolicyStatement({
-            actions: ['iot:DetachPrincipalPolicy'],
+            actions: ['iot:DetachPolicy'],
             effect: Effect.ALLOW,
             resources: ['*']
           })

@@ -1,13 +1,21 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Aws, ArnFormat, Construct, Duration, RemovalPolicy, Stack } from '@aws-cdk/core';
-import { CfnIdentityPool, CfnIdentityPoolRoleAttachment, CfnUserPool, CfnUserPoolUser, UserPool, UserPoolClient } from '@aws-cdk/aws-cognito';
-import { Effect, FederatedPrincipal, PolicyDocument, PolicyStatement, Role } from '@aws-cdk/aws-iam';
-import { Bucket, IBucket } from '@aws-cdk/aws-s3';
-import { CloudFrontToS3 } from '@aws-solutions-constructs/aws-cloudfront-s3';
-import { CfnPolicy } from '@aws-cdk/aws-iot';
-import { addCfnSuppressRules } from '../utils/utils';
+import { CloudFrontToS3 } from "@aws-solutions-constructs/aws-cloudfront-s3";
+import { addCfnSuppressRules } from "@aws-solutions-constructs/core";
+import { Construct } from "constructs";
+import { Bucket, IBucket } from "aws-cdk-lib/aws-s3";
+import { CfnPolicy } from "aws-cdk-lib/aws-iot";
+import {
+  CfnIdentityPool,
+  CfnIdentityPoolRoleAttachment,
+  CfnUserPool,
+  CfnUserPoolUser,
+  UserPool,
+  UserPoolClient
+} from "aws-cdk-lib/aws-cognito";
+import { ArnFormat, Aws, Duration, RemovalPolicy, Stack } from "aws-cdk-lib";
+import { Effect, FederatedPrincipal, PolicyDocument, PolicyStatement, Role } from "aws-cdk-lib/aws-iam";
 
 /**
  * UiConstructProps props

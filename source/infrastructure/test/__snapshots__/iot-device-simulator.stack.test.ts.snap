@@ -1,51 +1,153 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`IoT Device Simulator stack test 1`] = `
-Object {
+{
   "AWSTemplateFormatVersion": "2010-09-09",
-  "Mappings": Object {
-    "Solution": Object {
-      "Config": Object {
+  "Mappings": {
+    "ServiceprincipalMap": {
+      "af-south-1": {
+        "states": "states.af-south-1.amazonaws.com",
+      },
+      "ap-east-1": {
+        "states": "states.ap-east-1.amazonaws.com",
+      },
+      "ap-northeast-1": {
+        "states": "states.ap-northeast-1.amazonaws.com",
+      },
+      "ap-northeast-2": {
+        "states": "states.ap-northeast-2.amazonaws.com",
+      },
+      "ap-northeast-3": {
+        "states": "states.ap-northeast-3.amazonaws.com",
+      },
+      "ap-south-1": {
+        "states": "states.ap-south-1.amazonaws.com",
+      },
+      "ap-south-2": {
+        "states": "states.ap-south-2.amazonaws.com",
+      },
+      "ap-southeast-1": {
+        "states": "states.ap-southeast-1.amazonaws.com",
+      },
+      "ap-southeast-2": {
+        "states": "states.ap-southeast-2.amazonaws.com",
+      },
+      "ap-southeast-3": {
+        "states": "states.ap-southeast-3.amazonaws.com",
+      },
+      "ca-central-1": {
+        "states": "states.ca-central-1.amazonaws.com",
+      },
+      "cn-north-1": {
+        "states": "states.cn-north-1.amazonaws.com",
+      },
+      "cn-northwest-1": {
+        "states": "states.cn-northwest-1.amazonaws.com",
+      },
+      "eu-central-1": {
+        "states": "states.eu-central-1.amazonaws.com",
+      },
+      "eu-central-2": {
+        "states": "states.eu-central-2.amazonaws.com",
+      },
+      "eu-north-1": {
+        "states": "states.eu-north-1.amazonaws.com",
+      },
+      "eu-south-1": {
+        "states": "states.eu-south-1.amazonaws.com",
+      },
+      "eu-south-2": {
+        "states": "states.eu-south-2.amazonaws.com",
+      },
+      "eu-west-1": {
+        "states": "states.eu-west-1.amazonaws.com",
+      },
+      "eu-west-2": {
+        "states": "states.eu-west-2.amazonaws.com",
+      },
+      "eu-west-3": {
+        "states": "states.eu-west-3.amazonaws.com",
+      },
+      "me-central-1": {
+        "states": "states.me-central-1.amazonaws.com",
+      },
+      "me-south-1": {
+        "states": "states.me-south-1.amazonaws.com",
+      },
+      "sa-east-1": {
+        "states": "states.sa-east-1.amazonaws.com",
+      },
+      "us-east-1": {
+        "states": "states.us-east-1.amazonaws.com",
+      },
+      "us-east-2": {
+        "states": "states.us-east-2.amazonaws.com",
+      },
+      "us-gov-east-1": {
+        "states": "states.us-gov-east-1.amazonaws.com",
+      },
+      "us-gov-west-1": {
+        "states": "states.us-gov-west-1.amazonaws.com",
+      },
+      "us-iso-east-1": {
+        "states": "states.amazonaws.com",
+      },
+      "us-iso-west-1": {
+        "states": "states.amazonaws.com",
+      },
+      "us-isob-east-1": {
+        "states": "states.amazonaws.com",
+      },
+      "us-west-1": {
+        "states": "states.us-west-1.amazonaws.com",
+      },
+      "us-west-2": {
+        "states": "states.us-west-2.amazonaws.com",
+      },
+    },
+    "Solution": {
+      "Config": {
         "KeyPrefix": "SOLUTION_NAME_PLACEHOLDER/VERSION_PLACEHOLDER",
         "S3Bucket": "BUCKET_NAME_PLACEHOLDER",
         "SendAnonymousUsage": "Yes",
         "SolutionId": "SO0041",
+        "SolutionName": "SOLUTION_NAME_PLACEHOLDER",
         "Version": "VERSION_PLACEHOLDER",
       },
     },
   },
-  "Metadata": Object {
-    "AWS::CloudFormation::Interface": Object {
-      "ParameterGroups": Array [
-        Object {
-          "Label": Object {
+  "Metadata": {
+    "AWS::CloudFormation::Interface": {
+      "ParameterGroups": [
+        {
+          "Label": {
             "default": "Console access",
           },
-          "Parameters": Array [
+          "Parameters": [
             "UserEmail",
           ],
         },
       ],
-      "ParameterLabels": Object {
-        "UserEmail": Object {
+      "ParameterLabels": {
+        "UserEmail": {
           "default": "* Console Administrator Email",
         },
       },
     },
   },
-  "Outputs": Object {
-    "APIEndpoint": Object {
+  "Outputs": {
+    "APIEndpoint": {
       "Description": "The API endpoint",
-      "Value": Object {
-        "Fn::Join": Array [
+      "Value": {
+        "Fn::Join": [
           "",
-          Array [
+          [
             "https://",
-            Object {
+            {
               "Ref": "APIIoTDeviceSimulatorApi789EED4C",
             },
             ".execute-api.",
-            Object {
+            {
               "Ref": "AWS::Region",
             },
             ".amazonaws.com/prod",
@@ -53,25 +155,25 @@ Object {
         ],
       },
     },
-    "APIIoTDeviceSimulatorApiEndpoint38AE6122": Object {
-      "Value": Object {
-        "Fn::Join": Array [
+    "APIIoTDeviceSimulatorApiEndpoint38AE6122": {
+      "Value": {
+        "Fn::Join": [
           "",
-          Array [
+          [
             "https://",
-            Object {
+            {
               "Ref": "APIIoTDeviceSimulatorApi789EED4C",
             },
             ".execute-api.",
-            Object {
+            {
               "Ref": "AWS::Region",
             },
             ".",
-            Object {
+            {
               "Ref": "AWS::URLSuffix",
             },
             "/",
-            Object {
+            {
               "Ref": "APIIoTDeviceSimulatorApiDeploymentStageprodEBDF0099",
             },
             "/",
@@ -79,21 +181,21 @@ Object {
         ],
       },
     },
-    "ConsoleClientId": Object {
+    "ConsoleClientId": {
       "Description": "The console client ID",
-      "Value": Object {
+      "Value": {
         "Ref": "ConsoleUserPoolClient72810FD1",
       },
     },
-    "ConsoleURL": Object {
+    "ConsoleURL": {
       "Description": "The URL to access the console",
-      "Value": Object {
-        "Fn::Join": Array [
+      "Value": {
+        "Fn::Join": [
           "",
-          Array [
+          [
             "https://",
-            Object {
-              "Fn::GetAtt": Array [
+            {
+              "Fn::GetAtt": [
                 "ConsoleDistributionCloudFrontDistribution725A4837",
                 "DomainName",
               ],
@@ -102,52 +204,52 @@ Object {
         ],
       },
     },
-    "DeviceTypesTable": Object {
+    "DeviceTypesTable": {
       "Description": "The device types table name.",
-      "Value": Object {
+      "Value": {
         "Ref": "storageIDSDeviceTypesTable01F2060C",
       },
     },
-    "IdentityPoolId": Object {
+    "IdentityPoolId": {
       "Description": "The ID for the Cognitio Identity Pool",
-      "Value": Object {
+      "Value": {
         "Ref": "ConsoleIdentityPool389115C6",
       },
     },
-    "SimulationsTable": Object {
+    "SimulationsTable": {
       "Description": "The simulations table name",
-      "Value": Object {
+      "Value": {
         "Ref": "storageIDSSimulationsTable052FC452",
       },
     },
-    "UUID": Object {
+    "UUID": {
       "Description": "The solution UUID",
-      "Value": Object {
-        "Fn::GetAtt": Array [
+      "Value": {
+        "Fn::GetAtt": [
           "CustomResourcesUUID1685434C",
           "UUID",
         ],
       },
     },
-    "UserPoolId": Object {
+    "UserPoolId": {
       "Description": "The Cognito User Pool ID",
-      "Value": Object {
+      "Value": {
         "Ref": "ConsoleUserPoolEC556DE1",
       },
     },
   },
-  "Parameters": Object {
-    "UserEmail": Object {
-      "AllowedPattern": "^[_A-Za-z0-9-\\\\+]+(\\\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\\\.[A-Za-z0-9]+)*(\\\\.[A-Za-z]{2,})$",
+  "Parameters": {
+    "UserEmail": {
+      "AllowedPattern": "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$",
       "ConstraintDescription": "User E-Mail must be a valid E-Mail address.",
       "Description": "The user E-Mail to access the UI",
       "Type": "String",
     },
   },
-  "Resources": Object {
-    "APIApiRequestValidatorC6EB6FA1": Object {
-      "Properties": Object {
-        "RestApiId": Object {
+  "Resources": {
+    "APIApiRequestValidatorC6EB6FA1": {
+      "Properties": {
+        "RestApiId": {
           "Ref": "APIIoTDeviceSimulatorApi789EED4C",
         },
         "ValidateRequestBody": true,
@@ -155,20 +257,20 @@ Object {
       },
       "Type": "AWS::ApiGateway::RequestValidator",
     },
-    "APIIoTDeviceSimulatorApi789EED4C": Object {
-      "Properties": Object {
+    "APIIoTDeviceSimulatorApi789EED4C": {
+      "Properties": {
         "Description": "IoT Device Simulator Rest API",
-        "EndpointConfiguration": Object {
-          "Types": Array [
+        "EndpointConfiguration": {
+          "Types": [
             "REGIONAL",
           ],
         },
         "Name": "IoTDeviceSimulatorApi",
-        "Tags": Array [
-          Object {
+        "Tags": [
+          {
             "Key": "SolutionId",
-            "Value": Object {
-              "Fn::FindInMap": Array [
+            "Value": {
+              "Fn::FindInMap": [
                 "Solution",
                 "Config",
                 "SolutionId",
@@ -179,41 +281,44 @@ Object {
       },
       "Type": "AWS::ApiGateway::RestApi",
     },
-    "APIIoTDeviceSimulatorApiAccount46D2BA16": Object {
-      "DependsOn": Array [
+    "APIIoTDeviceSimulatorApiAccount46D2BA16": {
+      "DeletionPolicy": "Retain",
+      "DependsOn": [
         "APIIoTDeviceSimulatorApi789EED4C",
       ],
-      "Properties": Object {
-        "CloudWatchRoleArn": Object {
-          "Fn::GetAtt": Array [
+      "Properties": {
+        "CloudWatchRoleArn": {
+          "Fn::GetAtt": [
             "APIIoTDeviceSimulatorApiCloudWatchRole28B7B1FA",
             "Arn",
           ],
         },
       },
       "Type": "AWS::ApiGateway::Account",
+      "UpdateReplacePolicy": "Retain",
     },
-    "APIIoTDeviceSimulatorApiCloudWatchRole28B7B1FA": Object {
-      "Properties": Object {
-        "AssumeRolePolicyDocument": Object {
-          "Statement": Array [
-            Object {
+    "APIIoTDeviceSimulatorApiCloudWatchRole28B7B1FA": {
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
-              "Principal": Object {
+              "Principal": {
                 "Service": "apigateway.amazonaws.com",
               },
             },
           ],
           "Version": "2012-10-17",
         },
-        "ManagedPolicyArns": Array [
-          Object {
-            "Fn::Join": Array [
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
               "",
-              Array [
+              [
                 "arn:",
-                Object {
+                {
                   "Ref": "AWS::Partition",
                 },
                 ":iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs",
@@ -221,11 +326,11 @@ Object {
             ],
           },
         ],
-        "Tags": Array [
-          Object {
+        "Tags": [
+          {
             "Key": "SolutionId",
-            "Value": Object {
-              "Fn::FindInMap": Array [
+            "Value": {
+              "Fn::FindInMap": [
                 "Solution",
                 "Config",
                 "SolutionId",
@@ -235,9 +340,10 @@ Object {
         ],
       },
       "Type": "AWS::IAM::Role",
+      "UpdateReplacePolicy": "Retain",
     },
-    "APIIoTDeviceSimulatorApiDeployment3C1BA3951db056031fdce112fa315a0dc108e90c": Object {
-      "DependsOn": Array [
+    "APIIoTDeviceSimulatorApiDeployment3C1BA3951db056031fdce112fa315a0dc108e90c": {
+      "DependsOn": [
         "APIApiRequestValidatorC6EB6FA1",
         "APIIoTDeviceSimulatorApidevicetypestypeidANY9009DE71",
         "APIIoTDeviceSimulatorApidevicetypestypeidOPTIONS2E1262D2",
@@ -253,64 +359,68 @@ Object {
         "APIIoTDeviceSimulatorApisimulationOPTIONS3B6D882D",
         "APIIoTDeviceSimulatorApisimulationAB87A18B",
       ],
-      "Metadata": Object {
-        "cfn_nag": Object {
-          "rules_to_suppress": Array [
-            Object {
+      "Metadata": {
+        "cfn_nag": {
+          "rules_to_suppress": [
+            {
               "id": "W68",
               "reason": "The solution does not require the usage plan.",
             },
           ],
         },
       },
-      "Properties": Object {
-        "Description": "Automatically created by the RestApi construct",
-        "RestApiId": Object {
+      "Properties": {
+        "Description": "IoT Device Simulator Rest API",
+        "RestApiId": {
           "Ref": "APIIoTDeviceSimulatorApi789EED4C",
         },
       },
       "Type": "AWS::ApiGateway::Deployment",
     },
-    "APIIoTDeviceSimulatorApiDeploymentStageprodEBDF0099": Object {
-      "Metadata": Object {
-        "cfn_nag": Object {
-          "rules_to_suppress": Array [
-            Object {
+    "APIIoTDeviceSimulatorApiDeploymentStageprodEBDF0099": {
+      "DependsOn": [
+        "APIIoTDeviceSimulatorApiAccount46D2BA16",
+      ],
+      "Metadata": {
+        "cfn_nag": {
+          "rules_to_suppress": [
+            {
               "id": "W64",
               "reason": "The solution does not require the usage plan.",
             },
           ],
         },
       },
-      "Properties": Object {
-        "AccessLogSetting": Object {
-          "DestinationArn": Object {
-            "Fn::GetAtt": Array [
+      "Properties": {
+        "AccessLogSetting": {
+          "DestinationArn": {
+            "Fn::GetAtt": [
               "APILogsB6A8DF10",
               "Arn",
             ],
           },
-          "Format": "{\\"requestId\\":\\"$context.requestId\\",\\"ip\\":\\"$context.identity.sourceIp\\",\\"user\\":\\"$context.identity.user\\",\\"caller\\":\\"$context.identity.caller\\",\\"requestTime\\":\\"$context.requestTime\\",\\"httpMethod\\":\\"$context.httpMethod\\",\\"resourcePath\\":\\"$context.resourcePath\\",\\"status\\":\\"$context.status\\",\\"protocol\\":\\"$context.protocol\\",\\"responseLength\\":\\"$context.responseLength\\"}",
+          "Format": "{"requestId":"$context.requestId","ip":"$context.identity.sourceIp","user":"$context.identity.user","caller":"$context.identity.caller","requestTime":"$context.requestTime","httpMethod":"$context.httpMethod","resourcePath":"$context.resourcePath","status":"$context.status","protocol":"$context.protocol","responseLength":"$context.responseLength"}",
         },
-        "DeploymentId": Object {
+        "DeploymentId": {
           "Ref": "APIIoTDeviceSimulatorApiDeployment3C1BA3951db056031fdce112fa315a0dc108e90c",
         },
-        "MethodSettings": Array [
-          Object {
+        "MethodSettings": [
+          {
+            "DataTraceEnabled": false,
             "HttpMethod": "*",
             "LoggingLevel": "INFO",
             "ResourcePath": "/*",
           },
         ],
-        "RestApiId": Object {
+        "RestApiId": {
           "Ref": "APIIoTDeviceSimulatorApi789EED4C",
         },
         "StageName": "prod",
-        "Tags": Array [
-          Object {
+        "Tags": [
+          {
             "Key": "SolutionId",
-            "Value": Object {
-              "Fn::FindInMap": Array [
+            "Value": {
+              "Fn::FindInMap": [
                 "Solution",
                 "Config",
                 "SolutionId",
@@ -322,14 +432,14 @@ Object {
       },
       "Type": "AWS::ApiGateway::Stage",
     },
-    "APIIoTDeviceSimulatorApiOPTIONS4EA20DA2": Object {
-      "Properties": Object {
+    "APIIoTDeviceSimulatorApiOPTIONS4EA20DA2": {
+      "Properties": {
         "AuthorizationType": "NONE",
         "HttpMethod": "OPTIONS",
-        "Integration": Object {
-          "IntegrationResponses": Array [
-            Object {
-              "ResponseParameters": Object {
+        "Integration": {
+          "IntegrationResponses": [
+            {
+              "ResponseParameters": {
                 "method.response.header.Access-Control-Allow-Headers": "'Authorization,Content-Type,X-Amz-Date,X-Amz-Security-Token,X-Api-Key'",
                 "method.response.header.Access-Control-Allow-Methods": "'GET,POST,PUT,DELETE,OPTIONS'",
                 "method.response.header.Access-Control-Allow-Origin": "'*'",
@@ -337,14 +447,14 @@ Object {
               "StatusCode": "200",
             },
           ],
-          "RequestTemplates": Object {
+          "RequestTemplates": {
             "application/json": "{ statusCode: 200 }",
           },
           "Type": "MOCK",
         },
-        "MethodResponses": Array [
-          Object {
-            "ResponseParameters": Object {
+        "MethodResponses": [
+          {
+            "ResponseParameters": {
               "method.response.header.Access-Control-Allow-Headers": true,
               "method.response.header.Access-Control-Allow-Methods": true,
               "method.response.header.Access-Control-Allow-Origin": true,
@@ -352,62 +462,62 @@ Object {
             "StatusCode": "200",
           },
         ],
-        "ResourceId": Object {
-          "Fn::GetAtt": Array [
+        "ResourceId": {
+          "Fn::GetAtt": [
             "APIIoTDeviceSimulatorApi789EED4C",
             "RootResourceId",
           ],
         },
-        "RestApiId": Object {
+        "RestApiId": {
           "Ref": "APIIoTDeviceSimulatorApi789EED4C",
         },
       },
       "Type": "AWS::ApiGateway::Method",
     },
-    "APIIoTDeviceSimulatorApidevicetypes69DA3CE2": Object {
-      "Properties": Object {
-        "ParentId": Object {
-          "Fn::GetAtt": Array [
+    "APIIoTDeviceSimulatorApidevicetypes69DA3CE2": {
+      "Properties": {
+        "ParentId": {
+          "Fn::GetAtt": [
             "APIIoTDeviceSimulatorApi789EED4C",
             "RootResourceId",
           ],
         },
         "PathPart": "devicetypes",
-        "RestApiId": Object {
+        "RestApiId": {
           "Ref": "APIIoTDeviceSimulatorApi789EED4C",
         },
       },
       "Type": "AWS::ApiGateway::Resource",
     },
-    "APIIoTDeviceSimulatorApidevicetypesANY814B7130": Object {
-      "Properties": Object {
+    "APIIoTDeviceSimulatorApidevicetypesANY814B7130": {
+      "Properties": {
         "AuthorizationType": "AWS_IAM",
         "HttpMethod": "ANY",
-        "Integration": Object {
+        "Integration": {
           "ContentHandling": "CONVERT_TO_TEXT",
           "IntegrationHttpMethod": "POST",
-          "IntegrationResponses": Array [
-            Object {
+          "IntegrationResponses": [
+            {
               "StatusCode": "200",
             },
           ],
           "PassthroughBehavior": "WHEN_NO_MATCH",
           "Type": "AWS_PROXY",
-          "Uri": Object {
-            "Fn::Join": Array [
+          "Uri": {
+            "Fn::Join": [
               "",
-              Array [
+              [
                 "arn:",
-                Object {
+                {
                   "Ref": "AWS::Partition",
                 },
                 ":apigateway:",
-                Object {
+                {
                   "Ref": "AWS::Region",
                 },
                 ":lambda:path/2015-03-31/functions/",
-                Object {
-                  "Fn::GetAtt": Array [
+                {
+                  "Fn::GetAtt": [
                     "simulatormicroservices752C24A5",
                     "Arn",
                   ],
@@ -417,37 +527,37 @@ Object {
             ],
           },
         },
-        "MethodResponses": Array [
-          Object {
-            "ResponseModels": Object {
+        "MethodResponses": [
+          {
+            "ResponseModels": {
               "application/json": "Empty",
             },
             "StatusCode": "200",
           },
         ],
-        "RequestParameters": Object {
+        "RequestParameters": {
           "method.request.querystring.nextToken": false,
         },
-        "RequestValidatorId": Object {
+        "RequestValidatorId": {
           "Ref": "APIApiRequestValidatorC6EB6FA1",
         },
-        "ResourceId": Object {
+        "ResourceId": {
           "Ref": "APIIoTDeviceSimulatorApidevicetypes69DA3CE2",
         },
-        "RestApiId": Object {
+        "RestApiId": {
           "Ref": "APIIoTDeviceSimulatorApi789EED4C",
         },
       },
       "Type": "AWS::ApiGateway::Method",
     },
-    "APIIoTDeviceSimulatorApidevicetypesOPTIONS9AA68147": Object {
-      "Properties": Object {
+    "APIIoTDeviceSimulatorApidevicetypesOPTIONS9AA68147": {
+      "Properties": {
         "AuthorizationType": "NONE",
         "HttpMethod": "OPTIONS",
-        "Integration": Object {
-          "IntegrationResponses": Array [
-            Object {
-              "ResponseParameters": Object {
+        "Integration": {
+          "IntegrationResponses": [
+            {
+              "ResponseParameters": {
                 "method.response.header.Access-Control-Allow-Headers": "'Authorization,Content-Type,X-Amz-Date,X-Amz-Security-Token,X-Api-Key'",
                 "method.response.header.Access-Control-Allow-Methods": "'GET,POST,PUT,DELETE,OPTIONS'",
                 "method.response.header.Access-Control-Allow-Origin": "'*'",
@@ -455,14 +565,14 @@ Object {
               "StatusCode": "200",
             },
           ],
-          "RequestTemplates": Object {
+          "RequestTemplates": {
             "application/json": "{ statusCode: 200 }",
           },
           "Type": "MOCK",
         },
-        "MethodResponses": Array [
-          Object {
-            "ResponseParameters": Object {
+        "MethodResponses": [
+          {
+            "ResponseParameters": {
               "method.response.header.Access-Control-Allow-Headers": true,
               "method.response.header.Access-Control-Allow-Methods": true,
               "method.response.header.Access-Control-Allow-Origin": true,
@@ -470,56 +580,56 @@ Object {
             "StatusCode": "200",
           },
         ],
-        "ResourceId": Object {
+        "ResourceId": {
           "Ref": "APIIoTDeviceSimulatorApidevicetypes69DA3CE2",
         },
-        "RestApiId": Object {
+        "RestApiId": {
           "Ref": "APIIoTDeviceSimulatorApi789EED4C",
         },
       },
       "Type": "AWS::ApiGateway::Method",
     },
-    "APIIoTDeviceSimulatorApidevicetypestypeid9C625350": Object {
-      "Properties": Object {
-        "ParentId": Object {
+    "APIIoTDeviceSimulatorApidevicetypestypeid9C625350": {
+      "Properties": {
+        "ParentId": {
           "Ref": "APIIoTDeviceSimulatorApidevicetypes69DA3CE2",
         },
         "PathPart": "{typeid}",
-        "RestApiId": Object {
+        "RestApiId": {
           "Ref": "APIIoTDeviceSimulatorApi789EED4C",
         },
       },
       "Type": "AWS::ApiGateway::Resource",
     },
-    "APIIoTDeviceSimulatorApidevicetypestypeidANY9009DE71": Object {
-      "Properties": Object {
+    "APIIoTDeviceSimulatorApidevicetypestypeidANY9009DE71": {
+      "Properties": {
         "AuthorizationType": "AWS_IAM",
         "HttpMethod": "ANY",
-        "Integration": Object {
+        "Integration": {
           "ContentHandling": "CONVERT_TO_TEXT",
           "IntegrationHttpMethod": "POST",
-          "IntegrationResponses": Array [
-            Object {
+          "IntegrationResponses": [
+            {
               "StatusCode": "200",
             },
           ],
           "PassthroughBehavior": "WHEN_NO_MATCH",
           "Type": "AWS_PROXY",
-          "Uri": Object {
-            "Fn::Join": Array [
+          "Uri": {
+            "Fn::Join": [
               "",
-              Array [
+              [
                 "arn:",
-                Object {
+                {
                   "Ref": "AWS::Partition",
                 },
                 ":apigateway:",
-                Object {
+                {
                   "Ref": "AWS::Region",
                 },
                 ":lambda:path/2015-03-31/functions/",
-                Object {
-                  "Fn::GetAtt": Array [
+                {
+                  "Fn::GetAtt": [
                     "simulatormicroservices752C24A5",
                     "Arn",
                   ],
@@ -529,37 +639,37 @@ Object {
             ],
           },
         },
-        "MethodResponses": Array [
-          Object {
-            "ResponseModels": Object {
+        "MethodResponses": [
+          {
+            "ResponseModels": {
               "application/json": "Empty",
             },
             "StatusCode": "200",
           },
         ],
-        "RequestParameters": Object {
+        "RequestParameters": {
           "method.request.querystring.nextToken": false,
         },
-        "RequestValidatorId": Object {
+        "RequestValidatorId": {
           "Ref": "APIApiRequestValidatorC6EB6FA1",
         },
-        "ResourceId": Object {
+        "ResourceId": {
           "Ref": "APIIoTDeviceSimulatorApidevicetypestypeid9C625350",
         },
-        "RestApiId": Object {
+        "RestApiId": {
           "Ref": "APIIoTDeviceSimulatorApi789EED4C",
         },
       },
       "Type": "AWS::ApiGateway::Method",
     },
-    "APIIoTDeviceSimulatorApidevicetypestypeidOPTIONS2E1262D2": Object {
-      "Properties": Object {
+    "APIIoTDeviceSimulatorApidevicetypestypeidOPTIONS2E1262D2": {
+      "Properties": {
         "AuthorizationType": "NONE",
         "HttpMethod": "OPTIONS",
-        "Integration": Object {
-          "IntegrationResponses": Array [
-            Object {
-              "ResponseParameters": Object {
+        "Integration": {
+          "IntegrationResponses": [
+            {
+              "ResponseParameters": {
                 "method.response.header.Access-Control-Allow-Headers": "'Authorization,Content-Type,X-Amz-Date,X-Amz-Security-Token,X-Api-Key'",
                 "method.response.header.Access-Control-Allow-Methods": "'GET,POST,PUT,DELETE,OPTIONS'",
                 "method.response.header.Access-Control-Allow-Origin": "'*'",
@@ -567,14 +677,14 @@ Object {
               "StatusCode": "200",
             },
           ],
-          "RequestTemplates": Object {
+          "RequestTemplates": {
             "application/json": "{ statusCode: 200 }",
           },
           "Type": "MOCK",
         },
-        "MethodResponses": Array [
-          Object {
-            "ResponseParameters": Object {
+        "MethodResponses": [
+          {
+            "ResponseParameters": {
               "method.response.header.Access-Control-Allow-Headers": true,
               "method.response.header.Access-Control-Allow-Methods": true,
               "method.response.header.Access-Control-Allow-Origin": true,
@@ -582,59 +692,59 @@ Object {
             "StatusCode": "200",
           },
         ],
-        "ResourceId": Object {
+        "ResourceId": {
           "Ref": "APIIoTDeviceSimulatorApidevicetypestypeid9C625350",
         },
-        "RestApiId": Object {
+        "RestApiId": {
           "Ref": "APIIoTDeviceSimulatorApi789EED4C",
         },
       },
       "Type": "AWS::ApiGateway::Method",
     },
-    "APIIoTDeviceSimulatorApisimulationAB87A18B": Object {
-      "Properties": Object {
-        "ParentId": Object {
-          "Fn::GetAtt": Array [
+    "APIIoTDeviceSimulatorApisimulationAB87A18B": {
+      "Properties": {
+        "ParentId": {
+          "Fn::GetAtt": [
             "APIIoTDeviceSimulatorApi789EED4C",
             "RootResourceId",
           ],
         },
         "PathPart": "simulation",
-        "RestApiId": Object {
+        "RestApiId": {
           "Ref": "APIIoTDeviceSimulatorApi789EED4C",
         },
       },
       "Type": "AWS::ApiGateway::Resource",
     },
-    "APIIoTDeviceSimulatorApisimulationANY7B648289": Object {
-      "Properties": Object {
+    "APIIoTDeviceSimulatorApisimulationANY7B648289": {
+      "Properties": {
         "AuthorizationType": "AWS_IAM",
         "HttpMethod": "ANY",
-        "Integration": Object {
+        "Integration": {
           "ContentHandling": "CONVERT_TO_TEXT",
           "IntegrationHttpMethod": "POST",
-          "IntegrationResponses": Array [
-            Object {
+          "IntegrationResponses": [
+            {
               "StatusCode": "200",
             },
           ],
           "PassthroughBehavior": "WHEN_NO_MATCH",
           "Type": "AWS_PROXY",
-          "Uri": Object {
-            "Fn::Join": Array [
+          "Uri": {
+            "Fn::Join": [
               "",
-              Array [
+              [
                 "arn:",
-                Object {
+                {
                   "Ref": "AWS::Partition",
                 },
                 ":apigateway:",
-                Object {
+                {
                   "Ref": "AWS::Region",
                 },
                 ":lambda:path/2015-03-31/functions/",
-                Object {
-                  "Fn::GetAtt": Array [
+                {
+                  "Fn::GetAtt": [
                     "simulatormicroservices752C24A5",
                     "Arn",
                   ],
@@ -644,37 +754,37 @@ Object {
             ],
           },
         },
-        "MethodResponses": Array [
-          Object {
-            "ResponseModels": Object {
+        "MethodResponses": [
+          {
+            "ResponseModels": {
               "application/json": "Empty",
             },
             "StatusCode": "200",
           },
         ],
-        "RequestParameters": Object {
+        "RequestParameters": {
           "method.request.querystring.nextToken": false,
         },
-        "RequestValidatorId": Object {
+        "RequestValidatorId": {
           "Ref": "APIApiRequestValidatorC6EB6FA1",
         },
-        "ResourceId": Object {
+        "ResourceId": {
           "Ref": "APIIoTDeviceSimulatorApisimulationAB87A18B",
         },
-        "RestApiId": Object {
+        "RestApiId": {
           "Ref": "APIIoTDeviceSimulatorApi789EED4C",
         },
       },
       "Type": "AWS::ApiGateway::Method",
     },
-    "APIIoTDeviceSimulatorApisimulationOPTIONS3B6D882D": Object {
-      "Properties": Object {
+    "APIIoTDeviceSimulatorApisimulationOPTIONS3B6D882D": {
+      "Properties": {
         "AuthorizationType": "NONE",
         "HttpMethod": "OPTIONS",
-        "Integration": Object {
-          "IntegrationResponses": Array [
-            Object {
-              "ResponseParameters": Object {
+        "Integration": {
+          "IntegrationResponses": [
+            {
+              "ResponseParameters": {
                 "method.response.header.Access-Control-Allow-Headers": "'Authorization,Content-Type,X-Amz-Date,X-Amz-Security-Token,X-Api-Key'",
                 "method.response.header.Access-Control-Allow-Methods": "'GET,POST,PUT,DELETE,OPTIONS'",
                 "method.response.header.Access-Control-Allow-Origin": "'*'",
@@ -682,14 +792,14 @@ Object {
               "StatusCode": "200",
             },
           ],
-          "RequestTemplates": Object {
+          "RequestTemplates": {
             "application/json": "{ statusCode: 200 }",
           },
           "Type": "MOCK",
         },
-        "MethodResponses": Array [
-          Object {
-            "ResponseParameters": Object {
+        "MethodResponses": [
+          {
+            "ResponseParameters": {
               "method.response.header.Access-Control-Allow-Headers": true,
               "method.response.header.Access-Control-Allow-Methods": true,
               "method.response.header.Access-Control-Allow-Origin": true,
@@ -697,44 +807,44 @@ Object {
             "StatusCode": "200",
           },
         ],
-        "ResourceId": Object {
+        "ResourceId": {
           "Ref": "APIIoTDeviceSimulatorApisimulationAB87A18B",
         },
-        "RestApiId": Object {
+        "RestApiId": {
           "Ref": "APIIoTDeviceSimulatorApi789EED4C",
         },
       },
       "Type": "AWS::ApiGateway::Method",
     },
-    "APIIoTDeviceSimulatorApisimulationsimidANY7341FEEB": Object {
-      "Properties": Object {
+    "APIIoTDeviceSimulatorApisimulationsimidANY7341FEEB": {
+      "Properties": {
         "AuthorizationType": "AWS_IAM",
         "HttpMethod": "ANY",
-        "Integration": Object {
+        "Integration": {
           "ContentHandling": "CONVERT_TO_TEXT",
           "IntegrationHttpMethod": "POST",
-          "IntegrationResponses": Array [
-            Object {
+          "IntegrationResponses": [
+            {
               "StatusCode": "200",
             },
           ],
           "PassthroughBehavior": "WHEN_NO_MATCH",
           "Type": "AWS_PROXY",
-          "Uri": Object {
-            "Fn::Join": Array [
+          "Uri": {
+            "Fn::Join": [
               "",
-              Array [
+              [
                 "arn:",
-                Object {
+                {
                   "Ref": "AWS::Partition",
                 },
                 ":apigateway:",
-                Object {
+                {
                   "Ref": "AWS::Region",
                 },
                 ":lambda:path/2015-03-31/functions/",
-                Object {
-                  "Fn::GetAtt": Array [
+                {
+                  "Fn::GetAtt": [
                     "simulatormicroservices752C24A5",
                     "Arn",
                   ],
@@ -744,49 +854,49 @@ Object {
             ],
           },
         },
-        "MethodResponses": Array [
-          Object {
-            "ResponseModels": Object {
+        "MethodResponses": [
+          {
+            "ResponseModels": {
               "application/json": "Empty",
             },
             "StatusCode": "200",
           },
         ],
-        "RequestParameters": Object {
+        "RequestParameters": {
           "method.request.querystring.nextToken": false,
         },
-        "RequestValidatorId": Object {
+        "RequestValidatorId": {
           "Ref": "APIApiRequestValidatorC6EB6FA1",
         },
-        "ResourceId": Object {
+        "ResourceId": {
           "Ref": "APIIoTDeviceSimulatorApisimulationsimidC20C5A22",
         },
-        "RestApiId": Object {
+        "RestApiId": {
           "Ref": "APIIoTDeviceSimulatorApi789EED4C",
         },
       },
       "Type": "AWS::ApiGateway::Method",
     },
-    "APIIoTDeviceSimulatorApisimulationsimidC20C5A22": Object {
-      "Properties": Object {
-        "ParentId": Object {
+    "APIIoTDeviceSimulatorApisimulationsimidC20C5A22": {
+      "Properties": {
+        "ParentId": {
           "Ref": "APIIoTDeviceSimulatorApisimulationAB87A18B",
         },
         "PathPart": "{simid}",
-        "RestApiId": Object {
+        "RestApiId": {
           "Ref": "APIIoTDeviceSimulatorApi789EED4C",
         },
       },
       "Type": "AWS::ApiGateway::Resource",
     },
-    "APIIoTDeviceSimulatorApisimulationsimidOPTIONS3A8ADE0C": Object {
-      "Properties": Object {
+    "APIIoTDeviceSimulatorApisimulationsimidOPTIONS3A8ADE0C": {
+      "Properties": {
         "AuthorizationType": "NONE",
         "HttpMethod": "OPTIONS",
-        "Integration": Object {
-          "IntegrationResponses": Array [
-            Object {
-              "ResponseParameters": Object {
+        "Integration": {
+          "IntegrationResponses": [
+            {
+              "ResponseParameters": {
                 "method.response.header.Access-Control-Allow-Headers": "'Authorization,Content-Type,X-Amz-Date,X-Amz-Security-Token,X-Api-Key'",
                 "method.response.header.Access-Control-Allow-Methods": "'GET,POST,PUT,DELETE,OPTIONS'",
                 "method.response.header.Access-Control-Allow-Origin": "'*'",
@@ -794,14 +904,14 @@ Object {
               "StatusCode": "200",
             },
           ],
-          "RequestTemplates": Object {
+          "RequestTemplates": {
             "application/json": "{ statusCode: 200 }",
           },
           "Type": "MOCK",
         },
-        "MethodResponses": Array [
-          Object {
-            "ResponseParameters": Object {
+        "MethodResponses": [
+          {
+            "ResponseParameters": {
               "method.response.header.Access-Control-Allow-Headers": true,
               "method.response.header.Access-Control-Allow-Methods": true,
               "method.response.header.Access-Control-Allow-Origin": true,
@@ -809,58 +919,175 @@ Object {
             "StatusCode": "200",
           },
         ],
-        "ResourceId": Object {
+        "ResourceId": {
           "Ref": "APIIoTDeviceSimulatorApisimulationsimidC20C5A22",
         },
-        "RestApiId": Object {
+        "RestApiId": {
           "Ref": "APIIoTDeviceSimulatorApi789EED4C",
         },
       },
       "Type": "AWS::ApiGateway::Method",
     },
-    "APILogsB6A8DF10": Object {
+    "APILogsB6A8DF10": {
       "DeletionPolicy": "Delete",
-      "Metadata": Object {
-        "cfn_nag": Object {
-          "rules_to_suppress": Array [
-            Object {
+      "Metadata": {
+        "cfn_nag": {
+          "rules_to_suppress": [
+            {
               "id": "W84",
               "reason": "CloudWatch Logs are already encrypted by default.",
             },
           ],
         },
       },
-      "Properties": Object {
+      "Properties": {
         "RetentionInDays": 90,
+        "Tags": [
+          {
+            "Key": "SolutionId",
+            "Value": {
+              "Fn::FindInMap": [
+                "Solution",
+                "Config",
+                "SolutionId",
+              ],
+            },
+          },
+        ],
       },
       "Type": "AWS::Logs::LogGroup",
       "UpdateReplacePolicy": "Delete",
     },
-    "CommonResourcesCloudWatchLogsPolicyB8257A4C": Object {
-      "Properties": Object {
-        "PolicyDocument": Object {
-          "Statement": Array [
-            Object {
-              "Action": Array [
+    "AppRegistryAssociation": {
+      "Properties": {
+        "Application": {
+          "Fn::GetAtt": [
+            "ApplicationD9CED6CE",
+            "Id",
+          ],
+        },
+        "Resource": {
+          "Ref": "AWS::StackId",
+        },
+        "ResourceType": "CFN_STACK",
+      },
+      "Type": "AWS::ServiceCatalogAppRegistry::ResourceAssociation",
+    },
+    "ApplicationD9CED6CE": {
+      "Properties": {
+        "Description": {
+          "Fn::Join": [
+            "",
+            [
+              "(",
+              {
+                "Fn::FindInMap": [
+                  "Solution",
+                  "Config",
+                  "SolutionId",
+                ],
+              },
+              ") - ",
+              {
+                "Fn::FindInMap": [
+                  "Solution",
+                  "Config",
+                  "SolutionName",
+                ],
+              },
+              " Version ",
+              {
+                "Fn::FindInMap": [
+                  "Solution",
+                  "Config",
+                  "Version",
+                ],
+              },
+            ],
+          ],
+        },
+        "Name": {
+          "Fn::Join": [
+            "-",
+            [
+              {
+                "Fn::FindInMap": [
+                  "Solution",
+                  "Config",
+                  "SolutionName",
+                ],
+              },
+              {
+                "Ref": "AWS::Region",
+              },
+              {
+                "Ref": "AWS::AccountId",
+              },
+              {
+                "Ref": "AWS::StackName",
+              },
+            ],
+          ],
+        },
+        "Tags": {
+          "SolutionId": {
+            "Fn::FindInMap": [
+              "Solution",
+              "Config",
+              "SolutionId",
+            ],
+          },
+          "Solutions:ApplicationType": "AWS-Solutions",
+          "Solutions:SolutionID": {
+            "Fn::FindInMap": [
+              "Solution",
+              "Config",
+              "SolutionId",
+            ],
+          },
+          "Solutions:SolutionName": {
+            "Fn::FindInMap": [
+              "Solution",
+              "Config",
+              "SolutionName",
+            ],
+          },
+          "Solutions:SolutionVersion": {
+            "Fn::FindInMap": [
+              "Solution",
+              "Config",
+              "Version",
+            ],
+          },
+        },
+      },
+      "Type": "AWS::ServiceCatalogAppRegistry::Application",
+    },
+    "CommonResourcesCloudWatchLogsPolicyB8257A4C": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
                 "logs:CreateLogGroup",
                 "logs:CreateLogStream",
                 "logs:PutLogEvents",
               ],
               "Effect": "Allow",
-              "Resource": Object {
-                "Fn::Join": Array [
+              "Resource": {
+                "Fn::Join": [
                   "",
-                  Array [
+                  [
                     "arn:",
-                    Object {
+                    {
                       "Ref": "AWS::Partition",
                     },
                     ":logs:",
-                    Object {
+                    {
                       "Ref": "AWS::Region",
                     },
                     ":",
-                    Object {
+                    {
                       "Ref": "AWS::AccountId",
                     },
                     ":log-group:/aws/lambda/*",
@@ -872,58 +1099,65 @@ Object {
           "Version": "2012-10-17",
         },
         "PolicyName": "CommonResourcesCloudWatchLogsPolicyB8257A4C",
-        "Roles": Array [
-          Object {
+        "Roles": [
+          {
             "Ref": "CustomResourcesHelperLambdaRole9A7E3677",
           },
-          Object {
+          {
             "Ref": "simulatorEngineLambdaRoleE774CD29",
           },
-          Object {
+          {
             "Ref": "simulatorMicroservicesRole0AC1A17A",
           },
         ],
       },
       "Type": "AWS::IAM::Policy",
     },
-    "CommonResourcesLogBucketFC1ABCC9": Object {
+    "CommonResourcesLogBucketFC1ABCC9": {
       "DeletionPolicy": "Retain",
-      "Metadata": Object {
-        "cfn_nag": Object {
-          "rules_to_suppress": Array [
-            Object {
+      "Metadata": {
+        "cfn_nag": {
+          "rules_to_suppress": [
+            {
               "id": "W35",
               "reason": "This bucket is to store S3 logs, so it does not require access logs.",
             },
-            Object {
+            {
               "id": "W51",
               "reason": "This bucket is to store S3 logs, so it does not require S3 policy.",
             },
           ],
         },
       },
-      "Properties": Object {
+      "Properties": {
         "AccessControl": "LogDeliveryWrite",
-        "BucketEncryption": Object {
-          "ServerSideEncryptionConfiguration": Array [
-            Object {
-              "ServerSideEncryptionByDefault": Object {
+        "BucketEncryption": {
+          "ServerSideEncryptionConfiguration": [
+            {
+              "ServerSideEncryptionByDefault": {
                 "SSEAlgorithm": "AES256",
               },
             },
           ],
         },
-        "PublicAccessBlockConfiguration": Object {
+        "OwnershipControls": {
+          "Rules": [
+            {
+              "ObjectOwnership": "ObjectWriter",
+            },
+          ],
+        },
+        "PublicAccessBlockConfiguration": {
           "BlockPublicAcls": true,
           "BlockPublicPolicy": true,
           "IgnorePublicAcls": true,
           "RestrictPublicBuckets": true,
         },
-        "Tags": Array [
-          Object {
+        "Tags": [
+          {
             "Key": "SolutionId",
-            "Value": Object {
-              "Fn::FindInMap": Array [
+            "Value": {
+              "Fn::FindInMap": [
                 "Solution",
                 "Config",
                 "SolutionId",
@@ -935,33 +1169,33 @@ Object {
       "Type": "AWS::S3::Bucket",
       "UpdateReplacePolicy": "Retain",
     },
-    "ConsoleDistributionCloudFrontDistribution725A4837": Object {
-      "Metadata": Object {
-        "cfn_nag": Object {
-          "rules_to_suppress": Array [
-            Object {
+    "ConsoleDistributionCloudFrontDistribution725A4837": {
+      "Metadata": {
+        "cfn_nag": {
+          "rules_to_suppress": [
+            {
               "id": "W70",
               "reason": "Since the distribution uses the CloudFront domain name, CloudFront automatically sets the security policy to TLSv1 regardless of the value of MinimumProtocolVersion",
             },
           ],
         },
       },
-      "Properties": Object {
-        "DistributionConfig": Object {
+      "Properties": {
+        "DistributionConfig": {
           "Comment": "IoT Device Simulator Distribution",
-          "CustomErrorResponses": Array [
-            Object {
+          "CustomErrorResponses": [
+            {
               "ErrorCode": 403,
               "ResponseCode": 200,
               "ResponsePagePath": "/index.html",
             },
-            Object {
+            {
               "ErrorCode": 404,
               "ResponseCode": 200,
               "ResponsePagePath": "/index.html",
             },
           ],
-          "DefaultCacheBehavior": Object {
+          "DefaultCacheBehavior": {
             "CachePolicyId": "658327ea-f89d-4fab-a63d-7e88639e58f6",
             "Compress": true,
             "TargetOriginId": "TestDLTStackConsoleDistributionCloudFrontDistributionOrigin1BAEFFEA9",
@@ -971,31 +1205,31 @@ Object {
           "Enabled": true,
           "HttpVersion": "http2",
           "IPV6Enabled": true,
-          "Logging": Object {
-            "Bucket": Object {
-              "Fn::GetAtt": Array [
+          "Logging": {
+            "Bucket": {
+              "Fn::GetAtt": [
                 "CommonResourcesLogBucketFC1ABCC9",
                 "RegionalDomainName",
               ],
             },
             "Prefix": "console-cf/",
           },
-          "Origins": Array [
-            Object {
-              "DomainName": Object {
-                "Fn::GetAtt": Array [
+          "Origins": [
+            {
+              "DomainName": {
+                "Fn::GetAtt": [
                   "ConsoleDistributionS3Bucket51F4E4E5",
                   "RegionalDomainName",
                 ],
               },
               "Id": "TestDLTStackConsoleDistributionCloudFrontDistributionOrigin1BAEFFEA9",
-              "S3OriginConfig": Object {
-                "OriginAccessIdentity": Object {
-                  "Fn::Join": Array [
+              "S3OriginConfig": {
+                "OriginAccessIdentity": {
+                  "Fn::Join": [
                     "",
-                    Array [
+                    [
                       "origin-access-identity/cloudfront/",
-                      Object {
+                      {
                         "Ref": "ConsoleDistributionCloudFrontDistributionOrigin1S3OriginD5D71BC0",
                       },
                     ],
@@ -1005,11 +1239,11 @@ Object {
             },
           ],
         },
-        "Tags": Array [
-          Object {
+        "Tags": [
+          {
             "Key": "SolutionId",
-            "Value": Object {
-              "Fn::FindInMap": Array [
+            "Value": {
+              "Fn::FindInMap": [
                 "Solution",
                 "Config",
                 "SolutionId",
@@ -1020,31 +1254,31 @@ Object {
       },
       "Type": "AWS::CloudFront::Distribution",
     },
-    "ConsoleDistributionCloudFrontDistributionOrigin1S3OriginD5D71BC0": Object {
-      "Properties": Object {
-        "CloudFrontOriginAccessIdentityConfig": Object {
+    "ConsoleDistributionCloudFrontDistributionOrigin1S3OriginD5D71BC0": {
+      "Properties": {
+        "CloudFrontOriginAccessIdentityConfig": {
           "Comment": "Identity for TestDLTStackConsoleDistributionCloudFrontDistributionOrigin1BAEFFEA9",
         },
       },
       "Type": "AWS::CloudFront::CloudFrontOriginAccessIdentity",
     },
-    "ConsoleDistributionS3Bucket51F4E4E5": Object {
+    "ConsoleDistributionS3Bucket51F4E4E5": {
       "DeletionPolicy": "Retain",
-      "Properties": Object {
-        "BucketEncryption": Object {
-          "ServerSideEncryptionConfiguration": Array [
-            Object {
-              "ServerSideEncryptionByDefault": Object {
+      "Properties": {
+        "BucketEncryption": {
+          "ServerSideEncryptionConfiguration": [
+            {
+              "ServerSideEncryptionByDefault": {
                 "SSEAlgorithm": "AES256",
               },
             },
           ],
         },
-        "LifecycleConfiguration": Object {
-          "Rules": Array [
-            Object {
-              "NoncurrentVersionTransitions": Array [
-                Object {
+        "LifecycleConfiguration": {
+          "Rules": [
+            {
+              "NoncurrentVersionTransitions": [
+                {
                   "StorageClass": "GLACIER",
                   "TransitionInDays": 90,
                 },
@@ -1053,23 +1287,23 @@ Object {
             },
           ],
         },
-        "LoggingConfiguration": Object {
-          "DestinationBucketName": Object {
+        "LoggingConfiguration": {
+          "DestinationBucketName": {
             "Ref": "CommonResourcesLogBucketFC1ABCC9",
           },
           "LogFilePrefix": "console-s3/",
         },
-        "PublicAccessBlockConfiguration": Object {
+        "PublicAccessBlockConfiguration": {
           "BlockPublicAcls": true,
           "BlockPublicPolicy": true,
           "IgnorePublicAcls": true,
           "RestrictPublicBuckets": true,
         },
-        "Tags": Array [
-          Object {
+        "Tags": [
+          {
             "Key": "SolutionId",
-            "Value": Object {
-              "Fn::FindInMap": Array [
+            "Value": {
+              "Fn::FindInMap": [
                 "Solution",
                 "Config",
                 "SolutionId",
@@ -1077,48 +1311,54 @@ Object {
             },
           },
         ],
-        "VersioningConfiguration": Object {
+        "VersioningConfiguration": {
           "Status": "Enabled",
         },
       },
       "Type": "AWS::S3::Bucket",
       "UpdateReplacePolicy": "Retain",
     },
-    "ConsoleDistributionS3BucketPolicy0C20C26B": Object {
-      "Metadata": Object {
-        "cfn_nag": Object {
-          "rules_to_suppress": Array [
-            Object {
+    "ConsoleDistributionS3BucketPolicy0C20C26B": {
+      "Metadata": {
+        "cfn_nag": {
+          "rules_to_suppress": [
+            {
               "id": "F16",
               "reason": "Public website bucket policy requires a wildcard principal",
             },
           ],
         },
       },
-      "Properties": Object {
-        "Bucket": Object {
+      "Properties": {
+        "Bucket": {
           "Ref": "ConsoleDistributionS3Bucket51F4E4E5",
         },
-        "PolicyDocument": Object {
-          "Statement": Array [
-            Object {
-              "Action": "*",
-              "Condition": Object {
-                "Bool": Object {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "s3:*",
+              "Condition": {
+                "Bool": {
                   "aws:SecureTransport": "false",
                 },
               },
               "Effect": "Deny",
-              "Principal": Object {
+              "Principal": {
                 "AWS": "*",
               },
-              "Resource": Array [
-                Object {
-                  "Fn::Join": Array [
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "ConsoleDistributionS3Bucket51F4E4E5",
+                    "Arn",
+                  ],
+                },
+                {
+                  "Fn::Join": [
                     "",
-                    Array [
-                      Object {
-                        "Fn::GetAtt": Array [
+                    [
+                      {
+                        "Fn::GetAtt": [
                           "ConsoleDistributionS3Bucket51F4E4E5",
                           "Arn",
                         ],
@@ -1127,32 +1367,25 @@ Object {
                     ],
                   ],
                 },
-                Object {
-                  "Fn::GetAtt": Array [
-                    "ConsoleDistributionS3Bucket51F4E4E5",
-                    "Arn",
-                  ],
-                },
               ],
-              "Sid": "HttpsOnly",
             },
-            Object {
+            {
               "Action": "s3:GetObject",
               "Effect": "Allow",
-              "Principal": Object {
-                "CanonicalUser": Object {
-                  "Fn::GetAtt": Array [
+              "Principal": {
+                "CanonicalUser": {
+                  "Fn::GetAtt": [
                     "ConsoleDistributionCloudFrontDistributionOrigin1S3OriginD5D71BC0",
                     "S3CanonicalUserId",
                   ],
                 },
               },
-              "Resource": Object {
-                "Fn::Join": Array [
+              "Resource": {
+                "Fn::Join": [
                   "",
-                  Array [
-                    Object {
-                      "Fn::GetAtt": Array [
+                  [
+                    {
+                      "Fn::GetAtt": [
                         "ConsoleDistributionS3Bucket51F4E4E5",
                         "Arn",
                       ],
@@ -1168,37 +1401,37 @@ Object {
       },
       "Type": "AWS::S3::BucketPolicy",
     },
-    "ConsoleIDSIoTPolicy51CF0454": Object {
-      "Metadata": Object {
-        "cfn_nag": Object {
-          "rules_to_suppress": Array [
-            Object {
+    "ConsoleIDSIoTPolicy51CF0454": {
+      "Metadata": {
+        "cfn_nag": {
+          "rules_to_suppress": [
+            {
               "id": "W11",
               "reason": "Cannot specify the resource to attach policy to identity.",
             },
           ],
         },
       },
-      "Properties": Object {
-        "PolicyDocument": Object {
-          "Statement": Array [
-            Object {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
               "Action": "iot:Connect",
               "Effect": "Allow",
-              "Resource": Object {
-                "Fn::Join": Array [
+              "Resource": {
+                "Fn::Join": [
                   "",
-                  Array [
+                  [
                     "arn:",
-                    Object {
+                    {
                       "Ref": "AWS::Partition",
                     },
                     ":iot:",
-                    Object {
+                    {
                       "Ref": "AWS::Region",
                     },
                     ":",
-                    Object {
+                    {
                       "Ref": "AWS::AccountId",
                     },
                     ":client/*",
@@ -1206,23 +1439,23 @@ Object {
                 ],
               },
             },
-            Object {
+            {
               "Action": "iot:Subscribe",
               "Effect": "Allow",
-              "Resource": Object {
-                "Fn::Join": Array [
+              "Resource": {
+                "Fn::Join": [
                   "",
-                  Array [
+                  [
                     "arn:",
-                    Object {
+                    {
                       "Ref": "AWS::Partition",
                     },
                     ":iot:",
-                    Object {
+                    {
                       "Ref": "AWS::Region",
                     },
                     ":",
-                    Object {
+                    {
                       "Ref": "AWS::AccountId",
                     },
                     ":topicfilter/*",
@@ -1230,23 +1463,23 @@ Object {
                 ],
               },
             },
-            Object {
+            {
               "Action": "iot:Receive",
               "Effect": "Allow",
-              "Resource": Object {
-                "Fn::Join": Array [
+              "Resource": {
+                "Fn::Join": [
                   "",
-                  Array [
+                  [
                     "arn:",
-                    Object {
+                    {
                       "Ref": "AWS::Partition",
                     },
                     ":iot:",
-                    Object {
+                    {
                       "Ref": "AWS::Region",
                     },
                     ":",
-                    Object {
+                    {
                       "Ref": "AWS::AccountId",
                     },
                     ":topic/*",
@@ -1260,16 +1493,16 @@ Object {
       },
       "Type": "AWS::IoT::Policy",
     },
-    "ConsoleIdentityPool389115C6": Object {
-      "Properties": Object {
+    "ConsoleIdentityPool389115C6": {
+      "Properties": {
         "AllowUnauthenticatedIdentities": false,
-        "CognitoIdentityProviders": Array [
-          Object {
-            "ClientId": Object {
+        "CognitoIdentityProviders": [
+          {
+            "ClientId": {
               "Ref": "ConsoleUserPoolClient72810FD1",
             },
-            "ProviderName": Object {
-              "Fn::GetAtt": Array [
+            "ProviderName": {
+              "Fn::GetAtt": [
                 "ConsoleUserPoolEC556DE1",
                 "ProviderName",
               ],
@@ -1280,76 +1513,76 @@ Object {
       },
       "Type": "AWS::Cognito::IdentityPool",
     },
-    "ConsoleIdentityPoolAuthenticatedRole8F32DA79": Object {
-      "Metadata": Object {
-        "cfn_nag": Object {
-          "rules_to_suppress": Array [
-            Object {
+    "ConsoleIdentityPoolAuthenticatedRole8F32DA79": {
+      "Metadata": {
+        "cfn_nag": {
+          "rules_to_suppress": [
+            {
               "id": "W11",
               "reason": "iot:AttachPrincipalPolicy does not allow for resource specification",
             },
           ],
         },
       },
-      "Properties": Object {
-        "AssumeRolePolicyDocument": Object {
-          "Statement": Array [
-            Object {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
               "Action": "sts:AssumeRoleWithWebIdentity",
-              "Condition": Object {
-                "ForAnyValue:StringLike": Object {
+              "Condition": {
+                "ForAnyValue:StringLike": {
                   "cognito-identity.amazonaws.com:amr": "authenticated",
                 },
-                "StringEquals": Object {
-                  "cognito-identity.amazonaws.com:aud": Object {
+                "StringEquals": {
+                  "cognito-identity.amazonaws.com:aud": {
                     "Ref": "ConsoleIdentityPool389115C6",
                   },
                 },
               },
               "Effect": "Allow",
-              "Principal": Object {
+              "Principal": {
                 "Federated": "cognito-identity.amazonaws.com",
               },
             },
           ],
           "Version": "2012-10-17",
         },
-        "Description": Object {
-          "Fn::Join": Array [
+        "Description": {
+          "Fn::Join": [
             "",
-            Array [
-              Object {
+            [
+              {
                 "Ref": "AWS::StackName",
               },
               " Identity Pool authenticated role",
             ],
           ],
         },
-        "Policies": Array [
-          Object {
-            "PolicyDocument": Object {
-              "Statement": Array [
-                Object {
+        "Policies": [
+          {
+            "PolicyDocument": {
+              "Statement": [
+                {
                   "Action": "execute-api:Invoke",
                   "Effect": "Allow",
-                  "Resource": Object {
-                    "Fn::Join": Array [
+                  "Resource": {
+                    "Fn::Join": [
                       "",
-                      Array [
+                      [
                         "arn:",
-                        Object {
+                        {
                           "Ref": "AWS::Partition",
                         },
                         ":execute-api:",
-                        Object {
+                        {
                           "Ref": "AWS::Region",
                         },
                         ":",
-                        Object {
+                        {
                           "Ref": "AWS::AccountId",
                         },
                         ":",
-                        Object {
+                        {
                           "Ref": "APIIoTDeviceSimulatorApi789EED4C",
                         },
                         "/prod/*",
@@ -1362,11 +1595,11 @@ Object {
             },
             "PolicyName": "ExecuteApiPolicy",
           },
-          Object {
-            "PolicyDocument": Object {
-              "Statement": Array [
-                Object {
-                  "Action": Array [
+          {
+            "PolicyDocument": {
+              "Statement": [
+                {
+                  "Action": [
                     "geo:SearchPlaceIndexForText",
                     "geo:GetMapGlyphs",
                     "geo:GetMapSprites",
@@ -1376,15 +1609,15 @@ Object {
                     "geo:GetMapTile",
                   ],
                   "Effect": "Allow",
-                  "Resource": Array [
-                    Object {
-                      "Fn::GetAtt": Array [
+                  "Resource": [
+                    {
+                      "Fn::GetAtt": [
                         "IotDeviceSimulatorMap",
                         "MapArn",
                       ],
                     },
-                    Object {
-                      "Fn::GetAtt": Array [
+                    {
+                      "Fn::GetAtt": [
                         "IotDeviceSimulatorPlaceIndex",
                         "IndexArn",
                       ],
@@ -1396,31 +1629,31 @@ Object {
             },
             "PolicyName": "LocationServicePolicy",
           },
-          Object {
-            "PolicyDocument": Object {
-              "Statement": Array [
-                Object {
+          {
+            "PolicyDocument": {
+              "Statement": [
+                {
                   "Action": "iot:AttachPrincipalPolicy",
                   "Effect": "Allow",
                   "Resource": "*",
                 },
-                Object {
+                {
                   "Action": "iot:Connect",
                   "Effect": "Allow",
-                  "Resource": Object {
-                    "Fn::Join": Array [
+                  "Resource": {
+                    "Fn::Join": [
                       "",
-                      Array [
+                      [
                         "arn:",
-                        Object {
+                        {
                           "Ref": "AWS::Partition",
                         },
                         ":iot:",
-                        Object {
+                        {
                           "Ref": "AWS::Region",
                         },
                         ":",
-                        Object {
+                        {
                           "Ref": "AWS::AccountId",
                         },
                         ":client/*",
@@ -1428,23 +1661,23 @@ Object {
                     ],
                   },
                 },
-                Object {
+                {
                   "Action": "iot:Subscribe",
                   "Effect": "Allow",
-                  "Resource": Object {
-                    "Fn::Join": Array [
+                  "Resource": {
+                    "Fn::Join": [
                       "",
-                      Array [
+                      [
                         "arn:",
-                        Object {
+                        {
                           "Ref": "AWS::Partition",
                         },
                         ":iot:",
-                        Object {
+                        {
                           "Ref": "AWS::Region",
                         },
                         ":",
-                        Object {
+                        {
                           "Ref": "AWS::AccountId",
                         },
                         ":topicfilter/*",
@@ -1452,23 +1685,23 @@ Object {
                     ],
                   },
                 },
-                Object {
+                {
                   "Action": "iot:Receive",
                   "Effect": "Allow",
-                  "Resource": Object {
-                    "Fn::Join": Array [
+                  "Resource": {
+                    "Fn::Join": [
                       "",
-                      Array [
+                      [
                         "arn:",
-                        Object {
+                        {
                           "Ref": "AWS::Partition",
                         },
                         ":iot:",
-                        Object {
+                        {
                           "Ref": "AWS::Region",
                         },
                         ":",
-                        Object {
+                        {
                           "Ref": "AWS::AccountId",
                         },
                         ":topic/*",
@@ -1482,11 +1715,11 @@ Object {
             "PolicyName": "IoTPolicy",
           },
         ],
-        "Tags": Array [
-          Object {
+        "Tags": [
+          {
             "Key": "SolutionId",
-            "Value": Object {
-              "Fn::FindInMap": Array [
+            "Value": {
+              "Fn::FindInMap": [
                 "Solution",
                 "Config",
                 "SolutionId",
@@ -1497,14 +1730,14 @@ Object {
       },
       "Type": "AWS::IAM::Role",
     },
-    "ConsoleIdentityPoolRoleAttachement8552A306": Object {
-      "Properties": Object {
-        "IdentityPoolId": Object {
+    "ConsoleIdentityPoolRoleAttachement8552A306": {
+      "Properties": {
+        "IdentityPoolId": {
           "Ref": "ConsoleIdentityPool389115C6",
         },
-        "Roles": Object {
-          "authenticated": Object {
-            "Fn::GetAtt": Array [
+        "Roles": {
+          "authenticated": {
+            "Fn::GetAtt": [
               "ConsoleIdentityPoolAuthenticatedRole8F32DA79",
               "Arn",
             ],
@@ -1513,55 +1746,55 @@ Object {
       },
       "Type": "AWS::Cognito::IdentityPoolRoleAttachment",
     },
-    "ConsoleUser3BA0F436": Object {
-      "Properties": Object {
-        "DesiredDeliveryMediums": Array [
+    "ConsoleUser3BA0F436": {
+      "Properties": {
+        "DesiredDeliveryMediums": [
           "EMAIL",
         ],
         "ForceAliasCreation": true,
-        "UserAttributes": Array [
-          Object {
+        "UserAttributes": [
+          {
             "Name": "email",
-            "Value": Object {
+            "Value": {
               "Ref": "UserEmail",
             },
           },
-          Object {
+          {
             "Name": "email_verified",
             "Value": "true",
           },
         ],
-        "UserPoolId": Object {
+        "UserPoolId": {
           "Ref": "ConsoleUserPoolEC556DE1",
         },
-        "Username": Object {
+        "Username": {
           "Ref": "UserEmail",
         },
       },
       "Type": "AWS::Cognito::UserPoolUser",
     },
-    "ConsoleUserPoolClient72810FD1": Object {
-      "Properties": Object {
-        "AllowedOAuthFlows": Array [
+    "ConsoleUserPoolClient72810FD1": {
+      "Properties": {
+        "AllowedOAuthFlows": [
           "implicit",
           "code",
         ],
         "AllowedOAuthFlowsUserPoolClient": true,
-        "AllowedOAuthScopes": Array [
+        "AllowedOAuthScopes": [
           "profile",
           "phone",
           "email",
           "openid",
           "aws.cognito.signin.user.admin",
         ],
-        "CallbackURLs": Array [
+        "CallbackURLs": [
           "https://example.com",
         ],
-        "ClientName": Object {
-          "Fn::Join": Array [
+        "ClientName": {
+          "Fn::Join": [
             "",
-            Array [
-              Object {
+            [
+              {
                 "Ref": "AWS::StackName",
               },
               "-userpool-client",
@@ -1571,46 +1804,46 @@ Object {
         "GenerateSecret": false,
         "PreventUserExistenceErrors": "ENABLED",
         "RefreshTokenValidity": 1440,
-        "SupportedIdentityProviders": Array [
+        "SupportedIdentityProviders": [
           "COGNITO",
         ],
-        "TokenValidityUnits": Object {
+        "TokenValidityUnits": {
           "RefreshToken": "minutes",
         },
-        "UserPoolId": Object {
+        "UserPoolId": {
           "Ref": "ConsoleUserPoolEC556DE1",
         },
       },
       "Type": "AWS::Cognito::UserPoolClient",
     },
-    "ConsoleUserPoolEC556DE1": Object {
+    "ConsoleUserPoolEC556DE1": {
       "DeletionPolicy": "Delete",
-      "Properties": Object {
-        "AccountRecoverySetting": Object {
-          "RecoveryMechanisms": Array [
-            Object {
+      "Properties": {
+        "AccountRecoverySetting": {
+          "RecoveryMechanisms": [
+            {
               "Name": "verified_phone_number",
               "Priority": 1,
             },
-            Object {
+            {
               "Name": "verified_email",
               "Priority": 2,
             },
           ],
         },
-        "AdminCreateUserConfig": Object {
+        "AdminCreateUserConfig": {
           "AllowAdminCreateUserOnly": true,
-          "InviteMessageTemplate": Object {
-            "EmailMessage": Object {
-              "Fn::Join": Array [
+          "InviteMessageTemplate": {
+            "EmailMessage": {
+              "Fn::Join": [
                 "",
-                Array [
+                [
                   "
           <p>
             You are invited to join IoT Device Simulator.<br />
             https://",
-                  Object {
-                    "Fn::GetAtt": Array [
+                  {
+                    "Fn::GetAtt": [
                       "ConsoleDistributionCloudFrontDistribution725A4837",
                       "DomainName",
                     ],
@@ -1628,13 +1861,13 @@ Object {
             "EmailSubject": "[IoT Device Simulator] Login information",
           },
         },
-        "AutoVerifiedAttributes": Array [
+        "AutoVerifiedAttributes": [
           "email",
         ],
         "EmailVerificationMessage": "The verification code to your new account is {####}",
         "EmailVerificationSubject": "Verify your new account",
-        "Policies": Object {
-          "PasswordPolicy": Object {
+        "Policies": {
+          "PasswordPolicy": {
             "MinimumLength": 12,
             "RequireLowercase": true,
             "RequireNumbers": true,
@@ -1643,33 +1876,33 @@ Object {
           },
         },
         "SmsVerificationMessage": "The verification code to your new account is {####}",
-        "UserPoolAddOns": Object {
+        "UserPoolAddOns": {
           "AdvancedSecurityMode": "ENFORCED",
         },
-        "UserPoolName": Object {
-          "Fn::Join": Array [
+        "UserPoolName": {
+          "Fn::Join": [
             "",
-            Array [
-              Object {
+            [
+              {
                 "Ref": "AWS::StackName",
               },
               "-user-pool",
             ],
           ],
         },
-        "UserPoolTags": Object {
-          "SolutionId": Object {
-            "Fn::FindInMap": Array [
+        "UserPoolTags": {
+          "SolutionId": {
+            "Fn::FindInMap": [
               "Solution",
               "Config",
               "SolutionId",
             ],
           },
         },
-        "UsernameAttributes": Array [
+        "UsernameAttributes": [
           "email",
         ],
-        "VerificationMessageTemplate": Object {
+        "VerificationMessageTemplate": {
           "DefaultEmailOption": "CONFIRM_WITH_CODE",
           "EmailMessage": "The verification code to your new account is {####}",
           "EmailSubject": "Verify your new account",
@@ -1679,128 +1912,128 @@ Object {
       "Type": "AWS::Cognito::UserPool",
       "UpdateReplacePolicy": "Delete",
     },
-    "CustomResourcesConsoleConfig312242CD": Object {
+    "CustomResourcesConsoleConfig312242CD": {
       "DeletionPolicy": "Delete",
-      "Properties": Object {
+      "Properties": {
         "ConfigFileName": "aws_config.js",
-        "DestinationBucket": Object {
+        "DestinationBucket": {
           "Ref": "ConsoleDistributionS3Bucket51F4E4E5",
         },
         "Resource": "CreateConfig",
-        "ServiceToken": Object {
-          "Fn::GetAtt": Array [
+        "ServiceToken": {
+          "Fn::GetAtt": [
             "CustomResourcesHelperLambda2682DCBF",
             "Arn",
           ],
         },
-        "configObj": Object {
-          "Fn::Join": Array [
+        "configObj": {
+          "Fn::Join": [
             "",
-            Array [
-              "{\\"aws_iot_endpoint\\":\\"",
-              Object {
-                "Fn::GetAtt": Array [
+            [
+              "{"aws_iot_endpoint":"",
+              {
+                "Fn::GetAtt": [
                   "CustomResourcesEndpointAddressF8CE08A0",
                   "IOT_ENDPOINT",
                 ],
               },
-              "\\",\\"API\\":{\\"endpoints\\":[{\\"name\\":\\"ids\\",\\"endpoint\\":\\"https://",
-              Object {
+              "","API":{"endpoints":[{"name":"ids","endpoint":"https://",
+              {
                 "Ref": "APIIoTDeviceSimulatorApi789EED4C",
               },
               ".execute-api.",
-              Object {
+              {
                 "Ref": "AWS::Region",
               },
-              ".amazonaws.com/prod\\",\\"region\\":\\"",
-              Object {
+              ".amazonaws.com/prod","region":"",
+              {
                 "Ref": "AWS::Region",
               },
-              "\\"}]},\\"Auth\\":{\\"identityPoolId\\":\\"",
-              Object {
+              ""}]},"Auth":{"identityPoolId":"",
+              {
                 "Ref": "ConsoleIdentityPool389115C6",
               },
-              "\\",\\"region\\":\\"",
-              Object {
+              "","region":"",
+              {
                 "Ref": "AWS::Region",
               },
-              "\\",\\"userPoolId\\":\\"",
-              Object {
+              "","userPoolId":"",
+              {
                 "Ref": "ConsoleUserPoolEC556DE1",
               },
-              "\\",\\"userPoolWebClientId\\":\\"",
-              Object {
+              "","userPoolWebClientId":"",
+              {
                 "Ref": "ConsoleUserPoolClient72810FD1",
               },
-              "\\"},\\"aws_iot_policy_name\\":\\"",
-              Object {
+              ""},"aws_iot_policy_name":"",
+              {
                 "Ref": "ConsoleIDSIoTPolicy51CF0454",
               },
-              "\\",\\"aws_project_region\\":\\"",
-              Object {
+              "","aws_project_region":"",
+              {
                 "Ref": "AWS::Region",
               },
-              "\\",\\"geo\\":{\\"AmazonLocationService\\":{\\"region\\":\\"",
-              Object {
+              "","geo":{"AmazonLocationService":{"region":"",
+              {
                 "Ref": "AWS::Region",
               },
-              "\\",\\"maps\\":{\\"items\\":{\\"",
-              Object {
-                "Fn::GetAtt": Array [
+              "","maps":{"items":{"",
+              {
+                "Fn::GetAtt": [
                   "CustomResourcesUUID1685434C",
                   "REDUCED_STACK_NAME",
                 ],
               },
               "-IotDeviceSimulatorMap-",
-              Object {
-                "Fn::GetAtt": Array [
+              {
+                "Fn::GetAtt": [
                   "CustomResourcesUUID1685434C",
                   "UNIQUE_SUFFIX",
                 ],
               },
-              "\\":{\\"style\\":\\"VectorEsriNavigation\\"}},\\"default\\":\\"",
-              Object {
-                "Fn::GetAtt": Array [
+              "":{"style":"VectorEsriNavigation"}},"default":"",
+              {
+                "Fn::GetAtt": [
                   "CustomResourcesUUID1685434C",
                   "REDUCED_STACK_NAME",
                 ],
               },
               "-IotDeviceSimulatorMap-",
-              Object {
-                "Fn::GetAtt": Array [
+              {
+                "Fn::GetAtt": [
                   "CustomResourcesUUID1685434C",
                   "UNIQUE_SUFFIX",
                 ],
               },
-              "\\"},\\"search_indices\\":{\\"items\\":[\\"",
-              Object {
-                "Fn::GetAtt": Array [
+              ""},"search_indices":{"items":["",
+              {
+                "Fn::GetAtt": [
                   "CustomResourcesUUID1685434C",
                   "REDUCED_STACK_NAME",
                 ],
               },
               "-IoTDeviceSimulatorPlaceIndex-",
-              Object {
-                "Fn::GetAtt": Array [
+              {
+                "Fn::GetAtt": [
                   "CustomResourcesUUID1685434C",
                   "UNIQUE_SUFFIX",
                 ],
               },
-              "\\"],\\"default\\":\\"",
-              Object {
-                "Fn::GetAtt": Array [
+              ""],"default":"",
+              {
+                "Fn::GetAtt": [
                   "CustomResourcesUUID1685434C",
                   "REDUCED_STACK_NAME",
                 ],
               },
               "-IoTDeviceSimulatorPlaceIndex-",
-              Object {
-                "Fn::GetAtt": Array [
+              {
+                "Fn::GetAtt": [
                   "CustomResourcesUUID1685434C",
                   "UNIQUE_SUFFIX",
                 ],
               },
-              "\\"}}}}",
+              ""}}}}",
             ],
           ],
         },
@@ -1808,39 +2041,39 @@ Object {
       "Type": "Custom::CopyConfigFiles",
       "UpdateReplacePolicy": "Delete",
     },
-    "CustomResourcesCopyConsoleFiles52D180C5": Object {
+    "CustomResourcesCopyConsoleFiles52D180C5": {
       "DeletionPolicy": "Delete",
-      "Properties": Object {
-        "DestinationBucket": Object {
+      "Properties": {
+        "DestinationBucket": {
           "Ref": "ConsoleDistributionS3Bucket51F4E4E5",
         },
         "ManifestFile": "site-manifest.json",
         "Resource": "CopyS3Assets",
-        "ServiceToken": Object {
-          "Fn::GetAtt": Array [
+        "ServiceToken": {
+          "Fn::GetAtt": [
             "CustomResourcesHelperLambda2682DCBF",
             "Arn",
           ],
         },
-        "SourceBucket": Object {
-          "Fn::Join": Array [
+        "SourceBucket": {
+          "Fn::Join": [
             "-",
-            Array [
-              Object {
-                "Fn::FindInMap": Array [
+            [
+              {
+                "Fn::FindInMap": [
                   "Solution",
                   "Config",
                   "S3Bucket",
                 ],
               },
-              Object {
+              {
                 "Ref": "AWS::Region",
               },
             ],
           ],
         },
-        "SourcePrefix": Object {
-          "Fn::FindInMap": Array [
+        "SourcePrefix": {
+          "Fn::FindInMap": [
             "Solution",
             "Config",
             "KeyPrefix",
@@ -1850,39 +2083,39 @@ Object {
       "Type": "Custom::CopyConsoleFiles",
       "UpdateReplacePolicy": "Delete",
     },
-    "CustomResourcesCopyRouteFiles4A609857": Object {
+    "CustomResourcesCopyRouteFiles4A609857": {
       "DeletionPolicy": "Delete",
-      "Properties": Object {
-        "DestinationBucket": Object {
+      "Properties": {
+        "DestinationBucket": {
           "Ref": "storageRoutesBucketBB9EF62B",
         },
         "ManifestFile": "routes-manifest.json",
         "Resource": "CopyS3Assets",
-        "ServiceToken": Object {
-          "Fn::GetAtt": Array [
+        "ServiceToken": {
+          "Fn::GetAtt": [
             "CustomResourcesHelperLambda2682DCBF",
             "Arn",
           ],
         },
-        "SourceBucket": Object {
-          "Fn::Join": Array [
+        "SourceBucket": {
+          "Fn::Join": [
             "-",
-            Array [
-              Object {
-                "Fn::FindInMap": Array [
+            [
+              {
+                "Fn::FindInMap": [
                   "Solution",
                   "Config",
                   "S3Bucket",
                 ],
               },
-              Object {
+              {
                 "Ref": "AWS::Region",
               },
             ],
           ],
         },
-        "SourcePrefix": Object {
-          "Fn::FindInMap": Array [
+        "SourcePrefix": {
+          "Fn::FindInMap": [
             "Solution",
             "Config",
             "KeyPrefix",
@@ -1892,22 +2125,22 @@ Object {
       "Type": "Custom::CopyRouteFiles",
       "UpdateReplacePolicy": "Delete",
     },
-    "CustomResourcesCustomResourceLambdaIoTPolicy2D60FB8D": Object {
-      "Metadata": Object {
-        "cfn_nag": Object {
-          "rules_to_suppress": Array [
-            Object {
+    "CustomResourcesCustomResourceLambdaIoTPolicy2D60FB8D": {
+      "Metadata": {
+        "cfn_nag": {
+          "rules_to_suppress": [
+            {
               "id": "W12",
               "reason": "To connect IoT and attach IoT policy to Cognito identity cannot speficy the specific resources.",
             },
           ],
         },
       },
-      "Properties": Object {
-        "PolicyDocument": Object {
-          "Statement": Array [
-            Object {
-              "Action": "iot:DetachPrincipalPolicy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "iot:DetachPolicy",
               "Effect": "Allow",
               "Resource": "*",
             },
@@ -1915,23 +2148,23 @@ Object {
           "Version": "2012-10-17",
         },
         "PolicyName": "CustomResourceLambdaIoTPolicy",
-        "Roles": Array [
-          Object {
+        "Roles": [
+          {
             "Ref": "CustomResourcesHelperLambdaRole9A7E3677",
           },
         ],
       },
       "Type": "AWS::IAM::Policy",
     },
-    "CustomResourcesDetachIoTPolicyFE439AD7": Object {
+    "CustomResourcesDetachIoTPolicyFE439AD7": {
       "DeletionPolicy": "Delete",
-      "Properties": Object {
-        "IotPolicyName": Object {
+      "Properties": {
+        "IotPolicyName": {
           "Ref": "ConsoleIDSIoTPolicy51CF0454",
         },
         "Resource": "DetachIoTPolicy",
-        "ServiceToken": Object {
-          "Fn::GetAtt": Array [
+        "ServiceToken": {
+          "Fn::GetAtt": [
             "CustomResourcesHelperLambda2682DCBF",
             "Arn",
           ],
@@ -1940,12 +2173,12 @@ Object {
       "Type": "AWS::CloudFormation::CustomResource",
       "UpdateReplacePolicy": "Delete",
     },
-    "CustomResourcesEndpointAddressF8CE08A0": Object {
+    "CustomResourcesEndpointAddressF8CE08A0": {
       "DeletionPolicy": "Delete",
-      "Properties": Object {
+      "Properties": {
         "Resource": "DescribeIoTEndpoint",
-        "ServiceToken": Object {
-          "Fn::GetAtt": Array [
+        "ServiceToken": {
+          "Fn::GetAtt": [
             "CustomResourcesHelperLambda2682DCBF",
             "Arn",
           ],
@@ -1954,37 +2187,37 @@ Object {
       "Type": "AWS::CloudFormation::CustomResource",
       "UpdateReplacePolicy": "Delete",
     },
-    "CustomResourcesHelperLambda2682DCBF": Object {
-      "DependsOn": Array [
+    "CustomResourcesHelperLambda2682DCBF": {
+      "DependsOn": [
         "CommonResourcesCloudWatchLogsPolicyB8257A4C",
         "CustomResourcesHelperLambdaRoleDefaultPolicyD48B1BDC",
         "CustomResourcesHelperLambdaRole9A7E3677",
       ],
-      "Properties": Object {
-        "Code": Object {
-          "S3Bucket": Object {
-            "Fn::Join": Array [
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Fn::Join": [
               "-",
-              Array [
-                Object {
-                  "Fn::FindInMap": Array [
+              [
+                {
+                  "Fn::FindInMap": [
                     "Solution",
                     "Config",
                     "S3Bucket",
                   ],
                 },
-                Object {
+                {
                   "Ref": "AWS::Region",
                 },
               ],
             ],
           },
-          "S3Key": Object {
-            "Fn::Join": Array [
+          "S3Key": {
+            "Fn::Join": [
               "",
-              Array [
-                Object {
-                  "Fn::FindInMap": Array [
+              [
+                {
+                  "Fn::FindInMap": [
                     "Solution",
                     "Config",
                     "KeyPrefix",
@@ -1996,17 +2229,17 @@ Object {
           },
         },
         "Description": "IoT Device Simulator custom resource function",
-        "Environment": Object {
-          "Variables": Object {
-            "SOLUTION_ID": Object {
-              "Fn::FindInMap": Array [
+        "Environment": {
+          "Variables": {
+            "SOLUTION_ID": {
+              "Fn::FindInMap": [
                 "Solution",
                 "Config",
                 "SolutionId",
               ],
             },
-            "SOLUTION_VERSION": Object {
-              "Fn::FindInMap": Array [
+            "SOLUTION_VERSION": {
+              "Fn::FindInMap": [
                 "Solution",
                 "Config",
                 "Version",
@@ -2015,18 +2248,18 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "Role": Object {
-          "Fn::GetAtt": Array [
+        "Role": {
+          "Fn::GetAtt": [
             "CustomResourcesHelperLambdaRole9A7E3677",
             "Arn",
           ],
         },
-        "Runtime": "nodejs14.x",
-        "Tags": Array [
-          Object {
+        "Runtime": "nodejs18.x",
+        "Tags": [
+          {
             "Key": "SolutionId",
-            "Value": Object {
-              "Fn::FindInMap": Array [
+            "Value": {
+              "Fn::FindInMap": [
                 "Solution",
                 "Config",
                 "SolutionId",
@@ -2038,24 +2271,24 @@ Object {
       },
       "Type": "AWS::Lambda::Function",
     },
-    "CustomResourcesHelperLambdaRole9A7E3677": Object {
-      "Metadata": Object {
-        "cfn_nag": Object {
-          "rules_to_suppress": Array [
-            Object {
+    "CustomResourcesHelperLambdaRole9A7E3677": {
+      "Metadata": {
+        "cfn_nag": {
+          "rules_to_suppress": [
+            {
               "id": "W11",
               "reason": "iot:DescribeEndpoint cannot specify the resource.",
             },
           ],
         },
       },
-      "Properties": Object {
-        "AssumeRolePolicyDocument": Object {
-          "Statement": Array [
-            Object {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
-              "Principal": Object {
+              "Principal": {
                 "Service": "lambda.amazonaws.com",
               },
             },
@@ -2063,11 +2296,11 @@ Object {
           "Version": "2012-10-17",
         },
         "Path": "/",
-        "Policies": Array [
-          Object {
-            "PolicyDocument": Object {
-              "Statement": Array [
-                Object {
+        "Policies": [
+          {
+            "PolicyDocument": {
+              "Statement": [
+                {
                   "Action": "iot:DescribeEndpoint",
                   "Effect": "Allow",
                   "Resource": "*",
@@ -2078,11 +2311,11 @@ Object {
             "PolicyName": "customResourcePolicy",
           },
         ],
-        "Tags": Array [
-          Object {
+        "Tags": [
+          {
             "Key": "SolutionId",
-            "Value": Object {
-              "Fn::FindInMap": Array [
+            "Value": {
+              "Fn::FindInMap": [
                 "Solution",
                 "Config",
                 "SolutionId",
@@ -2093,39 +2326,39 @@ Object {
       },
       "Type": "AWS::IAM::Role",
     },
-    "CustomResourcesHelperLambdaRoleDefaultPolicyD48B1BDC": Object {
-      "Properties": Object {
-        "PolicyDocument": Object {
-          "Statement": Array [
-            Object {
-              "Action": Array [
+    "CustomResourcesHelperLambdaRoleDefaultPolicyD48B1BDC": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
                 "s3:GetObject*",
                 "s3:GetBucket*",
                 "s3:List*",
               ],
               "Effect": "Allow",
-              "Resource": Array [
-                Object {
-                  "Fn::Join": Array [
+              "Resource": [
+                {
+                  "Fn::Join": [
                     "",
-                    Array [
+                    [
                       "arn:",
-                      Object {
+                      {
                         "Ref": "AWS::Partition",
                       },
                       ":s3:::",
-                      Object {
-                        "Fn::Join": Array [
+                      {
+                        "Fn::Join": [
                           "-",
-                          Array [
-                            Object {
-                              "Fn::FindInMap": Array [
+                          [
+                            {
+                              "Fn::FindInMap": [
                                 "Solution",
                                 "Config",
                                 "S3Bucket",
                               ],
                             },
-                            Object {
+                            {
                               "Ref": "AWS::Region",
                             },
                           ],
@@ -2134,35 +2367,35 @@ Object {
                     ],
                   ],
                 },
-                Object {
-                  "Fn::Join": Array [
+                {
+                  "Fn::Join": [
                     "",
-                    Array [
+                    [
                       "arn:",
-                      Object {
+                      {
                         "Ref": "AWS::Partition",
                       },
                       ":s3:::",
-                      Object {
-                        "Fn::Join": Array [
+                      {
+                        "Fn::Join": [
                           "-",
-                          Array [
-                            Object {
-                              "Fn::FindInMap": Array [
+                          [
+                            {
+                              "Fn::FindInMap": [
                                 "Solution",
                                 "Config",
                                 "S3Bucket",
                               ],
                             },
-                            Object {
+                            {
                               "Ref": "AWS::Region",
                             },
                           ],
                         ],
                       },
                       "/",
-                      Object {
-                        "Fn::FindInMap": Array [
+                      {
+                        "Fn::FindInMap": [
                           "Solution",
                           "Config",
                           "KeyPrefix",
@@ -2174,18 +2407,22 @@ Object {
                 },
               ],
             },
-            Object {
-              "Action": Array [
-                "s3:PutObject*",
+            {
+              "Action": [
+                "s3:PutObject",
+                "s3:PutObjectLegalHold",
+                "s3:PutObjectRetention",
+                "s3:PutObjectTagging",
+                "s3:PutObjectVersionTagging",
                 "s3:Abort*",
               ],
               "Effect": "Allow",
-              "Resource": Object {
-                "Fn::Join": Array [
+              "Resource": {
+                "Fn::Join": [
                   "",
-                  Array [
-                    Object {
-                      "Fn::GetAtt": Array [
+                  [
+                    {
+                      "Fn::GetAtt": [
                         "ConsoleDistributionS3Bucket51F4E4E5",
                         "Arn",
                       ],
@@ -2195,18 +2432,22 @@ Object {
                 ],
               },
             },
-            Object {
-              "Action": Array [
-                "s3:PutObject*",
+            {
+              "Action": [
+                "s3:PutObject",
+                "s3:PutObjectLegalHold",
+                "s3:PutObjectRetention",
+                "s3:PutObjectTagging",
+                "s3:PutObjectVersionTagging",
                 "s3:Abort*",
               ],
               "Effect": "Allow",
-              "Resource": Object {
-                "Fn::Join": Array [
+              "Resource": {
+                "Fn::Join": [
                   "",
-                  Array [
-                    Object {
-                      "Fn::GetAtt": Array [
+                  [
+                    {
+                      "Fn::GetAtt": [
                         "storageRoutesBucketBB9EF62B",
                         "Arn",
                       ],
@@ -2216,23 +2457,23 @@ Object {
                 ],
               },
             },
-            Object {
+            {
               "Action": "iot:ListTargetsForPolicy",
               "Effect": "Allow",
-              "Resource": Object {
-                "Fn::Join": Array [
+              "Resource": {
+                "Fn::Join": [
                   "",
-                  Array [
+                  [
                     "arn:",
-                    Object {
+                    {
                       "Ref": "AWS::Partition",
                     },
                     ":iot:",
-                    Object {
+                    {
                       "Ref": "AWS::Region",
                     },
                     ":",
-                    Object {
+                    {
                       "Ref": "AWS::AccountId",
                     },
                     ":policy/*",
@@ -2244,49 +2485,119 @@ Object {
           "Version": "2012-10-17",
         },
         "PolicyName": "CustomResourcesHelperLambdaRoleDefaultPolicyD48B1BDC",
-        "Roles": Array [
-          Object {
+        "Roles": [
+          {
             "Ref": "CustomResourcesHelperLambdaRole9A7E3677",
           },
         ],
       },
       "Type": "AWS::IAM::Policy",
     },
-    "CustomResourcesUUID1685434C": Object {
+    "CustomResourcesUUID1685434C": {
       "DeletionPolicy": "Delete",
-      "Properties": Object {
+      "Properties": {
         "Resource": "CreateUUID",
-        "ServiceToken": Object {
-          "Fn::GetAtt": Array [
+        "ServiceToken": {
+          "Fn::GetAtt": [
             "CustomResourcesHelperLambda2682DCBF",
             "Arn",
           ],
         },
-        "StackName": Object {
+        "StackName": {
           "Ref": "AWS::StackName",
         },
       },
       "Type": "AWS::CloudFormation::CustomResource",
       "UpdateReplacePolicy": "Delete",
     },
-    "IotDeviceSimulatorMap": Object {
-      "Properties": Object {
-        "Configuration": Object {
+    "DefaultApplicationAttributeGroup41AD7209": {
+      "Properties": {
+        "Attributes": {
+          "applicationType": "AWS-Solutions",
+          "solutionID": {
+            "Fn::FindInMap": [
+              "Solution",
+              "Config",
+              "SolutionId",
+            ],
+          },
+          "solutionName": {
+            "Fn::FindInMap": [
+              "Solution",
+              "Config",
+              "SolutionName",
+            ],
+          },
+          "version": {
+            "Fn::FindInMap": [
+              "Solution",
+              "Config",
+              "Version",
+            ],
+          },
+        },
+        "Description": "Attribute group for solution information",
+        "Name": {
+          "Fn::Join": [
+            "-",
+            [
+              "S01",
+              {
+                "Ref": "AWS::Region",
+              },
+              {
+                "Ref": "AWS::StackName",
+              },
+            ],
+          ],
+        },
+        "Tags": {
+          "SolutionId": {
+            "Fn::FindInMap": [
+              "Solution",
+              "Config",
+              "SolutionId",
+            ],
+          },
+        },
+      },
+      "Type": "AWS::ServiceCatalogAppRegistry::AttributeGroup",
+    },
+    "DefaultApplicationAttributeGroupApplicationAttributeGroupAssociation79c82458105c95BE0F88": {
+      "Properties": {
+        "Application": {
+          "Fn::GetAtt": [
+            "ApplicationD9CED6CE",
+            "Id",
+          ],
+        },
+        "AttributeGroup": {
+          "Fn::GetAtt": [
+            "DefaultApplicationAttributeGroup41AD7209",
+            "Id",
+          ],
+        },
+      },
+      "Type": "AWS::ServiceCatalogAppRegistry::AttributeGroupAssociation",
+    },
+    "IotDeviceSimulatorMap": {
+      "Properties": {
+        "Configuration": {
           "Style": "VectorEsriNavigation",
         },
-        "MapName": Object {
-          "Fn::Join": Array [
+        "MapName": {
+          "Fn::Join": [
             "",
-            Array [
-              Object {
-                "Fn::GetAtt": Array [
+            [
+              {
+                "Fn::GetAtt": [
                   "CustomResourcesUUID1685434C",
                   "REDUCED_STACK_NAME",
                 ],
               },
               "-IotDeviceSimulatorMap-",
-              Object {
-                "Fn::GetAtt": Array [
+              {
+                "Fn::GetAtt": [
                   "CustomResourcesUUID1685434C",
                   "UNIQUE_SUFFIX",
                 ],
@@ -2298,22 +2609,22 @@ Object {
       },
       "Type": "AWS::Location::Map",
     },
-    "IotDeviceSimulatorPlaceIndex": Object {
-      "Properties": Object {
+    "IotDeviceSimulatorPlaceIndex": {
+      "Properties": {
         "DataSource": "Esri",
-        "IndexName": Object {
-          "Fn::Join": Array [
+        "IndexName": {
+          "Fn::Join": [
             "",
-            Array [
-              Object {
-                "Fn::GetAtt": Array [
+            [
+              {
+                "Fn::GetAtt": [
                   "CustomResourcesUUID1685434C",
                   "REDUCED_STACK_NAME",
                 ],
               },
               "-IoTDeviceSimulatorPlaceIndex-",
-              Object {
-                "Fn::GetAtt": Array [
+              {
+                "Fn::GetAtt": [
                   "CustomResourcesUUID1685434C",
                   "UNIQUE_SUFFIX",
                 ],
@@ -2325,36 +2636,36 @@ Object {
       },
       "Type": "AWS::Location::PlaceIndex",
     },
-    "simulatorEngineLambda17530EFE": Object {
-      "DependsOn": Array [
+    "simulatorEngineLambda17530EFE": {
+      "DependsOn": [
         "simulatorEngineLambdaRoleDefaultPolicy9ECE33DE",
         "simulatorEngineLambdaRoleE774CD29",
       ],
-      "Properties": Object {
-        "Code": Object {
-          "S3Bucket": Object {
-            "Fn::Join": Array [
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Fn::Join": [
               "-",
-              Array [
-                Object {
-                  "Fn::FindInMap": Array [
+              [
+                {
+                  "Fn::FindInMap": [
                     "Solution",
                     "Config",
                     "S3Bucket",
                   ],
                 },
-                Object {
+                {
                   "Ref": "AWS::Region",
                 },
               ],
             ],
           },
-          "S3Key": Object {
-            "Fn::Join": Array [
+          "S3Key": {
+            "Fn::Join": [
               "",
-              Array [
-                Object {
-                  "Fn::FindInMap": Array [
+              [
+                {
+                  "Fn::FindInMap": [
                     "Solution",
                     "Config",
                     "KeyPrefix",
@@ -2366,42 +2677,42 @@ Object {
           },
         },
         "Description": "IoT Device Simulator function",
-        "Environment": Object {
-          "Variables": Object {
-            "IOT_ENDPOINT": Object {
-              "Fn::GetAtt": Array [
+        "Environment": {
+          "Variables": {
+            "IOT_ENDPOINT": {
+              "Fn::GetAtt": [
                 "CustomResourcesEndpointAddressF8CE08A0",
                 "IOT_ENDPOINT",
               ],
             },
-            "ROUTE_BUCKET": Object {
+            "ROUTE_BUCKET": {
               "Ref": "storageRoutesBucketBB9EF62B",
             },
-            "SEND_ANONYMOUS_METRIC": Object {
-              "Fn::FindInMap": Array [
+            "SEND_ANONYMOUS_METRIC": {
+              "Fn::FindInMap": [
                 "Solution",
                 "Config",
                 "SendAnonymousUsage",
               ],
             },
-            "SIM_TABLE": Object {
+            "SIM_TABLE": {
               "Ref": "storageIDSSimulationsTable052FC452",
             },
-            "SOLUTION_ID": Object {
-              "Fn::FindInMap": Array [
+            "SOLUTION_ID": {
+              "Fn::FindInMap": [
                 "Solution",
                 "Config",
                 "SolutionId",
               ],
             },
-            "UUID": Object {
-              "Fn::GetAtt": Array [
+            "UUID": {
+              "Fn::GetAtt": [
                 "CustomResourcesUUID1685434C",
                 "UUID",
               ],
             },
-            "VERSION": Object {
-              "Fn::FindInMap": Array [
+            "VERSION": {
+              "Fn::FindInMap": [
                 "Solution",
                 "Config",
                 "Version",
@@ -2410,18 +2721,18 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "Role": Object {
-          "Fn::GetAtt": Array [
+        "Role": {
+          "Fn::GetAtt": [
             "simulatorEngineLambdaRoleE774CD29",
             "Arn",
           ],
         },
-        "Runtime": "nodejs14.x",
-        "Tags": Array [
-          Object {
+        "Runtime": "nodejs18.x",
+        "Tags": [
+          {
             "Key": "SolutionId",
-            "Value": Object {
-              "Fn::FindInMap": Array [
+            "Value": {
+              "Fn::FindInMap": [
                 "Solution",
                 "Config",
                 "SolutionId",
@@ -2433,30 +2744,30 @@ Object {
       },
       "Type": "AWS::Lambda::Function",
     },
-    "simulatorEngineLambdaRoleDefaultPolicy9ECE33DE": Object {
-      "Properties": Object {
-        "PolicyDocument": Object {
-          "Statement": Array [
-            Object {
-              "Action": Array [
+    "simulatorEngineLambdaRoleDefaultPolicy9ECE33DE": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
                 "s3:GetObject*",
                 "s3:GetBucket*",
                 "s3:List*",
               ],
               "Effect": "Allow",
-              "Resource": Array [
-                Object {
-                  "Fn::GetAtt": Array [
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
                     "storageRoutesBucketBB9EF62B",
                     "Arn",
                   ],
                 },
-                Object {
-                  "Fn::Join": Array [
+                {
+                  "Fn::Join": [
                     "",
-                    Array [
-                      Object {
-                        "Fn::GetAtt": Array [
+                    [
+                      {
+                        "Fn::GetAtt": [
                           "storageRoutesBucketBB9EF62B",
                           "Arn",
                         ],
@@ -2471,22 +2782,22 @@ Object {
           "Version": "2012-10-17",
         },
         "PolicyName": "simulatorEngineLambdaRoleDefaultPolicy9ECE33DE",
-        "Roles": Array [
-          Object {
+        "Roles": [
+          {
             "Ref": "simulatorEngineLambdaRoleE774CD29",
           },
         ],
       },
       "Type": "AWS::IAM::Policy",
     },
-    "simulatorEngineLambdaRoleE774CD29": Object {
-      "Properties": Object {
-        "AssumeRolePolicyDocument": Object {
-          "Statement": Array [
-            Object {
+    "simulatorEngineLambdaRoleE774CD29": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
-              "Principal": Object {
+              "Principal": {
                 "Service": "lambda.amazonaws.com",
               },
             },
@@ -2494,15 +2805,15 @@ Object {
           "Version": "2012-10-17",
         },
         "Path": "/",
-        "Policies": Array [
-          Object {
-            "PolicyDocument": Object {
-              "Statement": Array [
-                Object {
+        "Policies": [
+          {
+            "PolicyDocument": {
+              "Statement": [
+                {
                   "Action": "s3:GetObject",
                   "Effect": "Allow",
-                  "Resource": Object {
-                    "Fn::GetAtt": Array [
+                  "Resource": {
+                    "Fn::GetAtt": [
                       "storageRoutesBucketBB9EF62B",
                       "Arn",
                     ],
@@ -2513,14 +2824,14 @@ Object {
             },
             "PolicyName": "S3Policy",
           },
-          Object {
-            "PolicyDocument": Object {
-              "Statement": Array [
-                Object {
+          {
+            "PolicyDocument": {
+              "Statement": [
+                {
                   "Action": "dynamodb:GetItem",
                   "Effect": "Allow",
-                  "Resource": Object {
-                    "Fn::GetAtt": Array [
+                  "Resource": {
+                    "Fn::GetAtt": [
                       "storageIDSSimulationsTable052FC452",
                       "Arn",
                     ],
@@ -2531,26 +2842,26 @@ Object {
             },
             "PolicyName": "DynamoDBPolicy",
           },
-          Object {
-            "PolicyDocument": Object {
-              "Statement": Array [
-                Object {
+          {
+            "PolicyDocument": {
+              "Statement": [
+                {
                   "Action": "iot:Publish",
                   "Effect": "Allow",
-                  "Resource": Object {
-                    "Fn::Join": Array [
+                  "Resource": {
+                    "Fn::Join": [
                       "",
-                      Array [
+                      [
                         "arn:",
-                        Object {
+                        {
                           "Ref": "AWS::Partition",
                         },
                         ":iot:",
-                        Object {
+                        {
                           "Ref": "AWS::Region",
                         },
                         ":",
-                        Object {
+                        {
                           "Ref": "AWS::AccountId",
                         },
                         ":topic/*",
@@ -2564,11 +2875,11 @@ Object {
             "PolicyName": "IoTPolicy",
           },
         ],
-        "Tags": Array [
-          Object {
+        "Tags": [
+          {
             "Key": "SolutionId",
-            "Value": Object {
-              "Fn::FindInMap": Array [
+            "Value": {
+              "Fn::FindInMap": [
                 "Solution",
                 "Config",
                 "SolutionId",
@@ -2579,14 +2890,14 @@ Object {
       },
       "Type": "AWS::IAM::Role",
     },
-    "simulatorMicroservicesRole0AC1A17A": Object {
-      "Properties": Object {
-        "AssumeRolePolicyDocument": Object {
-          "Statement": Array [
-            Object {
+    "simulatorMicroservicesRole0AC1A17A": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
-              "Principal": Object {
+              "Principal": {
                 "Service": "lambda.amazonaws.com",
               },
             },
@@ -2594,12 +2905,12 @@ Object {
           "Version": "2012-10-17",
         },
         "Path": "/",
-        "Policies": Array [
-          Object {
-            "PolicyDocument": Object {
-              "Statement": Array [
-                Object {
-                  "Action": Array [
+        "Policies": [
+          {
+            "PolicyDocument": {
+              "Statement": [
+                {
+                  "Action": [
                     "dynamodb:PutItem",
                     "dynamodb:DeleteItem",
                     "dynamodb:GetItem",
@@ -2608,15 +2919,15 @@ Object {
                     "dynamodb:BatchGetItem",
                   ],
                   "Effect": "Allow",
-                  "Resource": Array [
-                    Object {
-                      "Fn::GetAtt": Array [
+                  "Resource": [
+                    {
+                      "Fn::GetAtt": [
                         "storageIDSSimulationsTable052FC452",
                         "Arn",
                       ],
                     },
-                    Object {
-                      "Fn::GetAtt": Array [
+                    {
+                      "Fn::GetAtt": [
                         "storageIDSDeviceTypesTable01F2060C",
                         "Arn",
                       ],
@@ -2629,11 +2940,11 @@ Object {
             "PolicyName": "DynamoDBPolicy",
           },
         ],
-        "Tags": Array [
-          Object {
+        "Tags": [
+          {
             "Key": "SolutionId",
-            "Value": Object {
-              "Fn::FindInMap": Array [
+            "Value": {
+              "Fn::FindInMap": [
                 "Solution",
                 "Config",
                 "SolutionId",
@@ -2644,14 +2955,14 @@ Object {
       },
       "Type": "AWS::IAM::Role",
     },
-    "simulatorMicroservicesRoleDefaultPolicy8F21950B": Object {
-      "Properties": Object {
-        "PolicyDocument": Object {
-          "Statement": Array [
-            Object {
+    "simulatorMicroservicesRoleDefaultPolicy8F21950B": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
               "Action": "states:StartExecution",
               "Effect": "Allow",
-              "Resource": Object {
+              "Resource": {
                 "Ref": "simulatorStepFunctionsStateMachineA2150DAB",
               },
             },
@@ -2659,22 +2970,22 @@ Object {
           "Version": "2012-10-17",
         },
         "PolicyName": "simulatorMicroservicesRoleDefaultPolicy8F21950B",
-        "Roles": Array [
-          Object {
+        "Roles": [
+          {
             "Ref": "simulatorMicroservicesRole0AC1A17A",
           },
         ],
       },
       "Type": "AWS::IAM::Policy",
     },
-    "simulatorStepFunctionsExecutionAbortedAlarmC24E8F0E": Object {
-      "Properties": Object {
+    "simulatorStepFunctionsExecutionAbortedAlarmC24E8F0E": {
+      "Properties": {
         "AlarmDescription": "Alarm for the number of executions that aborted exceeded the threshold of 1. ",
         "ComparisonOperator": "GreaterThanOrEqualToThreshold",
-        "Dimensions": Array [
-          Object {
+        "Dimensions": [
+          {
             "Name": "StateMachineArn",
-            "Value": Object {
+            "Value": {
               "Ref": "simulatorStepFunctionsStateMachineA2150DAB",
             },
           },
@@ -2688,14 +2999,14 @@ Object {
       },
       "Type": "AWS::CloudWatch::Alarm",
     },
-    "simulatorStepFunctionsExecutionFailedAlarmACE1FB5D": Object {
-      "Properties": Object {
+    "simulatorStepFunctionsExecutionFailedAlarmACE1FB5D": {
+      "Properties": {
         "AlarmDescription": "Alarm for the number of executions that failed exceeded the threshold of 1. ",
         "ComparisonOperator": "GreaterThanOrEqualToThreshold",
-        "Dimensions": Array [
-          Object {
+        "Dimensions": [
+          {
             "Name": "StateMachineArn",
-            "Value": Object {
+            "Value": {
               "Ref": "simulatorStepFunctionsStateMachineA2150DAB",
             },
           },
@@ -2709,14 +3020,14 @@ Object {
       },
       "Type": "AWS::CloudWatch::Alarm",
     },
-    "simulatorStepFunctionsExecutionThrottledAlarm542D795D": Object {
-      "Properties": Object {
+    "simulatorStepFunctionsExecutionThrottledAlarm542D795D": {
+      "Properties": {
         "AlarmDescription": "Alarm for the number of executions that throttled exceeded the threshold of 1. ",
         "ComparisonOperator": "GreaterThanOrEqualToThreshold",
-        "Dimensions": Array [
-          Object {
+        "Dimensions": [
+          {
             "Name": "StateMachineArn",
-            "Value": Object {
+            "Value": {
               "Ref": "simulatorStepFunctionsStateMachineA2150DAB",
             },
           },
@@ -2730,30 +3041,30 @@ Object {
       },
       "Type": "AWS::CloudWatch::Alarm",
     },
-    "simulatorStepFunctionsLogGroupF673A0C9": Object {
+    "simulatorStepFunctionsLogGroupF673A0C9": {
       "DeletionPolicy": "Retain",
-      "Metadata": Object {
-        "cfn_nag": Object {
-          "rules_to_suppress": Array [
-            Object {
+      "Metadata": {
+        "cfn_nag": {
+          "rules_to_suppress": [
+            {
               "id": "W84",
               "reason": "KMS encryption unnecessary for log group",
             },
           ],
         },
       },
-      "Properties": Object {
-        "LogGroupName": Object {
-          "Fn::Join": Array [
+      "Properties": {
+        "LogGroupName": {
+          "Fn::Join": [
             "",
-            Array [
+            [
               "/aws/vendedlogs/states/",
-              Object {
+              {
                 "Ref": "AWS::StackName",
               },
               "-simulatorStepFunctionsLogGroup-",
-              Object {
-                "Fn::GetAtt": Array [
+              {
+                "Fn::GetAtt": [
                   "CustomResourcesUUID1685434C",
                   "UNIQUE_SUFFIX",
                 ],
@@ -2762,71 +3073,84 @@ Object {
           ],
         },
         "RetentionInDays": 365,
+        "Tags": [
+          {
+            "Key": "SolutionId",
+            "Value": {
+              "Fn::FindInMap": [
+                "Solution",
+                "Config",
+                "SolutionId",
+              ],
+            },
+          },
+        ],
       },
       "Type": "AWS::Logs::LogGroup",
       "UpdateReplacePolicy": "Retain",
     },
-    "simulatorStepFunctionsStateMachineA2150DAB": Object {
-      "DependsOn": Array [
+    "simulatorStepFunctionsStateMachineA2150DAB": {
+      "DeletionPolicy": "Delete",
+      "DependsOn": [
         "simulatorStepFunctionsStateMachineRoleDefaultPolicy02630DD3",
         "simulatorStepFunctionsStateMachineRole6FCF7FE0",
       ],
-      "Metadata": Object {
-        "cfn_nag": Object {
-          "rules_to_suppress": Array [
-            Object {
+      "Metadata": {
+        "cfn_nag": {
+          "rules_to_suppress": [
+            {
               "id": "W11",
               "reason": "CloudWatch logs actions do not support resource level permissions",
             },
-            Object {
+            {
               "id": "W12",
               "reason": "CloudWatch logs actions do not support resource level permissions",
             },
           ],
         },
       },
-      "Properties": Object {
-        "DefinitionString": Object {
-          "Fn::Join": Array [
+      "Properties": {
+        "DefinitionString": {
+          "Fn::Join": [
             "",
-            Array [
-              "{\\"StartAt\\":\\"getDeviceTypeMap\\",\\"States\\":{\\"getDeviceTypeMap\\":{\\"Type\\":\\"Map\\",\\"ResultPath\\":\\"$.simulation.devices\\",\\"Next\\":\\"simulatorInvoke\\",\\"Parameters\\":{\\"typeId.$\\":\\"$$.Map.Item.Value.typeId\\",\\"amount.$\\":\\"$$.Map.Item.Value.amount\\"},\\"Iterator\\":{\\"StartAt\\":\\"getDeviceTypeInfo\\",\\"States\\":{\\"getDeviceTypeInfo\\":{\\"End\\":true,\\"Type\\":\\"Task\\",\\"ResultPath\\":\\"$.info\\",\\"ResultSelector\\":{\\"name.$\\":\\"$.Item.name\\",\\"topic.$\\":\\"$.Item.topic\\",\\"payload.$\\":\\"$.Item.payload\\"},\\"Resource\\":\\"arn:",
-              Object {
+            [
+              "{"StartAt":"getDeviceTypeMap","States":{"getDeviceTypeMap":{"Type":"Map","ResultPath":"$.simulation.devices","Next":"simulatorInvoke","Parameters":{"typeId.$":"$$.Map.Item.Value.typeId","amount.$":"$$.Map.Item.Value.amount"},"Iterator":{"StartAt":"getDeviceTypeInfo","States":{"getDeviceTypeInfo":{"End":true,"Type":"Task","ResultPath":"$.info","ResultSelector":{"name.$":"$.Item.name","topic.$":"$.Item.topic","payload.$":"$.Item.payload"},"Resource":"arn:",
+              {
                 "Ref": "AWS::Partition",
               },
-              ":states:::dynamodb:getItem\\",\\"Parameters\\":{\\"Key\\":{\\"typeId\\":{\\"S.$\\":\\"$.typeId\\"}},\\"TableName\\":\\"",
-              Object {
+              ":states:::dynamodb:getItem","Parameters":{"Key":{"typeId":{"S.$":"$.typeId"}},"TableName":"",
+              {
                 "Ref": "storageIDSDeviceTypesTable01F2060C",
               },
-              "\\",\\"ConsistentRead\\":false}}}},\\"ItemsPath\\":\\"$.simulation.devices\\",\\"MaxConcurrency\\":0},\\"simulatorInvoke\\":{\\"Next\\":\\"devicesRunning?\\",\\"Retry\\":[{\\"ErrorEquals\\":[\\"Lambda.ServiceException\\",\\"Lambda.AWSLambdaException\\",\\"Lambda.SdkClientException\\"],\\"IntervalSeconds\\":2,\\"MaxAttempts\\":6,\\"BackoffRate\\":2}],\\"Catch\\":[{\\"ErrorEquals\\":[\\"States.ALL\\"],\\"ResultPath\\":\\"$.error\\",\\"Next\\":\\"UpdateSimTable\\"}],\\"Type\\":\\"Task\\",\\"OutputPath\\":\\"$.Payload\\",\\"Resource\\":\\"arn:",
-              Object {
+              "","ConsistentRead":false}}}},"ItemsPath":"$.simulation.devices","MaxConcurrency":0},"simulatorInvoke":{"Next":"devicesRunning?","Retry":[{"ErrorEquals":["Lambda.ServiceException","Lambda.AWSLambdaException","Lambda.SdkClientException"],"IntervalSeconds":2,"MaxAttempts":6,"BackoffRate":2}],"Catch":[{"ErrorEquals":["States.ALL"],"ResultPath":"$.error","Next":"UpdateSimTable"}],"Type":"Task","OutputPath":"$.Payload","Resource":"arn:",
+              {
                 "Ref": "AWS::Partition",
               },
-              ":states:::lambda:invoke\\",\\"Parameters\\":{\\"FunctionName\\":\\"",
-              Object {
-                "Fn::GetAtt": Array [
+              ":states:::lambda:invoke","Parameters":{"FunctionName":"",
+              {
+                "Fn::GetAtt": [
                   "simulatorEngineLambda17530EFE",
                   "Arn",
                 ],
               },
-              "\\",\\"Payload.$\\":\\"$\\"}},\\"devicesRunning?\\":{\\"Type\\":\\"Choice\\",\\"Choices\\":[{\\"Variable\\":\\"$.options.restart\\",\\"BooleanEquals\\":true,\\"Next\\":\\"simulatorInvoke\\"}],\\"Default\\":\\"UpdateSimTable\\"},\\"UpdateSimTable\\":{\\"Next\\":\\"Done\\",\\"Catch\\":[{\\"ErrorEquals\\":[\\"DynamoDB.ConditionalCheckFailedException\\"],\\"Next\\":\\"Done\\"}],\\"Type\\":\\"Task\\",\\"Resource\\":\\"arn:",
-              Object {
+              "","Payload.$":"$"}},"devicesRunning?":{"Type":"Choice","Choices":[{"Variable":"$.options.restart","BooleanEquals":true,"Next":"simulatorInvoke"}],"Default":"UpdateSimTable"},"UpdateSimTable":{"Next":"Done","Catch":[{"ErrorEquals":["DynamoDB.ConditionalCheckFailedException"],"Next":"Done"}],"Type":"Task","Resource":"arn:",
+              {
                 "Ref": "AWS::Partition",
               },
-              ":states:::dynamodb:updateItem\\",\\"Parameters\\":{\\"Key\\":{\\"simId\\":{\\"S.$\\":\\"$.simulation.simId\\"}},\\"TableName\\":\\"",
-              Object {
+              ":states:::dynamodb:updateItem","Parameters":{"Key":{"simId":{"S.$":"$.simulation.simId"}},"TableName":"",
+              {
                 "Ref": "storageIDSSimulationsTable052FC452",
               },
-              "\\",\\"ConditionExpression\\":\\"attribute_exists(simId)\\",\\"ExpressionAttributeValues\\":{\\":stage\\":{\\"S\\":\\"sleeping\\"},\\":time\\":{\\"S.$\\":\\"$$.State.EnteredTime\\"}},\\"UpdateExpression\\":\\"SET stage = :stage, updatedAt = :time\\"}},\\"Done\\":{\\"Type\\":\\"Succeed\\"}}}",
+              "","ConditionExpression":"attribute_exists(simId)","ExpressionAttributeValues":{":stage":{"S":"sleeping"},":time":{"S.$":"$$.State.EnteredTime"}},"UpdateExpression":"SET stage = :stage, updatedAt = :time"}},"Done":{"Type":"Succeed"}}}",
             ],
           ],
         },
-        "LoggingConfiguration": Object {
-          "Destinations": Array [
-            Object {
-              "CloudWatchLogsLogGroup": Object {
-                "LogGroupArn": Object {
-                  "Fn::GetAtt": Array [
+        "LoggingConfiguration": {
+          "Destinations": [
+            {
+              "CloudWatchLogsLogGroup": {
+                "LogGroupArn": {
+                  "Fn::GetAtt": [
                     "simulatorStepFunctionsLogGroupF673A0C9",
                     "Arn",
                   ],
@@ -2837,17 +3161,17 @@ Object {
           "IncludeExecutionData": false,
           "Level": "ALL",
         },
-        "RoleArn": Object {
-          "Fn::GetAtt": Array [
+        "RoleArn": {
+          "Fn::GetAtt": [
             "simulatorStepFunctionsStateMachineRole6FCF7FE0",
             "Arn",
           ],
         },
-        "Tags": Array [
-          Object {
+        "Tags": [
+          {
             "Key": "SolutionId",
-            "Value": Object {
-              "Fn::FindInMap": Array [
+            "Value": {
+              "Fn::FindInMap": [
                 "Solution",
                 "Config",
                 "SolutionId",
@@ -2857,25 +3181,23 @@ Object {
         ],
       },
       "Type": "AWS::StepFunctions::StateMachine",
+      "UpdateReplacePolicy": "Delete",
     },
-    "simulatorStepFunctionsStateMachineRole6FCF7FE0": Object {
-      "Properties": Object {
-        "AssumeRolePolicyDocument": Object {
-          "Statement": Array [
-            Object {
+    "simulatorStepFunctionsStateMachineRole6FCF7FE0": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
-              "Principal": Object {
-                "Service": Object {
-                  "Fn::Join": Array [
-                    "",
-                    Array [
-                      "states.",
-                      Object {
-                        "Ref": "AWS::Region",
-                      },
-                      ".amazonaws.com",
-                    ],
+              "Principal": {
+                "Service": {
+                  "Fn::FindInMap": [
+                    "ServiceprincipalMap",
+                    {
+                      "Ref": "AWS::Region",
+                    },
+                    "states",
                   ],
                 },
               },
@@ -2883,11 +3205,11 @@ Object {
           ],
           "Version": "2012-10-17",
         },
-        "Tags": Array [
-          Object {
+        "Tags": [
+          {
             "Key": "SolutionId",
-            "Value": Object {
-              "Fn::FindInMap": Array [
+            "Value": {
+              "Fn::FindInMap": [
                 "Solution",
                 "Config",
                 "SolutionId",
@@ -2898,22 +3220,22 @@ Object {
       },
       "Type": "AWS::IAM::Role",
     },
-    "simulatorStepFunctionsStateMachineRoleDefaultPolicy02630DD3": Object {
-      "Metadata": Object {
-        "cfn_nag": Object {
-          "rules_to_suppress": Array [
-            Object {
+    "simulatorStepFunctionsStateMachineRoleDefaultPolicy02630DD3": {
+      "Metadata": {
+        "cfn_nag": {
+          "rules_to_suppress": [
+            {
               "id": "W12",
               "reason": "The 'LogDelivery' actions do not support resource-level authorizations",
             },
           ],
         },
       },
-      "Properties": Object {
-        "PolicyDocument": Object {
-          "Statement": Array [
-            Object {
-              "Action": Array [
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
                 "logs:CreateLogDelivery",
                 "logs:GetLogDelivery",
                 "logs:UpdateLogDelivery",
@@ -2923,91 +3245,107 @@ Object {
               "Effect": "Allow",
               "Resource": "*",
             },
-            Object {
+            {
               "Action": "lambda:InvokeFunction",
               "Effect": "Allow",
-              "Resource": Object {
-                "Fn::GetAtt": Array [
-                  "simulatorEngineLambda17530EFE",
-                  "Arn",
-                ],
-              },
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "simulatorEngineLambda17530EFE",
+                    "Arn",
+                  ],
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "simulatorEngineLambda17530EFE",
+                          "Arn",
+                        ],
+                      },
+                      ":*",
+                    ],
+                  ],
+                },
+              ],
             },
-            Object {
+            {
               "Action": "dynamodb:UpdateItem",
               "Effect": "Allow",
-              "Resource": Object {
-                "Fn::Join": Array [
+              "Resource": {
+                "Fn::Join": [
                   "",
-                  Array [
+                  [
                     "arn:",
-                    Object {
+                    {
                       "Ref": "AWS::Partition",
                     },
                     ":dynamodb:",
-                    Object {
+                    {
                       "Ref": "AWS::Region",
                     },
                     ":",
-                    Object {
+                    {
                       "Ref": "AWS::AccountId",
                     },
                     ":table/",
-                    Object {
+                    {
                       "Ref": "storageIDSSimulationsTable052FC452",
                     },
                   ],
                 ],
               },
             },
-            Object {
+            {
               "Action": "dynamodb:GetItem",
               "Effect": "Allow",
-              "Resource": Object {
-                "Fn::Join": Array [
+              "Resource": {
+                "Fn::Join": [
                   "",
-                  Array [
+                  [
                     "arn:",
-                    Object {
+                    {
                       "Ref": "AWS::Partition",
                     },
                     ":dynamodb:",
-                    Object {
+                    {
                       "Ref": "AWS::Region",
                     },
                     ":",
-                    Object {
+                    {
                       "Ref": "AWS::AccountId",
                     },
                     ":table/",
-                    Object {
+                    {
                       "Ref": "storageIDSDeviceTypesTable01F2060C",
                     },
                   ],
                 ],
               },
             },
-            Object {
-              "Action": Array [
+            {
+              "Action": [
                 "logs:PutResourcePolicy",
                 "logs:DescribeResourcePolicies",
                 "logs:DescribeLogGroups",
               ],
               "Effect": "Allow",
-              "Resource": Object {
-                "Fn::Join": Array [
+              "Resource": {
+                "Fn::Join": [
                   "",
-                  Array [
+                  [
                     "arn:",
-                    Object {
+                    {
                       "Ref": "AWS::Partition",
                     },
                     ":logs:",
-                    Object {
+                    {
                       "Ref": "AWS::Region",
                     },
                     ":",
-                    Object {
+                    {
                       "Ref": "AWS::AccountId",
                     },
                     ":*",
@@ -3019,44 +3357,44 @@ Object {
           "Version": "2012-10-17",
         },
         "PolicyName": "simulatorStepFunctionsStateMachineRoleDefaultPolicy02630DD3",
-        "Roles": Array [
-          Object {
+        "Roles": [
+          {
             "Ref": "simulatorStepFunctionsStateMachineRole6FCF7FE0",
           },
         ],
       },
       "Type": "AWS::IAM::Policy",
     },
-    "simulatormicroservices752C24A5": Object {
-      "DependsOn": Array [
+    "simulatormicroservices752C24A5": {
+      "DependsOn": [
         "simulatorMicroservicesRoleDefaultPolicy8F21950B",
         "simulatorMicroservicesRole0AC1A17A",
       ],
-      "Properties": Object {
-        "Code": Object {
-          "S3Bucket": Object {
-            "Fn::Join": Array [
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Fn::Join": [
               "-",
-              Array [
-                Object {
-                  "Fn::FindInMap": Array [
+              [
+                {
+                  "Fn::FindInMap": [
                     "Solution",
                     "Config",
                     "S3Bucket",
                   ],
                 },
-                Object {
+                {
                   "Ref": "AWS::Region",
                 },
               ],
             ],
           },
-          "S3Key": Object {
-            "Fn::Join": Array [
+          "S3Key": {
+            "Fn::Join": [
               "",
-              Array [
-                Object {
-                  "Fn::FindInMap": Array [
+              [
+                {
+                  "Fn::FindInMap": [
                     "Solution",
                     "Config",
                     "KeyPrefix",
@@ -3068,39 +3406,39 @@ Object {
           },
         },
         "Description": "IoT Device Simulator microservices function",
-        "Environment": Object {
-          "Variables": Object {
-            "DEVICE_TYPES_TBL": Object {
+        "Environment": {
+          "Variables": {
+            "DEVICE_TYPES_TBL": {
               "Ref": "storageIDSDeviceTypesTable01F2060C",
             },
-            "SEND_ANONYMOUS_METRIC": Object {
-              "Fn::FindInMap": Array [
+            "SEND_ANONYMOUS_METRIC": {
+              "Fn::FindInMap": [
                 "Solution",
                 "Config",
                 "SendAnonymousUsage",
               ],
             },
-            "SIMULATIONS_TBL": Object {
+            "SIMULATIONS_TBL": {
               "Ref": "storageIDSSimulationsTable052FC452",
             },
-            "SIM_STEP_FUNCTION": Object {
+            "SIM_STEP_FUNCTION": {
               "Ref": "simulatorStepFunctionsStateMachineA2150DAB",
             },
-            "SOLUTION_ID": Object {
-              "Fn::FindInMap": Array [
+            "SOLUTION_ID": {
+              "Fn::FindInMap": [
                 "Solution",
                 "Config",
                 "SolutionId",
               ],
             },
-            "UUID": Object {
-              "Fn::GetAtt": Array [
+            "UUID": {
+              "Fn::GetAtt": [
                 "CustomResourcesUUID1685434C",
                 "UUID",
               ],
             },
-            "VERSION": Object {
-              "Fn::FindInMap": Array [
+            "VERSION": {
+              "Fn::FindInMap": [
                 "Solution",
                 "Config",
                 "Version",
@@ -3109,18 +3447,18 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "Role": Object {
-          "Fn::GetAtt": Array [
+        "Role": {
+          "Fn::GetAtt": [
             "simulatorMicroservicesRole0AC1A17A",
             "Arn",
           ],
         },
-        "Runtime": "nodejs14.x",
-        "Tags": Array [
-          Object {
+        "Runtime": "nodejs18.x",
+        "Tags": [
+          {
             "Key": "SolutionId",
-            "Value": Object {
-              "Fn::FindInMap": Array [
+            "Value": {
+              "Fn::FindInMap": [
                 "Solution",
                 "Config",
                 "SolutionId",
@@ -3132,34 +3470,34 @@ Object {
       },
       "Type": "AWS::Lambda::Function",
     },
-    "simulatormicroservicesApiLambdaInvokePermission7E703994": Object {
-      "Properties": Object {
+    "simulatormicroservicesApiLambdaInvokePermission7E703994": {
+      "Properties": {
         "Action": "lambda:InvokeFunction",
-        "FunctionName": Object {
-          "Fn::GetAtt": Array [
+        "FunctionName": {
+          "Fn::GetAtt": [
             "simulatormicroservices752C24A5",
             "Arn",
           ],
         },
         "Principal": "apigateway.amazonaws.com",
-        "SourceArn": Object {
-          "Fn::Join": Array [
+        "SourceArn": {
+          "Fn::Join": [
             "",
-            Array [
+            [
               "arn:",
-              Object {
+              {
                 "Ref": "AWS::Partition",
               },
               ":execute-api:",
-              Object {
+              {
                 "Ref": "AWS::Region",
               },
               ":",
-              Object {
+              {
                 "Ref": "AWS::AccountId",
               },
               ":",
-              Object {
+              {
                 "Ref": "APIIoTDeviceSimulatorApi789EED4C",
               },
               "/*/*/*",
@@ -3169,33 +3507,33 @@ Object {
       },
       "Type": "AWS::Lambda::Permission",
     },
-    "storageIDSDeviceTypesTable01F2060C": Object {
+    "storageIDSDeviceTypesTable01F2060C": {
       "DeletionPolicy": "Retain",
-      "Properties": Object {
-        "AttributeDefinitions": Array [
-          Object {
+      "Properties": {
+        "AttributeDefinitions": [
+          {
             "AttributeName": "typeId",
             "AttributeType": "S",
           },
         ],
         "BillingMode": "PAY_PER_REQUEST",
-        "KeySchema": Array [
-          Object {
+        "KeySchema": [
+          {
             "AttributeName": "typeId",
             "KeyType": "HASH",
           },
         ],
-        "PointInTimeRecoverySpecification": Object {
+        "PointInTimeRecoverySpecification": {
           "PointInTimeRecoveryEnabled": true,
         },
-        "SSESpecification": Object {
+        "SSESpecification": {
           "SSEEnabled": true,
         },
-        "Tags": Array [
-          Object {
+        "Tags": [
+          {
             "Key": "SolutionId",
-            "Value": Object {
-              "Fn::FindInMap": Array [
+            "Value": {
+              "Fn::FindInMap": [
                 "Solution",
                 "Config",
                 "SolutionId",
@@ -3207,33 +3545,33 @@ Object {
       "Type": "AWS::DynamoDB::Table",
       "UpdateReplacePolicy": "Retain",
     },
-    "storageIDSSimulationsTable052FC452": Object {
+    "storageIDSSimulationsTable052FC452": {
       "DeletionPolicy": "Retain",
-      "Properties": Object {
-        "AttributeDefinitions": Array [
-          Object {
+      "Properties": {
+        "AttributeDefinitions": [
+          {
             "AttributeName": "simId",
             "AttributeType": "S",
           },
         ],
         "BillingMode": "PAY_PER_REQUEST",
-        "KeySchema": Array [
-          Object {
+        "KeySchema": [
+          {
             "AttributeName": "simId",
             "KeyType": "HASH",
           },
         ],
-        "PointInTimeRecoverySpecification": Object {
+        "PointInTimeRecoverySpecification": {
           "PointInTimeRecoveryEnabled": true,
         },
-        "SSESpecification": Object {
+        "SSESpecification": {
           "SSEEnabled": true,
         },
-        "Tags": Array [
-          Object {
+        "Tags": [
+          {
             "Key": "SolutionId",
-            "Value": Object {
-              "Fn::FindInMap": Array [
+            "Value": {
+              "Fn::FindInMap": [
                 "Solution",
                 "Config",
                 "SolutionId",
@@ -3245,35 +3583,35 @@ Object {
       "Type": "AWS::DynamoDB::Table",
       "UpdateReplacePolicy": "Retain",
     },
-    "storageRoutesBucketBB9EF62B": Object {
+    "storageRoutesBucketBB9EF62B": {
       "DeletionPolicy": "Retain",
-      "Properties": Object {
-        "BucketEncryption": Object {
-          "ServerSideEncryptionConfiguration": Array [
-            Object {
-              "ServerSideEncryptionByDefault": Object {
+      "Properties": {
+        "BucketEncryption": {
+          "ServerSideEncryptionConfiguration": [
+            {
+              "ServerSideEncryptionByDefault": {
                 "SSEAlgorithm": "AES256",
               },
             },
           ],
         },
-        "LoggingConfiguration": Object {
-          "DestinationBucketName": Object {
+        "LoggingConfiguration": {
+          "DestinationBucketName": {
             "Ref": "CommonResourcesLogBucketFC1ABCC9",
           },
           "LogFilePrefix": "routes-bucket-access/",
         },
-        "PublicAccessBlockConfiguration": Object {
+        "PublicAccessBlockConfiguration": {
           "BlockPublicAcls": true,
           "BlockPublicPolicy": true,
           "IgnorePublicAcls": true,
           "RestrictPublicBuckets": true,
         },
-        "Tags": Array [
-          Object {
+        "Tags": [
+          {
             "Key": "SolutionId",
-            "Value": Object {
-              "Fn::FindInMap": Array [
+            "Value": {
+              "Fn::FindInMap": [
                 "Solution",
                 "Config",
                 "SolutionId",
@@ -3285,31 +3623,31 @@ Object {
       "Type": "AWS::S3::Bucket",
       "UpdateReplacePolicy": "Retain",
     },
-    "storageRoutesBucketPolicy68A7F4A8": Object {
-      "Properties": Object {
-        "Bucket": Object {
+    "storageRoutesBucketPolicy68A7F4A8": {
+      "Properties": {
+        "Bucket": {
           "Ref": "storageRoutesBucketBB9EF62B",
         },
-        "PolicyDocument": Object {
-          "Statement": Array [
-            Object {
+        "PolicyDocument": {
+          "Statement": [
+            {
               "Action": "*",
-              "Condition": Object {
-                "Bool": Object {
+              "Condition": {
+                "Bool": {
                   "aws:SecureTransport": "false",
                 },
               },
               "Effect": "Deny",
-              "Principal": Object {
+              "Principal": {
                 "AWS": "*",
               },
-              "Resource": Array [
-                Object {
-                  "Fn::Join": Array [
+              "Resource": [
+                {
+                  "Fn::Join": [
                     "",
-                    Array [
-                      Object {
-                        "Fn::GetAtt": Array [
+                    [
+                      {
+                        "Fn::GetAtt": [
                           "storageRoutesBucketBB9EF62B",
                           "Arn",
                         ],
@@ -3318,8 +3656,8 @@ Object {
                     ],
                   ],
                 },
-                Object {
-                  "Fn::GetAtt": Array [
+                {
+                  "Fn::GetAtt": [
                     "storageRoutesBucketBB9EF62B",
                     "Arn",
                   ],

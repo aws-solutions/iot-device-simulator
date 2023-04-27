@@ -4,10 +4,10 @@
 
 import Amplify, { I18n } from '@aws-amplify/core';
 import { withAuthenticator } from '@aws-amplify/ui-react';
-import { onAuthUIStateChange, AuthState } from '@aws-amplify/ui-components';
+import { AuthState, onAuthUIStateChange } from '@aws-amplify/ui-react/node_modules/@aws-amplify/ui-components';
 import { Geo } from '@aws-amplify/geo';
 import { Auth } from '@aws-amplify/auth';
-import { BrowserRouter, Route, Switch, Redirect } from 'react-router-dom';
+import { BrowserRouter, Redirect, Route, Switch } from 'react-router-dom';
 import Simulations from './views/Simulations';
 import DeviceTypeCreate from './views/DeviceTypeCreate';
 import DeviceTypes from './views/DeviceTypes';
@@ -15,7 +15,7 @@ import Header from './components/Shared/Header';
 import PageNotFound from './views/PageNotFound';
 import SimulationCreate from './views/SimulationCreate';
 import SimulationDetails from './views/SimulationDetails';
-import { PubSub, AWSIoTProvider } from '@aws-amplify/pubsub';
+import { AWSIoTProvider, PubSub } from '@aws-amplify/pubsub';
 import AWS from 'aws-sdk';
 
 // Amplify configuration

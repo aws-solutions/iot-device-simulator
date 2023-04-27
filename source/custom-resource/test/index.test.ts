@@ -2,35 +2,28 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { CustomResourceTypes } from '../interfaces';
+import {
+  CopyObjectCommand,
+  GetObjectCommand,
+  PutObjectCommand,
+  S3Client
+} from "@aws-sdk/client-s3";
+import {
+  DescribeEndpointCommand,
+  DescribeEndpointCommandInput,
+  DetachPolicyCommand,
+  DetachPolicyCommandInput,
+  IoTClient,
+  ListTargetsForPolicyCommand
+} from "@aws-sdk/client-iot";
+import { mockClient } from "aws-sdk-client-mock";
+import { sdkStreamMixin } from '@aws-sdk/util-stream-node';
+import { Readable } from "stream";
+import 'aws-sdk-client-mock-jest';
 
 // Mock AWS
-const mockAws = {
-  copyObject: jest.fn(),
-  getSignedUrlPromise: jest.fn(),
-  getObject: jest.fn(),
-  putObject: jest.fn(),
-  describeEndpoint: jest.fn(),
-  detachPrincipalPolicy: jest.fn(),
-  listTargetsForPolicy: jest.fn()
-};
-
-jest.mock('aws-sdk/clients/s3', () => {
-  return jest.fn(() => ({
-    copyObject: mockAws.copyObject,
-    getSignedUrlPromise: mockAws.getSignedUrlPromise,
-    getObject: mockAws.getObject,
-    putObject: mockAws.putObject
-  }));
-});
-
-jest.mock('aws-sdk/clients/iot', () => {
-  return jest.fn(() => ({
-    describeEndpoint: mockAws.describeEndpoint,
-    detachPrincipalPolicy: mockAws.detachPrincipalPolicy,
-    listTargetsForPolicy: mockAws.listTargetsForPolicy
-  }))
-});
-
+const s3Mock = mockClient(S3Client);
+const iotMock = mockClient(IoTClient);
 
 // Mock axios
 const mockAxios = {
@@ -79,6 +72,7 @@ process.env = {
 
 /**
  * Builds a CloudFormation response body.
+ * @param event the custom resource event request
  * @param response The custom resource response
  * @param reason The reason for failure
  * @returns The CloudFormation response body
@@ -169,24 +163,15 @@ describe('Unit tests of COPY_S3_ASSETS', () => {
   const manifest = ['console/index.html', 'console/script.js', 'console/static/style.css', 'console/static/script/script/js'];
 
   beforeEach(() => {
-    mockAws.copyObject.mockReset();
-    mockAws.getObject.mockReset();
+    s3Mock.reset();
+    iotMock.reset();
     mockAxios.put.mockReset();
   });
 
   test('Success to copy console assets when creating a solution', async () => {
-    mockAws.getObject.mockImplementationOnce(() => {
-      return {
-        promise() {
-          return Promise.resolve({ Body: JSON.stringify(manifest) });
-        }
-      };
-    });
-    mockAws.copyObject.mockImplementation(() => {
-      return {
-        promise() { return Promise.resolve(); }
-      };
-    });
+    const body = sdkStreamMixin(Readable.from(JSON.stringify(manifest)));
+    s3Mock.on(GetObjectCommand).resolves({ Body: body });
+    s3Mock.on(CopyObjectCommand).resolves({});
     mockAxios.put.mockResolvedValue({ status: 200 });
 
     const index = require('../index');
@@ -194,19 +179,20 @@ describe('Unit tests of COPY_S3_ASSETS', () => {
     const responseBody = buildResponseBody(event, response);
     axiosConfig.headers['Content-Length'] = responseBody.length;
 
-    expect(mockAws.getObject).toHaveBeenCalledTimes(1);
-    expect(mockAws.getObject).toHaveBeenCalledWith({
-      Bucket: resourceProperties.SourceBucket,
-      Key: `${resourceProperties.SourcePrefix}/${resourceProperties.ManifestFile}`
-    });
+    expect(s3Mock).toHaveReceivedCommandTimes(GetObjectCommand, 1);
+    const getObjectCall = s3Mock.commandCalls(GetObjectCommand)[0].firstArg as GetObjectCommand;
+    expect(getObjectCall.input.Bucket).toBe(resourceProperties.SourceBucket);
+    expect(getObjectCall.input.Key).toBe(`${resourceProperties.SourcePrefix}/${resourceProperties.ManifestFile}`);
 
-    let n = 1;
-    expect(mockAws.copyObject).toHaveBeenCalledTimes(manifest.length);
+    let n = 2;
+    expect(s3Mock).toHaveReceivedCommandTimes(CopyObjectCommand, manifest.length);
     for (let fileName of manifest) {
-      expect(mockAws.copyObject).toHaveBeenNthCalledWith(n++, {
-        Bucket: resourceProperties.DestinationBucket,
-        CopySource: `${resourceProperties.SourceBucket}/${resourceProperties.SourcePrefix}/${fileName}`,
-        Key: fileName.split('/').slice(1).join('/')
+      expect(s3Mock).toHaveReceivedNthCommandWith(n++,
+        CopyObjectCommand,
+        {
+          Bucket: resourceProperties.DestinationBucket,
+          CopySource: `${resourceProperties.SourceBucket}/${resourceProperties.SourcePrefix}/${fileName}`,
+          Key: fileName.split('/').slice(1).join('/')
       });
     }
 
@@ -220,11 +206,7 @@ describe('Unit tests of COPY_S3_ASSETS', () => {
 
   test('Failed to get the manifest file when creating a solution', async () => {
     event.RequestType = CustomResourceTypes.RequestTypes.UPDATE;
-    mockAws.getObject.mockImplementationOnce(() => {
-      return {
-        promise() { return Promise.reject({ message: 'Failure' }); }
-      };
-    });
+    s3Mock.on(GetObjectCommand).rejects({ message: 'Failure' });
     mockAxios.put.mockResolvedValue({ status: 200 });
 
     const index = require('../index');
@@ -232,12 +214,12 @@ describe('Unit tests of COPY_S3_ASSETS', () => {
     const responseBody = buildResponseBody(event, response, 'Failure');
     axiosConfig.headers['Content-Length'] = responseBody.length;
 
-    expect(mockAws.getObject).toHaveBeenCalledTimes(1);
-    expect(mockAws.getObject).toHaveBeenCalledWith({
-      Bucket: resourceProperties.SourceBucket,
-      Key: `${resourceProperties.SourcePrefix}/${resourceProperties.ManifestFile}`
-    });
-    expect(mockAws.copyObject).not.toHaveBeenCalled();
+    expect(s3Mock).toHaveReceivedCommandTimes(GetObjectCommand, 1);
+    const getObjectCall = s3Mock.commandCalls(GetObjectCommand)[0].firstArg as GetObjectCommand;
+    expect(getObjectCall.input.Bucket).toBe(resourceProperties.SourceBucket);
+    expect(getObjectCall.input.Key).toBe(`${resourceProperties.SourcePrefix}/${resourceProperties.ManifestFile}`);
+
+    expect(s3Mock).toHaveReceivedCommandTimes(CopyObjectCommand, 0);
     expect(mockAxios.put).toHaveBeenCalledTimes(1);
     expect(mockAxios.put).toHaveBeenCalledWith(event.ResponseURL, responseBody, axiosConfig);
     expect(response).toEqual({
@@ -247,18 +229,9 @@ describe('Unit tests of COPY_S3_ASSETS', () => {
   });
 
   test('Failed to copy the console assets when updating a solution', async () => {
-    mockAws.getObject.mockImplementationOnce(() => {
-      return {
-        promise() {
-          return Promise.resolve({ Body: JSON.stringify(manifest) });
-        }
-      };
-    });
-    mockAws.copyObject.mockImplementation(() => {
-      return {
-        promise() { return Promise.reject({ message: 'Failure' }); }
-      };
-    });
+    const body = sdkStreamMixin(Readable.from(JSON.stringify(manifest)));
+    s3Mock.on(GetObjectCommand).resolves({ Body: body });
+    s3Mock.on(CopyObjectCommand).rejects({ message: 'Failure' });
     mockAxios.put.mockResolvedValue({ status: 200 });
 
     const index = require('../index');
@@ -266,20 +239,21 @@ describe('Unit tests of COPY_S3_ASSETS', () => {
     const responseBody = buildResponseBody(event, response, 'Failure');
     axiosConfig.headers['Content-Length'] = responseBody.length;
 
-    expect(mockAws.getObject).toHaveBeenCalledTimes(1);
-    expect(mockAws.getObject).toHaveBeenCalledWith({
-      Bucket: resourceProperties.SourceBucket,
-      Key: `${resourceProperties.SourcePrefix}/${resourceProperties.ManifestFile}`
-    });
+    expect(s3Mock).toHaveReceivedCommandTimes(GetObjectCommand, 1);
+    const getObjectCall = s3Mock.commandCalls(GetObjectCommand)[0].firstArg as GetObjectCommand;
+    expect(getObjectCall.input.Bucket).toBe(resourceProperties.SourceBucket);
+    expect(getObjectCall.input.Key).toBe(`${resourceProperties.SourcePrefix}/${resourceProperties.ManifestFile}`);
 
-    let n = 1;
-    expect(mockAws.copyObject).toHaveBeenCalledTimes(manifest.length);
+    let n = 2;
+    expect(s3Mock).toHaveReceivedCommandTimes(CopyObjectCommand, manifest.length);
     for (let fileName of manifest) {
-      expect(mockAws.copyObject).toHaveBeenNthCalledWith(n++, {
-        Bucket: resourceProperties.DestinationBucket,
-        CopySource: `${resourceProperties.SourceBucket}/${resourceProperties.SourcePrefix}/${fileName}`,
-        Key: fileName.split('/').slice(1).join('/')
-      });
+      expect(s3Mock).toHaveReceivedNthCommandWith(n++,
+        CopyObjectCommand,
+        {
+          Bucket: resourceProperties.DestinationBucket,
+          CopySource: `${resourceProperties.SourceBucket}/${resourceProperties.SourcePrefix}/${fileName}`,
+          Key: fileName.split('/').slice(1).join('/')
+        });
     }
 
     expect(mockAxios.put).toHaveBeenCalledTimes(1);
@@ -292,6 +266,8 @@ describe('Unit tests of COPY_S3_ASSETS', () => {
 
   test('Nothing happens when deleting the solution', async () => {
     event.RequestType = CustomResourceTypes.RequestTypes.DELETE;
+    s3Mock.on(GetObjectCommand).resolves({});
+    s3Mock.on(CopyObjectCommand).resolves({});
     mockAxios.put.mockResolvedValue({ status: 200 });
 
     const index = require('../index');
@@ -299,8 +275,8 @@ describe('Unit tests of COPY_S3_ASSETS', () => {
     const responseBody = buildResponseBody(event, response);
     axiosConfig.headers['Content-Length'] = responseBody.length;
 
-    expect(mockAws.getObject).not.toHaveBeenCalled();
-    expect(mockAws.copyObject).not.toHaveBeenCalled();
+    expect(s3Mock).toHaveReceivedCommandTimes(GetObjectCommand, 0);
+    expect(s3Mock).toHaveReceivedCommandTimes(CopyObjectCommand, 0);
     expect(mockAxios.put).toHaveBeenCalledTimes(1);
     expect(mockAxios.put).toHaveBeenCalledWith(event.ResponseURL, responseBody, axiosConfig);
     expect(response).toEqual({
@@ -328,19 +304,16 @@ describe('Unit tests of CREATE_CONFIG', () => {
     }
   };
   const resourceProperties = event.ResourceProperties as CustomResourceTypes.CreateConsoleConfigProperties;
-  const consoleConfig = { key: "value" }
+  const consoleConfig = { key: "value" };
 
   beforeEach(() => {
-    mockAws.putObject.mockReset();
+    s3Mock.reset();
+    iotMock.reset();
     mockAxios.put.mockReset();
   });
 
   test('Success to put the console config when creating a solution', async () => {
-    mockAws.putObject.mockImplementationOnce(() => {
-      return {
-        promise() { return Promise.resolve(); }
-      };
-    });
+    s3Mock.on(PutObjectCommand).resolves({});
     mockAxios.put.mockResolvedValue({ status: 200 });
 
     const index = require('../index');
@@ -348,13 +321,12 @@ describe('Unit tests of CREATE_CONFIG', () => {
     const responseBody = buildResponseBody(event, response);
     axiosConfig.headers['Content-Length'] = responseBody.length;
 
-    expect(mockAws.putObject).toHaveBeenCalledTimes(1);
-    expect(mockAws.putObject).toHaveBeenCalledWith({
-      Body: `const config = ${JSON.stringify(consoleConfig, null, 2)};`,
-      Bucket: resourceProperties.DestinationBucket,
-      Key: resourceProperties.ConfigFileName,
-      ContentType: 'application/javascript'
-    });
+    expect(s3Mock).toHaveReceivedCommandTimes(PutObjectCommand, 1);
+    const putObjectCall = s3Mock.commandCalls(PutObjectCommand)[0].firstArg as PutObjectCommand;
+    expect(putObjectCall.input.Body).toBe(`const config = ${JSON.stringify(consoleConfig, null, 2)};`);
+    expect(putObjectCall.input.Bucket).toBe(resourceProperties.DestinationBucket);
+    expect(putObjectCall.input.Key).toBe(resourceProperties.ConfigFileName);
+    expect(putObjectCall.input.ContentType).toBe('application/javascript');
     expect(mockAxios.put).toHaveBeenCalledTimes(1);
     expect(mockAxios.put).toHaveBeenCalledWith(event.ResponseURL, responseBody, axiosConfig);
     expect(response).toEqual({
@@ -365,11 +337,7 @@ describe('Unit tests of CREATE_CONFIG', () => {
 
   test('Failed to put the console config when updating a solution', async () => {
     event.RequestType = CustomResourceTypes.RequestTypes.UPDATE;
-    mockAws.putObject.mockImplementationOnce(() => {
-      return {
-        promise() { return Promise.reject({ message: 'Failure' }); }
-      };
-    });
+    s3Mock.on(PutObjectCommand).rejects({ message: 'Failure' });
     mockAxios.put.mockResolvedValue({ status: 200 });
 
     const index = require('../index');
@@ -377,13 +345,13 @@ describe('Unit tests of CREATE_CONFIG', () => {
     const responseBody = buildResponseBody(event, response, 'Failure');
     axiosConfig.headers['Content-Length'] = responseBody.length;
 
-    expect(mockAws.putObject).toHaveBeenCalledTimes(1);
-    expect(mockAws.putObject).toHaveBeenCalledWith({
-      Body: `const config = ${JSON.stringify(consoleConfig, null, 2)};`,
-      Bucket: resourceProperties.DestinationBucket,
-      Key: resourceProperties.ConfigFileName,
-      ContentType: 'application/javascript'
-    });
+    expect(s3Mock).toHaveReceivedCommandTimes(PutObjectCommand, 1);
+    const putObjectCall = s3Mock.commandCalls(PutObjectCommand)[0].firstArg as PutObjectCommand;
+    expect(putObjectCall.input.Body).toBe(`const config = ${JSON.stringify(consoleConfig, null, 2)};`);
+    expect(putObjectCall.input.Bucket).toBe(resourceProperties.DestinationBucket);
+    expect(putObjectCall.input.Key).toBe(resourceProperties.ConfigFileName);
+    expect(putObjectCall.input.ContentType).toBe('application/javascript');
+
     expect(mockAxios.put).toHaveBeenCalledTimes(1);
     expect(mockAxios.put).toHaveBeenCalledWith(event.ResponseURL, responseBody, axiosConfig);
     expect(response).toEqual({
@@ -401,7 +369,7 @@ describe('Unit tests of CREATE_CONFIG', () => {
     const responseBody = buildResponseBody(event, response);
     axiosConfig.headers['Content-Length'] = responseBody.length;
 
-    expect(mockAws.putObject).not.toHaveBeenCalled();
+    expect(s3Mock).toHaveReceivedCommandTimes(PutObjectCommand, 0);
     expect(mockAxios.put).toHaveBeenCalledTimes(1);
     expect(mockAxios.put).toHaveBeenCalledWith(event.ResponseURL, responseBody, axiosConfig);
     expect(response).toEqual({
@@ -427,16 +395,13 @@ describe('Unit tests of DescribeIoTEndpoint', () => {
   };
 
   beforeEach(() => {
-    mockAxios.put.mockReset()
-    mockAws.describeEndpoint.mockReset();
+    s3Mock.reset();
+    iotMock.reset();
+    mockAxios.put.mockReset();
   });
 
   test('Success to get IoT endpoint', async () => {
-    mockAws.describeEndpoint.mockImplementationOnce(() => {
-      return {
-        promise() { return Promise.resolve({ endpointAddress: 'endpoint.fake' }); }
-      };
-    });
+    iotMock.on(DescribeEndpointCommand).resolves({ endpointAddress: 'endpoint.fake' });
     mockAxios.put.mockResolvedValue({ status: 200 });
 
     const index = require('../index');
@@ -444,8 +409,8 @@ describe('Unit tests of DescribeIoTEndpoint', () => {
     const responseBody = buildResponseBody(event, response);
     axiosConfig.headers['Content-Length'] = responseBody.length;
 
-    expect(mockAws.describeEndpoint).toHaveBeenCalledTimes(1);
-    expect(mockAws.describeEndpoint).toHaveBeenCalledWith({
+    expect(iotMock).toHaveReceivedCommandTimes(DescribeEndpointCommand, 1);
+    expect(iotMock).toHaveReceivedCommandWith(DescribeEndpointCommand, {
       endpointType: 'iot:Data-ATS'
     });
     expect(mockAxios.put).toHaveBeenCalledTimes(1);
@@ -458,6 +423,7 @@ describe('Unit tests of DescribeIoTEndpoint', () => {
 
   test('Nothing happens when updating the solution', async () => {
     event.RequestType = CustomResourceTypes.RequestTypes.UPDATE;
+    iotMock.on(DescribeEndpointCommand).resolves({});
     mockAxios.put.mockResolvedValue({ status: 200 });
 
     const index = require('../index');
@@ -465,7 +431,7 @@ describe('Unit tests of DescribeIoTEndpoint', () => {
     const responseBody = buildResponseBody(event, response);
     axiosConfig.headers['Content-Length'] = responseBody.length;
 
-    expect(mockAws.describeEndpoint).not.toHaveBeenCalled();
+    expect(iotMock).toHaveReceivedCommandTimes(DescribeEndpointCommand, 0);
     expect(mockAxios.put).toHaveBeenCalledTimes(1);
     expect(mockAxios.put).toHaveBeenCalledWith(event.ResponseURL, responseBody, axiosConfig);
     expect(response).toEqual({
@@ -476,6 +442,7 @@ describe('Unit tests of DescribeIoTEndpoint', () => {
 
   test('Nothing happens when deleting the solution', async () => {
     event.RequestType = CustomResourceTypes.RequestTypes.DELETE;
+    iotMock.on(DescribeEndpointCommand).resolves({});
     mockAxios.put.mockResolvedValue({ status: 200 });
 
     const index = require('../index');
@@ -483,7 +450,7 @@ describe('Unit tests of DescribeIoTEndpoint', () => {
     const responseBody = buildResponseBody(event, response);
     axiosConfig.headers['Content-Length'] = responseBody.length;
 
-    expect(mockAws.describeEndpoint).not.toHaveBeenCalled();
+    expect(iotMock).toHaveReceivedCommandTimes(DescribeEndpointCommand, 0);
     expect(mockAxios.put).toHaveBeenCalledTimes(1);
     expect(mockAxios.put).toHaveBeenCalledWith(event.ResponseURL, responseBody, axiosConfig);
     expect(response).toEqual({
@@ -510,23 +477,14 @@ describe('Unit tests of DetachIoTPolicy', () => {
   };
 
   beforeEach(() => {
-    mockAxios.put.mockReset()
-    mockAws.listTargetsForPolicy.mockReset();
-    mockAws.detachPrincipalPolicy.mockReset();
+    s3Mock.reset();
+    iotMock.reset();
+    mockAxios.put.mockReset();
   });
 
   test('Success to get detach IoT policy when request is DELETE', async () => {
-    mockAws.listTargetsForPolicy.mockImplementationOnce(() => {
-      return {
-        promise() { return Promise.resolve({ targets: ["target1"] }); }
-      };
-    });
-
-    mockAws.detachPrincipalPolicy.mockImplementationOnce(() => {
-      return {
-        promise() { return Promise.resolve(); }
-      };
-    });
+    iotMock.on(ListTargetsForPolicyCommand).resolves({ targets: ["target1"] });
+    iotMock.on(DetachPolicyCommand).resolves({});
 
     mockAxios.put.mockResolvedValue({ status: 200 });
 
@@ -535,14 +493,15 @@ describe('Unit tests of DetachIoTPolicy', () => {
     const responseBody = buildResponseBody(event, response);
     axiosConfig.headers['Content-Length'] = responseBody.length;
 
-    expect(mockAws.listTargetsForPolicy).toHaveBeenCalledTimes(1);
-    expect(mockAws.listTargetsForPolicy).toHaveBeenCalledWith({
+    expect(iotMock).toHaveReceivedCommandTimes(ListTargetsForPolicyCommand, 1);
+    expect(iotMock).toHaveReceivedCommandWith(ListTargetsForPolicyCommand, {
       policyName: 'IotPolicy'
     });
-    expect(mockAws.detachPrincipalPolicy).toHaveBeenCalledTimes(1);
-    expect(mockAws.detachPrincipalPolicy).toHaveBeenCalledWith({
+
+    expect(iotMock).toHaveReceivedCommandTimes(DetachPolicyCommand, 1);
+    expect(iotMock).toHaveReceivedCommandWith(DetachPolicyCommand, {
       policyName: 'IotPolicy',
-      principal: 'target1'
+      target: 'target1'
     });
     expect(mockAxios.put).toHaveBeenCalledTimes(1);
     expect(mockAxios.put).toHaveBeenCalledWith(event.ResponseURL, responseBody, axiosConfig);
@@ -554,6 +513,8 @@ describe('Unit tests of DetachIoTPolicy', () => {
 
   test('Nothing happens when updating the solution', async () => {
     event.RequestType = CustomResourceTypes.RequestTypes.UPDATE;
+    iotMock.on(ListTargetsForPolicyCommand).resolves({});
+    iotMock.on(DetachPolicyCommand).resolves({});
     mockAxios.put.mockResolvedValue({ status: 200 });
 
     const index = require('../index');
@@ -561,8 +522,8 @@ describe('Unit tests of DetachIoTPolicy', () => {
     const responseBody = buildResponseBody(event, response);
     axiosConfig.headers['Content-Length'] = responseBody.length;
 
-    expect(mockAws.listTargetsForPolicy).not.toHaveBeenCalled();
-    expect(mockAws.detachPrincipalPolicy).not.toHaveBeenCalled();
+    expect(iotMock).toHaveReceivedCommandTimes(ListTargetsForPolicyCommand, 0);
+    expect(iotMock).toHaveReceivedCommandTimes(DetachPolicyCommand, 0);
     expect(mockAxios.put).toHaveBeenCalledTimes(1);
     expect(mockAxios.put).toHaveBeenCalledWith(event.ResponseURL, responseBody, axiosConfig);
     expect(response).toEqual({
@@ -573,6 +534,8 @@ describe('Unit tests of DetachIoTPolicy', () => {
 
   test('Nothing happens when creating the solution', async () => {
     event.RequestType = CustomResourceTypes.RequestTypes.CREATE;
+    iotMock.on(ListTargetsForPolicyCommand).resolves({});
+    iotMock.on(DetachPolicyCommand).resolves({});
     mockAxios.put.mockResolvedValue({ status: 200 });
 
     const index = require('../index');
@@ -580,8 +543,8 @@ describe('Unit tests of DetachIoTPolicy', () => {
     const responseBody = buildResponseBody(event, response);
     axiosConfig.headers['Content-Length'] = responseBody.length;
 
-    expect(mockAws.listTargetsForPolicy).not.toHaveBeenCalled();
-    expect(mockAws.detachPrincipalPolicy).not.toHaveBeenCalled();
+    expect(iotMock).toHaveReceivedCommandTimes(ListTargetsForPolicyCommand, 0);
+    expect(iotMock).toHaveReceivedCommandTimes(DetachPolicyCommand, 0);
     expect(mockAxios.put).toHaveBeenCalledTimes(1);
     expect(mockAxios.put).toHaveBeenCalledWith(event.ResponseURL, responseBody, axiosConfig);
     expect(response).toEqual({
@@ -591,11 +554,7 @@ describe('Unit tests of DetachIoTPolicy', () => {
   });
 
   test('Fail to get detach IoT policy when listTargetsForPolicy fails', async () => {
-    mockAws.listTargetsForPolicy.mockImplementationOnce(() => {
-      return {
-        promise() { return Promise.reject({ message: 'Failure' }) }
-      };
-    });
+    iotMock.on(ListTargetsForPolicyCommand).rejects({ message: 'Failure' });
 
     mockAxios.put.mockResolvedValue({ status: 200 });
     event.RequestType = CustomResourceTypes.RequestTypes.DELETE;
@@ -604,8 +563,8 @@ describe('Unit tests of DetachIoTPolicy', () => {
     const responseBody = buildResponseBody(event, response, 'Failure');
     axiosConfig.headers['Content-Length'] = responseBody.length;
 
-    expect(mockAws.listTargetsForPolicy).toHaveBeenCalledTimes(1);
-    expect(mockAws.listTargetsForPolicy).toHaveBeenCalledWith({
+    expect(iotMock).toHaveReceivedCommandTimes(ListTargetsForPolicyCommand, 1);
+    expect(iotMock).toHaveReceivedCommandWith(ListTargetsForPolicyCommand, {
       policyName: 'IotPolicy'
     });
     expect(mockAxios.put).toHaveBeenCalledTimes(1);
@@ -617,17 +576,8 @@ describe('Unit tests of DetachIoTPolicy', () => {
   });
 
   test('Fail to get detach IoT policy when detachPrincipalPolicy fails', async () => {
-    mockAws.listTargetsForPolicy.mockImplementationOnce(() => {
-      return {
-        promise() { return Promise.resolve({ targets: ["target1"] }) }
-      };
-    });
-
-    mockAws.detachPrincipalPolicy.mockImplementationOnce(() => {
-      return {
-        promise() { return Promise.reject({ message: 'Failure' }) }
-      };
-    });
+    iotMock.on(ListTargetsForPolicyCommand).resolves({ targets: ["target1"] });
+    iotMock.on(DetachPolicyCommand).rejects({ message: 'Failure' });
 
     mockAxios.put.mockResolvedValue({ status: 200 });
     event.RequestType = CustomResourceTypes.RequestTypes.DELETE;
@@ -636,14 +586,15 @@ describe('Unit tests of DetachIoTPolicy', () => {
     const responseBody = buildResponseBody(event, response, 'Failure');
     axiosConfig.headers['Content-Length'] = responseBody.length;
 
-    expect(mockAws.listTargetsForPolicy).toHaveBeenCalledTimes(1);
-    expect(mockAws.listTargetsForPolicy).toHaveBeenCalledWith({
+    expect(iotMock).toHaveReceivedCommandTimes(ListTargetsForPolicyCommand, 1);
+    expect(iotMock).toHaveReceivedCommandWith(ListTargetsForPolicyCommand, {
       policyName: 'IotPolicy'
     });
-    expect(mockAws.detachPrincipalPolicy).toHaveBeenCalledTimes(1);
-    expect(mockAws.detachPrincipalPolicy).toHaveBeenCalledWith({
+
+    expect(iotMock).toHaveReceivedCommandTimes(DetachPolicyCommand, 1);
+    expect(iotMock).toHaveReceivedCommandWith(DetachPolicyCommand, {
       policyName: 'IotPolicy',
-      principal: 'target1'
+      target: 'target1'
     });
     expect(mockAxios.put).toHaveBeenCalledTimes(1);
     expect(mockAxios.put).toHaveBeenCalledWith(event.ResponseURL, responseBody, axiosConfig);

@@ -1,35 +1,35 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`IoT Device Simulator ConsoleConstruct Test 1`] = `
-Object {
-  "Resources": Object {
-    "TestCommonResourceDistributionCloudFrontDistributionCF3F0A1C": Object {
-      "Metadata": Object {
-        "cfn_nag": Object {
-          "rules_to_suppress": Array [
-            Object {
+{
+  "Resources": {
+    "TestCommonResourceDistributionCloudFrontDistributionCF3F0A1C": {
+      "Metadata": {
+        "cfn_nag": {
+          "rules_to_suppress": [
+            {
               "id": "W70",
               "reason": "Since the distribution uses the CloudFront domain name, CloudFront automatically sets the security policy to TLSv1 regardless of the value of MinimumProtocolVersion",
             },
           ],
         },
       },
-      "Properties": Object {
-        "DistributionConfig": Object {
+      "Properties": {
+        "DistributionConfig": {
           "Comment": "IoT Device Simulator Distribution",
-          "CustomErrorResponses": Array [
-            Object {
+          "CustomErrorResponses": [
+            {
               "ErrorCode": 403,
               "ResponseCode": 200,
               "ResponsePagePath": "/index.html",
             },
-            Object {
+            {
               "ErrorCode": 404,
               "ResponseCode": 200,
               "ResponsePagePath": "/index.html",
             },
           ],
-          "DefaultCacheBehavior": Object {
+          "DefaultCacheBehavior": {
             "CachePolicyId": "658327ea-f89d-4fab-a63d-7e88639e58f6",
             "Compress": true,
             "TargetOriginId": "TestCommonResourceDistributionCloudFrontDistributionOrigin17ECA9ED9",
@@ -39,31 +39,31 @@ Object {
           "Enabled": true,
           "HttpVersion": "http2",
           "IPV6Enabled": true,
-          "Logging": Object {
-            "Bucket": Object {
-              "Fn::GetAtt": Array [
+          "Logging": {
+            "Bucket": {
+              "Fn::GetAtt": [
                 "testBucketDF4D7D1A",
                 "RegionalDomainName",
               ],
             },
             "Prefix": "console-cf/",
           },
-          "Origins": Array [
-            Object {
-              "DomainName": Object {
-                "Fn::GetAtt": Array [
+          "Origins": [
+            {
+              "DomainName": {
+                "Fn::GetAtt": [
                   "TestCommonResourceDistributionS3Bucket4473F8A7",
                   "RegionalDomainName",
                 ],
               },
               "Id": "TestCommonResourceDistributionCloudFrontDistributionOrigin17ECA9ED9",
-              "S3OriginConfig": Object {
-                "OriginAccessIdentity": Object {
-                  "Fn::Join": Array [
+              "S3OriginConfig": {
+                "OriginAccessIdentity": {
+                  "Fn::Join": [
                     "",
-                    Array [
+                    [
                       "origin-access-identity/cloudfront/",
-                      Object {
+                      {
                         "Ref": "TestCommonResourceDistributionCloudFrontDistributionOrigin1S3Origin537D11B7",
                       },
                     ],
@@ -76,31 +76,31 @@ Object {
       },
       "Type": "AWS::CloudFront::Distribution",
     },
-    "TestCommonResourceDistributionCloudFrontDistributionOrigin1S3Origin537D11B7": Object {
-      "Properties": Object {
-        "CloudFrontOriginAccessIdentityConfig": Object {
+    "TestCommonResourceDistributionCloudFrontDistributionOrigin1S3Origin537D11B7": {
+      "Properties": {
+        "CloudFrontOriginAccessIdentityConfig": {
           "Comment": "Identity for TestCommonResourceDistributionCloudFrontDistributionOrigin17ECA9ED9",
         },
       },
       "Type": "AWS::CloudFront::CloudFrontOriginAccessIdentity",
     },
-    "TestCommonResourceDistributionS3Bucket4473F8A7": Object {
+    "TestCommonResourceDistributionS3Bucket4473F8A7": {
       "DeletionPolicy": "Retain",
-      "Properties": Object {
-        "BucketEncryption": Object {
-          "ServerSideEncryptionConfiguration": Array [
-            Object {
-              "ServerSideEncryptionByDefault": Object {
+      "Properties": {
+        "BucketEncryption": {
+          "ServerSideEncryptionConfiguration": [
+            {
+              "ServerSideEncryptionByDefault": {
                 "SSEAlgorithm": "AES256",
               },
             },
           ],
         },
-        "LifecycleConfiguration": Object {
-          "Rules": Array [
-            Object {
-              "NoncurrentVersionTransitions": Array [
-                Object {
+        "LifecycleConfiguration": {
+          "Rules": [
+            {
+              "NoncurrentVersionTransitions": [
+                {
                   "StorageClass": "GLACIER",
                   "TransitionInDays": 90,
                 },
@@ -109,60 +109,66 @@ Object {
             },
           ],
         },
-        "LoggingConfiguration": Object {
-          "DestinationBucketName": Object {
+        "LoggingConfiguration": {
+          "DestinationBucketName": {
             "Ref": "testBucketDF4D7D1A",
           },
           "LogFilePrefix": "console-s3/",
         },
-        "PublicAccessBlockConfiguration": Object {
+        "PublicAccessBlockConfiguration": {
           "BlockPublicAcls": true,
           "BlockPublicPolicy": true,
           "IgnorePublicAcls": true,
           "RestrictPublicBuckets": true,
         },
-        "VersioningConfiguration": Object {
+        "VersioningConfiguration": {
           "Status": "Enabled",
         },
       },
       "Type": "AWS::S3::Bucket",
       "UpdateReplacePolicy": "Retain",
     },
-    "TestCommonResourceDistributionS3BucketPolicyFD5D32C0": Object {
-      "Metadata": Object {
-        "cfn_nag": Object {
-          "rules_to_suppress": Array [
-            Object {
+    "TestCommonResourceDistributionS3BucketPolicyFD5D32C0": {
+      "Metadata": {
+        "cfn_nag": {
+          "rules_to_suppress": [
+            {
               "id": "F16",
               "reason": "Public website bucket policy requires a wildcard principal",
             },
           ],
         },
       },
-      "Properties": Object {
-        "Bucket": Object {
+      "Properties": {
+        "Bucket": {
           "Ref": "TestCommonResourceDistributionS3Bucket4473F8A7",
         },
-        "PolicyDocument": Object {
-          "Statement": Array [
-            Object {
-              "Action": "*",
-              "Condition": Object {
-                "Bool": Object {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "s3:*",
+              "Condition": {
+                "Bool": {
                   "aws:SecureTransport": "false",
                 },
               },
               "Effect": "Deny",
-              "Principal": Object {
+              "Principal": {
                 "AWS": "*",
               },
-              "Resource": Array [
-                Object {
-                  "Fn::Join": Array [
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "TestCommonResourceDistributionS3Bucket4473F8A7",
+                    "Arn",
+                  ],
+                },
+                {
+                  "Fn::Join": [
                     "",
-                    Array [
-                      Object {
-                        "Fn::GetAtt": Array [
+                    [
+                      {
+                        "Fn::GetAtt": [
                           "TestCommonResourceDistributionS3Bucket4473F8A7",
                           "Arn",
                         ],
@@ -171,32 +177,25 @@ Object {
                     ],
                   ],
                 },
-                Object {
-                  "Fn::GetAtt": Array [
-                    "TestCommonResourceDistributionS3Bucket4473F8A7",
-                    "Arn",
-                  ],
-                },
               ],
-              "Sid": "HttpsOnly",
             },
-            Object {
+            {
               "Action": "s3:GetObject",
               "Effect": "Allow",
-              "Principal": Object {
-                "CanonicalUser": Object {
-                  "Fn::GetAtt": Array [
+              "Principal": {
+                "CanonicalUser": {
+                  "Fn::GetAtt": [
                     "TestCommonResourceDistributionCloudFrontDistributionOrigin1S3Origin537D11B7",
                     "S3CanonicalUserId",
                   ],
                 },
               },
-              "Resource": Object {
-                "Fn::Join": Array [
+              "Resource": {
+                "Fn::Join": [
                   "",
-                  Array [
-                    Object {
-                      "Fn::GetAtt": Array [
+                  [
+                    {
+                      "Fn::GetAtt": [
                         "TestCommonResourceDistributionS3Bucket4473F8A7",
                         "Arn",
                       ],
@@ -212,37 +211,37 @@ Object {
       },
       "Type": "AWS::S3::BucketPolicy",
     },
-    "TestCommonResourceIDSIoTPolicyB2F77C27": Object {
-      "Metadata": Object {
-        "cfn_nag": Object {
-          "rules_to_suppress": Array [
-            Object {
+    "TestCommonResourceIDSIoTPolicyB2F77C27": {
+      "Metadata": {
+        "cfn_nag": {
+          "rules_to_suppress": [
+            {
               "id": "W11",
               "reason": "Cannot specify the resource to attach policy to identity.",
             },
           ],
         },
       },
-      "Properties": Object {
-        "PolicyDocument": Object {
-          "Statement": Array [
-            Object {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
               "Action": "iot:Connect",
               "Effect": "Allow",
-              "Resource": Object {
-                "Fn::Join": Array [
+              "Resource": {
+                "Fn::Join": [
                   "",
-                  Array [
+                  [
                     "arn:",
-                    Object {
+                    {
                       "Ref": "AWS::Partition",
                     },
                     ":iot:",
-                    Object {
+                    {
                       "Ref": "AWS::Region",
                     },
                     ":",
-                    Object {
+                    {
                       "Ref": "AWS::AccountId",
                     },
                     ":client/*",
@@ -250,23 +249,23 @@ Object {
                 ],
               },
             },
-            Object {
+            {
               "Action": "iot:Subscribe",
               "Effect": "Allow",
-              "Resource": Object {
-                "Fn::Join": Array [
+              "Resource": {
+                "Fn::Join": [
                   "",
-                  Array [
+                  [
                     "arn:",
-                    Object {
+                    {
                       "Ref": "AWS::Partition",
                     },
                     ":iot:",
-                    Object {
+                    {
                       "Ref": "AWS::Region",
                     },
                     ":",
-                    Object {
+                    {
                       "Ref": "AWS::AccountId",
                     },
                     ":topicfilter/*",
@@ -274,23 +273,23 @@ Object {
                 ],
               },
             },
-            Object {
+            {
               "Action": "iot:Receive",
               "Effect": "Allow",
-              "Resource": Object {
-                "Fn::Join": Array [
+              "Resource": {
+                "Fn::Join": [
                   "",
-                  Array [
+                  [
                     "arn:",
-                    Object {
+                    {
                       "Ref": "AWS::Partition",
                     },
                     ":iot:",
-                    Object {
+                    {
                       "Ref": "AWS::Region",
                     },
                     ":",
-                    Object {
+                    {
                       "Ref": "AWS::AccountId",
                     },
                     ":topic/*",
@@ -304,72 +303,72 @@ Object {
       },
       "Type": "AWS::IoT::Policy",
     },
-    "TestCommonResourceIdentityPoolAuthenticatedRoleB174B008": Object {
-      "Metadata": Object {
-        "cfn_nag": Object {
-          "rules_to_suppress": Array [
-            Object {
+    "TestCommonResourceIdentityPoolAuthenticatedRoleB174B008": {
+      "Metadata": {
+        "cfn_nag": {
+          "rules_to_suppress": [
+            {
               "id": "W11",
               "reason": "iot:AttachPrincipalPolicy does not allow for resource specification",
             },
           ],
         },
       },
-      "Properties": Object {
-        "AssumeRolePolicyDocument": Object {
-          "Statement": Array [
-            Object {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
               "Action": "sts:AssumeRoleWithWebIdentity",
-              "Condition": Object {
-                "ForAnyValue:StringLike": Object {
+              "Condition": {
+                "ForAnyValue:StringLike": {
                   "cognito-identity.amazonaws.com:amr": "authenticated",
                 },
-                "StringEquals": Object {
-                  "cognito-identity.amazonaws.com:aud": Object {
+                "StringEquals": {
+                  "cognito-identity.amazonaws.com:aud": {
                     "Ref": "TestCommonResourceIdentityPoolFC1CEC73",
                   },
                 },
               },
               "Effect": "Allow",
-              "Principal": Object {
+              "Principal": {
                 "Federated": "cognito-identity.amazonaws.com",
               },
             },
           ],
           "Version": "2012-10-17",
         },
-        "Description": Object {
-          "Fn::Join": Array [
+        "Description": {
+          "Fn::Join": [
             "",
-            Array [
-              Object {
+            [
+              {
                 "Ref": "AWS::StackName",
               },
               " Identity Pool authenticated role",
             ],
           ],
         },
-        "Policies": Array [
-          Object {
-            "PolicyDocument": Object {
-              "Statement": Array [
-                Object {
+        "Policies": [
+          {
+            "PolicyDocument": {
+              "Statement": [
+                {
                   "Action": "execute-api:Invoke",
                   "Effect": "Allow",
-                  "Resource": Object {
-                    "Fn::Join": Array [
+                  "Resource": {
+                    "Fn::Join": [
                       "",
-                      Array [
+                      [
                         "arn:",
-                        Object {
+                        {
                           "Ref": "AWS::Partition",
                         },
                         ":execute-api:",
-                        Object {
+                        {
                           "Ref": "AWS::Region",
                         },
                         ":",
-                        Object {
+                        {
                           "Ref": "AWS::AccountId",
                         },
                         ":12ab34cde5/prod/*",
@@ -382,11 +381,11 @@ Object {
             },
             "PolicyName": "ExecuteApiPolicy",
           },
-          Object {
-            "PolicyDocument": Object {
-              "Statement": Array [
-                Object {
-                  "Action": Array [
+          {
+            "PolicyDocument": {
+              "Statement": [
+                {
+                  "Action": [
                     "geo:SearchPlaceIndexForText",
                     "geo:GetMapGlyphs",
                     "geo:GetMapSprites",
@@ -396,7 +395,7 @@ Object {
                     "geo:GetMapTile",
                   ],
                   "Effect": "Allow",
-                  "Resource": Array [
+                  "Resource": [
                     "arn:aws:geo:region:accountID:map/ExampleMap",
                     "arn:aws:geo:region:accountID:place-index/ExamplePlaceIndex",
                   ],
@@ -406,31 +405,31 @@ Object {
             },
             "PolicyName": "LocationServicePolicy",
           },
-          Object {
-            "PolicyDocument": Object {
-              "Statement": Array [
-                Object {
+          {
+            "PolicyDocument": {
+              "Statement": [
+                {
                   "Action": "iot:AttachPrincipalPolicy",
                   "Effect": "Allow",
                   "Resource": "*",
                 },
-                Object {
+                {
                   "Action": "iot:Connect",
                   "Effect": "Allow",
-                  "Resource": Object {
-                    "Fn::Join": Array [
+                  "Resource": {
+                    "Fn::Join": [
                       "",
-                      Array [
+                      [
                         "arn:",
-                        Object {
+                        {
                           "Ref": "AWS::Partition",
                         },
                         ":iot:",
-                        Object {
+                        {
                           "Ref": "AWS::Region",
                         },
                         ":",
-                        Object {
+                        {
                           "Ref": "AWS::AccountId",
                         },
                         ":client/*",
@@ -438,23 +437,23 @@ Object {
                     ],
                   },
                 },
-                Object {
+                {
                   "Action": "iot:Subscribe",
                   "Effect": "Allow",
-                  "Resource": Object {
-                    "Fn::Join": Array [
+                  "Resource": {
+                    "Fn::Join": [
                       "",
-                      Array [
+                      [
                         "arn:",
-                        Object {
+                        {
                           "Ref": "AWS::Partition",
                         },
                         ":iot:",
-                        Object {
+                        {
                           "Ref": "AWS::Region",
                         },
                         ":",
-                        Object {
+                        {
                           "Ref": "AWS::AccountId",
                         },
                         ":topicfilter/*",
@@ -462,23 +461,23 @@ Object {
                     ],
                   },
                 },
-                Object {
+                {
                   "Action": "iot:Receive",
                   "Effect": "Allow",
-                  "Resource": Object {
-                    "Fn::Join": Array [
+                  "Resource": {
+                    "Fn::Join": [
                       "",
-                      Array [
+                      [
                         "arn:",
-                        Object {
+                        {
                           "Ref": "AWS::Partition",
                         },
                         ":iot:",
-                        Object {
+                        {
                           "Ref": "AWS::Region",
                         },
                         ":",
-                        Object {
+                        {
                           "Ref": "AWS::AccountId",
                         },
                         ":topic/*",
@@ -495,16 +494,16 @@ Object {
       },
       "Type": "AWS::IAM::Role",
     },
-    "TestCommonResourceIdentityPoolFC1CEC73": Object {
-      "Properties": Object {
+    "TestCommonResourceIdentityPoolFC1CEC73": {
+      "Properties": {
         "AllowUnauthenticatedIdentities": false,
-        "CognitoIdentityProviders": Array [
-          Object {
-            "ClientId": Object {
+        "CognitoIdentityProviders": [
+          {
+            "ClientId": {
               "Ref": "TestCommonResourceUserPoolClient2595A2FD",
             },
-            "ProviderName": Object {
-              "Fn::GetAtt": Array [
+            "ProviderName": {
+              "Fn::GetAtt": [
                 "TestCommonResourceUserPoolAAE3EB23",
                 "ProviderName",
               ],
@@ -515,14 +514,14 @@ Object {
       },
       "Type": "AWS::Cognito::IdentityPool",
     },
-    "TestCommonResourceIdentityPoolRoleAttachement3832B688": Object {
-      "Properties": Object {
-        "IdentityPoolId": Object {
+    "TestCommonResourceIdentityPoolRoleAttachement3832B688": {
+      "Properties": {
+        "IdentityPoolId": {
           "Ref": "TestCommonResourceIdentityPoolFC1CEC73",
         },
-        "Roles": Object {
-          "authenticated": Object {
-            "Fn::GetAtt": Array [
+        "Roles": {
+          "authenticated": {
+            "Fn::GetAtt": [
               "TestCommonResourceIdentityPoolAuthenticatedRoleB174B008",
               "Arn",
             ],
@@ -531,57 +530,57 @@ Object {
       },
       "Type": "AWS::Cognito::IdentityPoolRoleAttachment",
     },
-    "TestCommonResourceUserEE889C83": Object {
-      "Properties": Object {
-        "DesiredDeliveryMediums": Array [
+    "TestCommonResourceUserEE889C83": {
+      "Properties": {
+        "DesiredDeliveryMediums": [
           "EMAIL",
         ],
         "ForceAliasCreation": true,
-        "UserAttributes": Array [
-          Object {
+        "UserAttributes": [
+          {
             "Name": "email",
             "Value": "someEmail",
           },
-          Object {
+          {
             "Name": "email_verified",
             "Value": "true",
           },
         ],
-        "UserPoolId": Object {
+        "UserPoolId": {
           "Ref": "TestCommonResourceUserPoolAAE3EB23",
         },
         "Username": "someEmail",
       },
       "Type": "AWS::Cognito::UserPoolUser",
     },
-    "TestCommonResourceUserPoolAAE3EB23": Object {
+    "TestCommonResourceUserPoolAAE3EB23": {
       "DeletionPolicy": "Delete",
-      "Properties": Object {
-        "AccountRecoverySetting": Object {
-          "RecoveryMechanisms": Array [
-            Object {
+      "Properties": {
+        "AccountRecoverySetting": {
+          "RecoveryMechanisms": [
+            {
               "Name": "verified_phone_number",
               "Priority": 1,
             },
-            Object {
+            {
               "Name": "verified_email",
               "Priority": 2,
             },
           ],
         },
-        "AdminCreateUserConfig": Object {
+        "AdminCreateUserConfig": {
           "AllowAdminCreateUserOnly": true,
-          "InviteMessageTemplate": Object {
-            "EmailMessage": Object {
-              "Fn::Join": Array [
+          "InviteMessageTemplate": {
+            "EmailMessage": {
+              "Fn::Join": [
                 "",
-                Array [
+                [
                   "
           <p>
             You are invited to join IoT Device Simulator.<br />
             https://",
-                  Object {
-                    "Fn::GetAtt": Array [
+                  {
+                    "Fn::GetAtt": [
                       "TestCommonResourceDistributionCloudFrontDistributionCF3F0A1C",
                       "DomainName",
                     ],
@@ -599,13 +598,13 @@ Object {
             "EmailSubject": "[IoT Device Simulator] Login information",
           },
         },
-        "AutoVerifiedAttributes": Array [
+        "AutoVerifiedAttributes": [
           "email",
         ],
         "EmailVerificationMessage": "The verification code to your new account is {####}",
         "EmailVerificationSubject": "Verify your new account",
-        "Policies": Object {
-          "PasswordPolicy": Object {
+        "Policies": {
+          "PasswordPolicy": {
             "MinimumLength": 12,
             "RequireLowercase": true,
             "RequireNumbers": true,
@@ -614,24 +613,24 @@ Object {
           },
         },
         "SmsVerificationMessage": "The verification code to your new account is {####}",
-        "UserPoolAddOns": Object {
+        "UserPoolAddOns": {
           "AdvancedSecurityMode": "ENFORCED",
         },
-        "UserPoolName": Object {
-          "Fn::Join": Array [
+        "UserPoolName": {
+          "Fn::Join": [
             "",
-            Array [
-              Object {
+            [
+              {
                 "Ref": "AWS::StackName",
               },
               "-user-pool",
             ],
           ],
         },
-        "UsernameAttributes": Array [
+        "UsernameAttributes": [
           "email",
         ],
-        "VerificationMessageTemplate": Object {
+        "VerificationMessageTemplate": {
           "DefaultEmailOption": "CONFIRM_WITH_CODE",
           "EmailMessage": "The verification code to your new account is {####}",
           "EmailSubject": "Verify your new account",
@@ -641,28 +640,28 @@ Object {
       "Type": "AWS::Cognito::UserPool",
       "UpdateReplacePolicy": "Delete",
     },
-    "TestCommonResourceUserPoolClient2595A2FD": Object {
-      "Properties": Object {
-        "AllowedOAuthFlows": Array [
+    "TestCommonResourceUserPoolClient2595A2FD": {
+      "Properties": {
+        "AllowedOAuthFlows": [
           "implicit",
           "code",
         ],
         "AllowedOAuthFlowsUserPoolClient": true,
-        "AllowedOAuthScopes": Array [
+        "AllowedOAuthScopes": [
           "profile",
           "phone",
           "email",
           "openid",
           "aws.cognito.signin.user.admin",
         ],
-        "CallbackURLs": Array [
+        "CallbackURLs": [
           "https://example.com",
         ],
-        "ClientName": Object {
-          "Fn::Join": Array [
+        "ClientName": {
+          "Fn::Join": [
             "",
-            Array [
-              Object {
+            [
+              {
                 "Ref": "AWS::StackName",
               },
               "-userpool-client",
@@ -672,21 +671,21 @@ Object {
         "GenerateSecret": false,
         "PreventUserExistenceErrors": "ENABLED",
         "RefreshTokenValidity": 1440,
-        "SupportedIdentityProviders": Array [
+        "SupportedIdentityProviders": [
           "COGNITO",
         ],
-        "TokenValidityUnits": Object {
+        "TokenValidityUnits": {
           "RefreshToken": "minutes",
         },
-        "UserPoolId": Object {
+        "UserPoolId": {
           "Ref": "TestCommonResourceUserPoolAAE3EB23",
         },
       },
       "Type": "AWS::Cognito::UserPoolClient",
     },
-    "testBucketDF4D7D1A": Object {
+    "testBucketDF4D7D1A": {
       "DeletionPolicy": "Retain",
-      "Properties": Object {
+      "Properties": {
         "AccessControl": "LogDeliveryWrite",
       },
       "Type": "AWS::S3::Bucket",
