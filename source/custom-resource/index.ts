@@ -4,8 +4,23 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { v4 } from 'uuid';
 import { CustomResourceTypes } from './interfaces';
-import S3 from 'aws-sdk/clients/s3';
-import Iot from 'aws-sdk/clients/iot';
+import {
+  CopyObjectCommand,
+  CopyObjectCommandInput,
+  GetObjectCommand,
+  GetObjectCommandInput,
+  PutObjectCommand,
+  PutObjectCommandInput,
+  S3Client
+} from "@aws-sdk/client-s3";
+import {
+  DescribeEndpointCommand,
+  DescribeEndpointCommandInput,
+  DetachPolicyCommand,
+  DetachPolicyCommandInput,
+  IoTClient,
+  ListTargetsForPolicyCommand
+} from "@aws-sdk/client-iot";
 
 const { SOLUTION_ID, SOLUTION_VERSION } = process.env;
 let options: { [key: string]: string } = {};
@@ -13,8 +28,8 @@ if (SOLUTION_ID && SOLUTION_VERSION
   && SOLUTION_ID.trim() !== '' && SOLUTION_VERSION.trim() !== '') {
   options.customUserAgent = `AwsSolution/${SOLUTION_ID}/${SOLUTION_VERSION}`;
 }
-const S3Client = new S3(options);
-const IotClient = new Iot(options);
+const s3Client = new S3Client(options);
+const iotClient = new IoTClient(options);
 
 /**
  * Handles the custom resource requests.
@@ -119,25 +134,26 @@ async function sendCloudFormationResponse(event: CustomResourceTypes.EventReques
 async function copyS3Assets(props: CustomResourceTypes.CopyFilesProperties, requestType: CustomResourceTypes.RequestTypes): Promise<void> {
   if ([CustomResourceTypes.RequestTypes.CREATE, CustomResourceTypes.RequestTypes.UPDATE].includes(requestType)) {
     const { DestinationBucket, ManifestFile, SourceBucket, SourcePrefix } = props;
-    const getParams = {
+    const getParams: GetObjectCommandInput = {
       Bucket: SourceBucket,
       Key: `${SourcePrefix}/${ManifestFile}`
     };
 
     console.debug(`Getting manifest file: ${JSON.stringify(getParams, null, 2)}`);
-    const response = await S3Client.getObject(getParams).promise();
-    const manifest: string[] = JSON.parse(response.Body.toString());
+    const response = await s3Client.send(new GetObjectCommand(getParams));
+    const body = await response.Body.transformToString();
+    const manifest: string[] = JSON.parse(body);
 
     await Promise.all(manifest.map(async (fileName: string) => {
       const keyName = fileName.split('/').slice(1).join('/');
-      const copyParams = {
+      const copyParams: CopyObjectCommandInput = {
         Bucket: DestinationBucket,
         CopySource: `${SourceBucket}/${SourcePrefix}/${fileName}`,
         Key: keyName
       };
 
       console.debug(`Copying ${fileName} to ${DestinationBucket}`);
-      return S3Client.copyObject(copyParams).promise();
+      return await s3Client.send(new CopyObjectCommand(copyParams));
     }));
   }
 }
@@ -152,29 +168,29 @@ async function createConsoleConfig(props: CustomResourceTypes.CreateConsoleConfi
     const { configObj, DestinationBucket, ConfigFileName } = props;
     const config = JSON.parse(configObj);
 
-    const params = {
+    const params: PutObjectCommandInput = {
       Body: `const config = ${JSON.stringify(config, null, 2)};`,
       Bucket: DestinationBucket,
       Key: ConfigFileName,
       ContentType: 'application/javascript'
     };
     console.log(`Putting console config: ${JSON.stringify(config, null, 2)}`);
-    await S3Client.putObject(params).promise();
+    await s3Client.send(new PutObjectCommand(params));
   }
 }
 
 /**
- * Get the IoT endpoint 
+ * Get the IoT endpoint
  * @param props Gets the IoT endpoint custom resource properties
  * @param requestType The custom resource request type
  * @returns the IoT endpoint address
  */
 async function getIotEndpoint(): Promise<string> {
-  let params = {
+  let params: DescribeEndpointCommandInput = {
     endpointType: 'iot:Data-ATS'
   };
 
-  const data = await IotClient.describeEndpoint(params).promise();
+  const data = await iotClient.send(new DescribeEndpointCommand(params));
   return data.endpointAddress;
 }
 
@@ -184,15 +200,17 @@ async function getIotEndpoint(): Promise<string> {
  */
 async function detachIotPolicy(props: CustomResourceTypes.DetachIoTPolicyRequestProps, requestType: CustomResourceTypes.RequestTypes): Promise<void> {
   if (requestType === CustomResourceTypes.RequestTypes.DELETE) {
-    const { IotPolicyName } = props
-    const response = await IotClient.listTargetsForPolicy({ policyName: IotPolicyName }).promise();
+    const { IotPolicyName } = props;
+    const response = await iotClient.send(new ListTargetsForPolicyCommand({
+      policyName: IotPolicyName
+    }));
     const targets = response.targets;
     for (let target of targets) {
-      const params = {
+      const params: DetachPolicyCommandInput = {
         policyName: IotPolicyName,
-        principal: target
+        target: target
       };
-      await IotClient.detachPrincipalPolicy(params).promise();
+      await iotClient.send(new DetachPolicyCommand(params));
       console.log(`${target} is detached from ${IotPolicyName}`);
     }
   }

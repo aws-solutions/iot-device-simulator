@@ -20,7 +20,9 @@ import Tab from 'react-bootstrap/Tab';
 import Nav from 'react-bootstrap/Nav';
 import Dropdown from 'react-bootstrap/Dropdown';
 import DropdownButton from 'react-bootstrap/DropdownButton';
+import { Coordinates } from "maplibre-gl-js-amplify/lib/esm/types";
 import { createMap, drawPoints } from "maplibre-gl-js-amplify";
+import { Feature, FeatureCollection } from "geojson";
 
 
 
@@ -93,7 +95,7 @@ export default function SimulationDetails(props: IPageProps): JSX.Element {
 
     /**
      * parse and save incoming IoT message
-     * @param data 
+     * @param data
      */
     const handleMessage = (data: any) => {
         let message = {
@@ -135,11 +137,7 @@ export default function SimulationDetails(props: IPageProps): JSX.Element {
             let mapSource = map.getSource('IoTMessage-source-points');
             if (!mapSource) {
                 drawPoints("IoTMessage",
-                    [
-                        {
-                            coordinates: coordinates,
-                        },
-                    ],
+                    coordinates as Coordinates[],
                     map,
                     {
                         clusterOptions: {
@@ -159,7 +157,7 @@ export default function SimulationDetails(props: IPageProps): JSX.Element {
                     });
                 }
             } else {
-                mapSource = mapSource as maplibregl.GeoJSONSource;
+                const source = mapSource as maplibregl.GeoJSONSource;
                 let features = coordinates.map((coordinate) => {
                     return {
                         "type": "Feature",
@@ -167,12 +165,13 @@ export default function SimulationDetails(props: IPageProps): JSX.Element {
                             "type": "Point",
                             "coordinates": coordinate
                         }
-                    }
-                })
-                mapSource.setData({
+                    } as Feature
+                });
+                const data = {
                     "type": "FeatureCollection",
                     "features": features
-                })
+                } as FeatureCollection;
+                source.setData(data);
 
                 if (coordinates.length === 1) {
                     map.panTo([
@@ -187,7 +186,7 @@ export default function SimulationDetails(props: IPageProps): JSX.Element {
             }
         }
 
-    }, [messages])
+    }, [messages]);
 
     /**
      * react useEffect hook
@@ -204,7 +203,7 @@ export default function SimulationDetails(props: IPageProps): JSX.Element {
     }, [topics])
 
     /**
-     * start simulation 
+     * start simulation
      */
     const startSim = async () => {
         if (sim && sim.stage === "sleeping") {

@@ -1,24 +1,16 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import {
-  Aws,
-  CfnOutput,
-  CfnMapping,
-  CfnParameter,
-  Construct,
-  Fn,
-  Stack,
-  StackProps,
-  Tags
-} from '@aws-cdk/core';
-import { ApiConstruct } from './api';
-import { CommonResourcesConstruct } from './common-resources';
-import { CustomResourcesConstruct } from './custom-resource';
-import { StorageContruct } from './storage';
-import { SimulatorConstruct } from './simulator';
-import { ConsoleConstruct } from './console';
-import { CfnMap, CfnPlaceIndex, } from '@aws-cdk/aws-location';
+import { ApiConstruct}  from "./api";
+import { CommonResourcesConstruct } from "./common-resources";
+import { CustomResourcesConstruct } from "./custom-resource";
+import { StorageContruct } from "./storage";
+import { SimulatorConstruct } from "./simulator";
+import { ConsoleConstruct } from "./console";
+import { CfnMap, CfnPlaceIndex } from 'aws-cdk-lib/aws-location';
+import { Construct }  from "constructs";
+import { Aws, CfnMapping, CfnOutput, CfnParameter, Fn, Stack, StackProps, Tags } from "aws-cdk-lib";
+import {applyAppRegistry} from "./application-resource";
 
 export class IDSStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
@@ -56,6 +48,7 @@ export class IDSStack extends Stack {
       mapping: {
         Config: {
           SolutionId: 'SO0041',
+          SolutionName: 'SOLUTION_NAME_PLACEHOLDER',
           Version: 'VERSION_PLACEHOLDER',
           SendAnonymousUsage: 'Yes',
           S3Bucket: 'BUCKET_NAME_PLACEHOLDER',
@@ -65,7 +58,9 @@ export class IDSStack extends Stack {
     });
     const sendAnonymousUsage = solutionMapping.findInMap('Config', 'SendAnonymousUsage');
     const solutionId = solutionMapping.findInMap('Config', 'SolutionId');
+    const solutionName = solutionMapping.findInMap('Config', 'SolutionName');
     const solutionVersion = solutionMapping.findInMap('Config', 'Version');
+    const solutionDescription = `(${solutionId}) - ${solutionName} Version ${solutionVersion}`;
     const sourceCodeBucket = Fn.join('-', [solutionMapping.findInMap('Config', 'S3Bucket'), Aws.REGION]);
     const sourceCodePrefix = solutionMapping.findInMap('Config', 'KeyPrefix');
 
@@ -78,7 +73,7 @@ export class IDSStack extends Stack {
     const storage = new StorageContruct(this, 'storage', {
       solutionId: solutionId,
       s3LogsBucket: commonResources.s3LoggingBucket
-    })
+    });
 
     // Custom Resources
     const customResources = new CustomResourcesConstruct(this, 'CustomResources', {
@@ -108,7 +103,7 @@ export class IDSStack extends Stack {
       },
       // Solution UUID
       uuid: customResources.uuid
-    })
+    });
 
     const api = new ApiConstruct(this, 'API', {
       microservicesLambda: simulator.microservicesLambdaFunction,
@@ -125,7 +120,7 @@ export class IDSStack extends Stack {
         sourceCodePrefix: sourceCodePrefix
       },
       uuid: customResources.uuid
-    })
+    });
 
     const idsMap = new CfnMap(this, "IotDeviceSimulatorMap", {
       configuration: {
@@ -159,11 +154,19 @@ export class IDSStack extends Stack {
       cognitoUserPoolClient: console.webClientId,
       routesBucket: storage.routesBucket,
       consoleBucket: console.consoleBucket,
-    })
+    });
 
     customResources.setupDetachIotPolicyCustomResource({
       iotPolicyName: console.iotPolicy.ref
-    })
+    });
+
+    // Register this application in App Registry
+    applyAppRegistry(this, {
+      solutionId: solutionId,
+      solutionName: solutionName,
+      solutionVersion: solutionVersion,
+      solutionDescription: solutionDescription,
+    });
 
     //Outputs
     new CfnOutput(this, 'DeviceTypesTable', { // NOSONAR: typescript:S1848

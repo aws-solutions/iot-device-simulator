@@ -1,10 +1,11 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Construct, RemovalPolicy } from '@aws-cdk/core';
-import { AttributeType, BillingMode, Table, TableEncryption } from '@aws-cdk/aws-dynamodb';
-import { Bucket, BucketEncryption, BlockPublicAccess} from '@aws-cdk/aws-s3';
-import { PolicyStatement, AnyPrincipal, Effect } from '@aws-cdk/aws-iam';
+import { BlockPublicAccess, Bucket, BucketEncryption } from "aws-cdk-lib/aws-s3";
+import { Construct } from "constructs";
+import { AttributeType, BillingMode, Table, TableEncryption } from "aws-cdk-lib/aws-dynamodb";
+import { RemovalPolicy } from "aws-cdk-lib";
+import { AnyPrincipal, Effect, PolicyStatement } from "aws-cdk-lib/aws-iam";
 
 /**,
  * @interface StorageContructProps
@@ -17,7 +18,7 @@ export interface StorageContructProps {
 
 /**
  * IoT Device Simulator storage construct
- * Creates an S3 bucket to store test scenarios and 
+ * Creates an S3 bucket to store test scenarios and
  * a DynamoDB table to store tests and test configuration
  */
 export class StorageContruct extends Construct {
