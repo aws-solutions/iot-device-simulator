@@ -1,14 +1,15 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import '@aws-cdk/assert/jest';
-import { SynthUtils } from '@aws-cdk/assert';
-import { Stack } from '@aws-cdk/core';
-import { ApiConstruct } from '../lib/api';
-import { Bucket } from '@aws-cdk/aws-s3';
-import { Policy, PolicyStatement } from '@aws-cdk/aws-iam';
-import { AttributeType, Table } from '@aws-cdk/aws-dynamodb';
-import { Function as LambdaFunction, Runtime, Code } from '@aws-cdk/aws-lambda';
+import "@aws-cdk/assert/jest";
+import { SynthUtils } from "@aws-cdk/assert";
+import { ApiConstruct } from "../lib/api";
+import { Stack } from "aws-cdk-lib";
+import { Policy, PolicyStatement } from "aws-cdk-lib/aws-iam";
+import { AttributeType, Table } from "aws-cdk-lib/aws-dynamodb";
+import { Bucket } from "aws-cdk-lib/aws-s3";
+import { Code, Runtime, Function as LambdaFunction } from "aws-cdk-lib/aws-lambda";
+
 
 test('IoT Device Simulator API Test', () => {
     const stack = new Stack();

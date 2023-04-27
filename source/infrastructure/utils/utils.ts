@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { CfnResource, Resource } from '@aws-cdk/core';
+import { CfnResource, Resource } from "aws-cdk-lib";
 
 /**
  * The CFN NAG suppress rule interface

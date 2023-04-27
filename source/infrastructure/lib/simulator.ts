@@ -1,33 +1,28 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { ArnFormat, Aws, Construct, Duration, Stack } from '@aws-cdk/core';
+import { addCfnSuppressRules } from "@aws-solutions-constructs/core";
+import { LambdaToStepfunctions } from "@aws-solutions-constructs/aws-lambda-stepfunctions";
+import { Effect, Policy, PolicyDocument, PolicyStatement, Role, ServicePrincipal } from "aws-cdk-lib/aws-iam";
+import { Table } from "aws-cdk-lib/aws-dynamodb";
+import { Bucket, IBucket } from "aws-cdk-lib/aws-s3";
+import { Construct } from "constructs";
+import { Code, Function as LambdaFunction, Runtime } from "aws-cdk-lib/aws-lambda";
 import {
-    Effect,
-    Policy,
-    PolicyDocument,
-    PolicyStatement,
-    Role,
-    ServicePrincipal
-} from '@aws-cdk/aws-iam';
-import { LogGroup, RetentionDays } from "@aws-cdk/aws-logs";
-import { Code, Function as LambdaFunction, Runtime } from '@aws-cdk/aws-lambda';
-import {
-    StateMachine,
+    Chain,
     Choice,
     Condition,
-    Map as SFMap,
-    TaskInput,
-    Succeed,
-    Chain,
+    JsonPath,
     LogLevel,
-    JsonPath
-} from '@aws-cdk/aws-stepfunctions';
-import { LambdaInvoke, DynamoGetItem, DynamoUpdateItem, DynamoAttributeValue } from '@aws-cdk/aws-stepfunctions-tasks';
-import { Bucket, IBucket } from '@aws-cdk/aws-s3';
-import { addCfnSuppressRules } from '../utils/utils';
-import { Table } from '@aws-cdk/aws-dynamodb';
-import { LambdaToStepfunctions } from '@aws-solutions-constructs/aws-lambda-stepfunctions';
+    Map as SFMap,
+    StateMachine,
+    Succeed,
+    TaskInput
+} from "aws-cdk-lib/aws-stepfunctions";
+import { ArnFormat, Aws, Duration, Stack } from "aws-cdk-lib";
+import { DynamoAttributeValue, DynamoGetItem, DynamoUpdateItem, LambdaInvoke } from "aws-cdk-lib/aws-stepfunctions-tasks";
+import { LogGroup, RetentionDays } from "aws-cdk-lib/aws-logs";
+
 /**
  * ConnectionBuilderConstruct props
  * @interface SimulatorConstructProps
@@ -129,7 +124,7 @@ export class SimulatorConstruct extends Construct {
                 ROUTE_BUCKET: props.routesBucket.bucketName
             },
             handler: 'index.handler',
-            runtime: Runtime.NODEJS_14_X,
+            runtime: Runtime.NODEJS_18_X,
             timeout: Duration.minutes(15),
             role: simulatorLambdaRole
         });
@@ -181,7 +176,7 @@ export class SimulatorConstruct extends Construct {
         });
         const done = new Succeed(this, 'Done');
         updateSimTable.addCatch(done, {errors: ["DynamoDB.ConditionalCheckFailedException"]});
-        
+
         const definition = Chain
             .start(getDeviceTypeMap.iterator(getDeviceTypeInfo))
             .next(simulatorInvoke.addCatch(updateSimTable, { resultPath: '$.error' }))
@@ -243,7 +238,7 @@ export class SimulatorConstruct extends Construct {
                 UUID: props.uuid
             },
             handler: 'index.handler',
-            runtime: Runtime.NODEJS_14_X,
+            runtime: Runtime.NODEJS_18_X,
             timeout: Duration.minutes(1),
             role: microservicesRole
         });

@@ -1,50 +1,50 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`IoT Device Simulator customResourcesConstruct Test 1`] = `
-Object {
-  "Resources": Object {
-    "TestCustomResourceConsoleConfig9233433D": Object {
+{
+  "Resources": {
+    "TestCustomResourceConsoleConfig9233433D": {
       "DeletionPolicy": "Delete",
-      "Properties": Object {
+      "Properties": {
         "ConfigFileName": "aws_config.js",
-        "DestinationBucket": Object {
+        "DestinationBucket": {
           "Ref": "testConsoleBucketC1925855",
         },
         "Resource": "CreateConfig",
-        "ServiceToken": Object {
-          "Fn::GetAtt": Array [
+        "ServiceToken": {
+          "Fn::GetAtt": [
             "TestCustomResourceHelperLambda4F3A7ED4",
             "Arn",
           ],
         },
-        "configObj": Object {
-          "Fn::Join": Array [
+        "configObj": {
+          "Fn::Join": [
             "",
-            Array [
-              "{\\"aws_iot_endpoint\\":\\"",
-              Object {
-                "Fn::GetAtt": Array [
+            [
+              "{"aws_iot_endpoint":"",
+              {
+                "Fn::GetAtt": [
                   "TestCustomResourceEndpointAddress55F0267E",
                   "IOT_ENDPOINT",
                 ],
               },
-              "\\",\\"API\\":{\\"endpoints\\":[{\\"name\\":\\"ids\\",\\"endpoint\\":\\"https://12ab34cde5.execute-api.us-east-1.amazonaws.com/test\\",\\"region\\":\\"",
-              Object {
+              "","API":{"endpoints":[{"name":"ids","endpoint":"https://12ab34cde5.execute-api.us-east-1.amazonaws.com/test","region":"",
+              {
                 "Ref": "AWS::Region",
               },
-              "\\"}]},\\"Auth\\":{\\"identityPoolId\\":\\"testIdentityPool\\",\\"region\\":\\"",
-              Object {
+              ""}]},"Auth":{"identityPoolId":"testIdentityPool","region":"",
+              {
                 "Ref": "AWS::Region",
               },
-              "\\",\\"userPoolId\\":\\"testUserPool\\",\\"userPoolWebClientId\\":\\"testUserPoolClient\\"},\\"aws_iot_policy_name\\":\\"testIoTPolicy\\",\\"aws_project_region\\":\\"",
-              Object {
+              "","userPoolId":"testUserPool","userPoolWebClientId":"testUserPoolClient"},"aws_iot_policy_name":"testIoTPolicy","aws_project_region":"",
+              {
                 "Ref": "AWS::Region",
               },
-              "\\",\\"geo\\":{\\"AmazonLocationService\\":{\\"region\\":\\"",
-              Object {
+              "","geo":{"AmazonLocationService":{"region":"",
+              {
                 "Ref": "AWS::Region",
               },
-              "\\",\\"maps\\":{\\"items\\":{\\"testMap\\":{\\"style\\":\\"VectorEsriNavigation\\"}},\\"default\\":\\"testMap\\"},\\"search_indices\\":{\\"items\\":[\\"testPlaceIndex\\"],\\"default\\":\\"testPlaceIndex\\"}}}}",
+              "","maps":{"items":{"testMap":{"style":"VectorEsriNavigation"}},"default":"testMap"},"search_indices":{"items":["testPlaceIndex"],"default":"testPlaceIndex"}}}}",
             ],
           ],
         },
@@ -52,16 +52,16 @@ Object {
       "Type": "Custom::CopyConfigFiles",
       "UpdateReplacePolicy": "Delete",
     },
-    "TestCustomResourceCopyConsoleFilesE61CD7FB": Object {
+    "TestCustomResourceCopyConsoleFilesE61CD7FB": {
       "DeletionPolicy": "Delete",
-      "Properties": Object {
-        "DestinationBucket": Object {
+      "Properties": {
+        "DestinationBucket": {
           "Ref": "testConsoleBucketC1925855",
         },
         "ManifestFile": "site-manifest.json",
         "Resource": "CopyS3Assets",
-        "ServiceToken": Object {
-          "Fn::GetAtt": Array [
+        "ServiceToken": {
+          "Fn::GetAtt": [
             "TestCustomResourceHelperLambda4F3A7ED4",
             "Arn",
           ],
@@ -72,16 +72,16 @@ Object {
       "Type": "Custom::CopyConsoleFiles",
       "UpdateReplacePolicy": "Delete",
     },
-    "TestCustomResourceCopyRouteFilesB49E39F7": Object {
+    "TestCustomResourceCopyRouteFilesB49E39F7": {
       "DeletionPolicy": "Delete",
-      "Properties": Object {
-        "DestinationBucket": Object {
+      "Properties": {
+        "DestinationBucket": {
           "Ref": "testRouteBucket64D9BEB5",
         },
         "ManifestFile": "routes-manifest.json",
         "Resource": "CopyS3Assets",
-        "ServiceToken": Object {
-          "Fn::GetAtt": Array [
+        "ServiceToken": {
+          "Fn::GetAtt": [
             "TestCustomResourceHelperLambda4F3A7ED4",
             "Arn",
           ],
@@ -92,22 +92,22 @@ Object {
       "Type": "Custom::CopyRouteFiles",
       "UpdateReplacePolicy": "Delete",
     },
-    "TestCustomResourceCustomResourceLambdaIoTPolicy36A1424E": Object {
-      "Metadata": Object {
-        "cfn_nag": Object {
-          "rules_to_suppress": Array [
-            Object {
+    "TestCustomResourceCustomResourceLambdaIoTPolicy36A1424E": {
+      "Metadata": {
+        "cfn_nag": {
+          "rules_to_suppress": [
+            {
               "id": "W12",
               "reason": "To connect IoT and attach IoT policy to Cognito identity cannot speficy the specific resources.",
             },
           ],
         },
       },
-      "Properties": Object {
-        "PolicyDocument": Object {
-          "Statement": Array [
-            Object {
-              "Action": "iot:DetachPrincipalPolicy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "iot:DetachPolicy",
               "Effect": "Allow",
               "Resource": "*",
             },
@@ -115,21 +115,21 @@ Object {
           "Version": "2012-10-17",
         },
         "PolicyName": "CustomResourceLambdaIoTPolicy",
-        "Roles": Array [
-          Object {
+        "Roles": [
+          {
             "Ref": "TestCustomResourceHelperLambdaRoleA52DBB50",
           },
         ],
       },
       "Type": "AWS::IAM::Policy",
     },
-    "TestCustomResourceDetachIoTPolicyF6F108AC": Object {
+    "TestCustomResourceDetachIoTPolicyF6F108AC": {
       "DeletionPolicy": "Delete",
-      "Properties": Object {
+      "Properties": {
         "IotPolicyName": "testIoTPolicy",
         "Resource": "DetachIoTPolicy",
-        "ServiceToken": Object {
-          "Fn::GetAtt": Array [
+        "ServiceToken": {
+          "Fn::GetAtt": [
             "TestCustomResourceHelperLambda4F3A7ED4",
             "Arn",
           ],
@@ -138,12 +138,12 @@ Object {
       "Type": "AWS::CloudFormation::CustomResource",
       "UpdateReplacePolicy": "Delete",
     },
-    "TestCustomResourceEndpointAddress55F0267E": Object {
+    "TestCustomResourceEndpointAddress55F0267E": {
       "DeletionPolicy": "Delete",
-      "Properties": Object {
+      "Properties": {
         "Resource": "DescribeIoTEndpoint",
-        "ServiceToken": Object {
-          "Fn::GetAtt": Array [
+        "ServiceToken": {
+          "Fn::GetAtt": [
             "TestCustomResourceHelperLambda4F3A7ED4",
             "Arn",
           ],
@@ -152,54 +152,54 @@ Object {
       "Type": "AWS::CloudFormation::CustomResource",
       "UpdateReplacePolicy": "Delete",
     },
-    "TestCustomResourceHelperLambda4F3A7ED4": Object {
-      "DependsOn": Array [
+    "TestCustomResourceHelperLambda4F3A7ED4": {
+      "DependsOn": [
         "TestCustomResourceHelperLambdaRoleDefaultPolicy236FD1D8",
         "TestCustomResourceHelperLambdaRoleA52DBB50",
         "TestPolicyCC05E598",
       ],
-      "Properties": Object {
-        "Code": Object {
+      "Properties": {
+        "Code": {
           "S3Bucket": "test-bucket-region",
           "S3Key": "testPrefix//custom-resource.zip",
         },
         "Description": "IoT Device Simulator custom resource function",
-        "Environment": Object {
-          "Variables": Object {
+        "Environment": {
+          "Variables": {
             "SOLUTION_ID": "testId",
             "SOLUTION_VERSION": "testVersion",
           },
         },
         "Handler": "index.handler",
-        "Role": Object {
-          "Fn::GetAtt": Array [
+        "Role": {
+          "Fn::GetAtt": [
             "TestCustomResourceHelperLambdaRoleA52DBB50",
             "Arn",
           ],
         },
-        "Runtime": "nodejs14.x",
+        "Runtime": "nodejs18.x",
         "Timeout": 240,
       },
       "Type": "AWS::Lambda::Function",
     },
-    "TestCustomResourceHelperLambdaRoleA52DBB50": Object {
-      "Metadata": Object {
-        "cfn_nag": Object {
-          "rules_to_suppress": Array [
-            Object {
+    "TestCustomResourceHelperLambdaRoleA52DBB50": {
+      "Metadata": {
+        "cfn_nag": {
+          "rules_to_suppress": [
+            {
               "id": "W11",
               "reason": "iot:DescribeEndpoint cannot specify the resource.",
             },
           ],
         },
       },
-      "Properties": Object {
-        "AssumeRolePolicyDocument": Object {
-          "Statement": Array [
-            Object {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
-              "Principal": Object {
+              "Principal": {
                 "Service": "lambda.amazonaws.com",
               },
             },
@@ -207,11 +207,11 @@ Object {
           "Version": "2012-10-17",
         },
         "Path": "/",
-        "Policies": Array [
-          Object {
-            "PolicyDocument": Object {
-              "Statement": Array [
-                Object {
+        "Policies": [
+          {
+            "PolicyDocument": {
+              "Statement": [
+                {
                   "Action": "iot:DescribeEndpoint",
                   "Effect": "Allow",
                   "Resource": "*",
@@ -225,36 +225,36 @@ Object {
       },
       "Type": "AWS::IAM::Role",
     },
-    "TestCustomResourceHelperLambdaRoleDefaultPolicy236FD1D8": Object {
-      "Properties": Object {
-        "PolicyDocument": Object {
-          "Statement": Array [
-            Object {
-              "Action": Array [
+    "TestCustomResourceHelperLambdaRoleDefaultPolicy236FD1D8": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
                 "s3:GetObject*",
                 "s3:GetBucket*",
                 "s3:List*",
               ],
               "Effect": "Allow",
-              "Resource": Array [
-                Object {
-                  "Fn::Join": Array [
+              "Resource": [
+                {
+                  "Fn::Join": [
                     "",
-                    Array [
+                    [
                       "arn:",
-                      Object {
+                      {
                         "Ref": "AWS::Partition",
                       },
                       ":s3:::test-bucket-region",
                     ],
                   ],
                 },
-                Object {
-                  "Fn::Join": Array [
+                {
+                  "Fn::Join": [
                     "",
-                    Array [
+                    [
                       "arn:",
-                      Object {
+                      {
                         "Ref": "AWS::Partition",
                       },
                       ":s3:::test-bucket-region/testPrefix//*",
@@ -263,18 +263,22 @@ Object {
                 },
               ],
             },
-            Object {
-              "Action": Array [
-                "s3:PutObject*",
+            {
+              "Action": [
+                "s3:PutObject",
+                "s3:PutObjectLegalHold",
+                "s3:PutObjectRetention",
+                "s3:PutObjectTagging",
+                "s3:PutObjectVersionTagging",
                 "s3:Abort*",
               ],
               "Effect": "Allow",
-              "Resource": Object {
-                "Fn::Join": Array [
+              "Resource": {
+                "Fn::Join": [
                   "",
-                  Array [
-                    Object {
-                      "Fn::GetAtt": Array [
+                  [
+                    {
+                      "Fn::GetAtt": [
                         "testConsoleBucketC1925855",
                         "Arn",
                       ],
@@ -284,18 +288,22 @@ Object {
                 ],
               },
             },
-            Object {
-              "Action": Array [
-                "s3:PutObject*",
+            {
+              "Action": [
+                "s3:PutObject",
+                "s3:PutObjectLegalHold",
+                "s3:PutObjectRetention",
+                "s3:PutObjectTagging",
+                "s3:PutObjectVersionTagging",
                 "s3:Abort*",
               ],
               "Effect": "Allow",
-              "Resource": Object {
-                "Fn::Join": Array [
+              "Resource": {
+                "Fn::Join": [
                   "",
-                  Array [
-                    Object {
-                      "Fn::GetAtt": Array [
+                  [
+                    {
+                      "Fn::GetAtt": [
                         "testRouteBucket64D9BEB5",
                         "Arn",
                       ],
@@ -305,23 +313,23 @@ Object {
                 ],
               },
             },
-            Object {
+            {
               "Action": "iot:ListTargetsForPolicy",
               "Effect": "Allow",
-              "Resource": Object {
-                "Fn::Join": Array [
+              "Resource": {
+                "Fn::Join": [
                   "",
-                  Array [
+                  [
                     "arn:",
-                    Object {
+                    {
                       "Ref": "AWS::Partition",
                     },
                     ":iot:",
-                    Object {
+                    {
                       "Ref": "AWS::Region",
                     },
                     ":",
-                    Object {
+                    {
                       "Ref": "AWS::AccountId",
                     },
                     ":policy/*",
@@ -333,36 +341,36 @@ Object {
           "Version": "2012-10-17",
         },
         "PolicyName": "TestCustomResourceHelperLambdaRoleDefaultPolicy236FD1D8",
-        "Roles": Array [
-          Object {
+        "Roles": [
+          {
             "Ref": "TestCustomResourceHelperLambdaRoleA52DBB50",
           },
         ],
       },
       "Type": "AWS::IAM::Policy",
     },
-    "TestCustomResourceUUID90DFF55D": Object {
+    "TestCustomResourceUUID90DFF55D": {
       "DeletionPolicy": "Delete",
-      "Properties": Object {
+      "Properties": {
         "Resource": "CreateUUID",
-        "ServiceToken": Object {
-          "Fn::GetAtt": Array [
+        "ServiceToken": {
+          "Fn::GetAtt": [
             "TestCustomResourceHelperLambda4F3A7ED4",
             "Arn",
           ],
         },
-        "StackName": Object {
+        "StackName": {
           "Ref": "AWS::StackName",
         },
       },
       "Type": "AWS::CloudFormation::CustomResource",
       "UpdateReplacePolicy": "Delete",
     },
-    "TestPolicyCC05E598": Object {
-      "Properties": Object {
-        "PolicyDocument": Object {
-          "Statement": Array [
-            Object {
+    "TestPolicyCC05E598": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
               "Action": "cloudwatch:Get*",
               "Effect": "Allow",
               "Resource": "*",
@@ -371,20 +379,20 @@ Object {
           "Version": "2012-10-17",
         },
         "PolicyName": "TestPolicyCC05E598",
-        "Roles": Array [
-          Object {
+        "Roles": [
+          {
             "Ref": "TestCustomResourceHelperLambdaRoleA52DBB50",
           },
         ],
       },
       "Type": "AWS::IAM::Policy",
     },
-    "testConsoleBucketC1925855": Object {
+    "testConsoleBucketC1925855": {
       "DeletionPolicy": "Retain",
       "Type": "AWS::S3::Bucket",
       "UpdateReplacePolicy": "Retain",
     },
-    "testRouteBucket64D9BEB5": Object {
+    "testRouteBucket64D9BEB5": {
       "DeletionPolicy": "Retain",
       "Type": "AWS::S3::Bucket",
       "UpdateReplacePolicy": "Retain",

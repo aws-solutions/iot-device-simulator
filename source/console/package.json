@@ -1,6 +1,6 @@
 {
   "name": "iot-device-simulator-console",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "private": true,
   "dependencies": {
     "@aws-amplify/api": "^4.0.6",
@@ -9,8 +9,8 @@
     "@aws-amplify/geo": "^1.0.0",
     "@aws-amplify/interactions": "^4.0.6",
     "@aws-amplify/storage": "^4.3.1",
-    "@aws-amplify/ui-react": "^1.2.6",
-    "@maplibre/maplibre-gl-geocoder": "^1.1.0",
+    "@aws-amplify/ui-react": "^1.2.26",
+    "@maplibre/maplibre-gl-geocoder": "^1.5.0",
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^12.1.2",
     "@testing-library/user-event": "^13.3.0",
@@ -18,26 +18,36 @@
     "@types/node": "^16.11.0",
     "@types/react": "^17.0.30",
     "@types/react-dom": "^17.0.0",
-    "@types/react-router-dom": "^5.3.1",
-    "aws-sdk": "^2.999.0",
+    "@types/react-router-dom": "^5.3.3",
+    "aws-sdk": "^2.1354.0",
     "bootstrap": "^4.6.0",
     "bootstrap-icons": "^1.6.0",
-    "maplibre-gl": "^1.15.2",
-    "maplibre-gl-js-amplify": "^1.1.0",
+    "maplibre-gl": "^2.4.0",
+    "maplibre-gl-js-amplify": "^3.0.5",
     "moment": "^2.29.1",
-    "react": "^17.0.2",
+    "react": "~16.14.0",
     "react-bootstrap": "^1.6.4",
-    "react-dom": "^17.0.2",
-    "react-router-dom": "^5.2.0",
-    "react-scripts": "^4.0.3",
+    "react-dom": "~16.14.0",
+    "react-router-dom": "~5.3.4",
     "typescript": "^4.4.4",
     "web-vitals": "^2.1.2"
+  },
+  "devDependencies": {
+    "react-scripts": "^5.0.1"
+  },
+  "overrides": {
+    "css-select@2.1.0": {
+      "nth-check": "2.1.1"
+    }
   },
   "scripts": {
     "start": "react-scripts start",
     "build": "GENERATE_SOURCEMAP=false INLINE_RUNTIME_CHUNK=false react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
+  },
+  "engines": {
+    "node": ">=18.0.0"
   },
   "eslintConfig": {
     "extends": [

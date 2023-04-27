@@ -1,10 +1,18 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { ArnFormat, Construct, RemovalPolicy, Stack } from '@aws-cdk/core';
-import { Effect, Policy, PolicyStatement } from '@aws-cdk/aws-iam';
-import { BlockPublicAccess, Bucket, BucketAccessControl, BucketEncryption, IBucket } from '@aws-cdk/aws-s3';
-import { addCfnSuppressRules } from '../utils/utils';
+import { addCfnSuppressRules } from "@aws-solutions-constructs/core";
+import {Construct} from "constructs";
+import {Effect, Policy, PolicyStatement} from "aws-cdk-lib/aws-iam";
+import {
+  BlockPublicAccess,
+  Bucket,
+  BucketAccessControl,
+  BucketEncryption,
+  IBucket,
+  ObjectOwnership
+} from "aws-cdk-lib/aws-s3";
+import {ArnFormat, RemovalPolicy, Stack} from "aws-cdk-lib";
 
 /**
  * CommonResourcesConstruct props
@@ -48,6 +56,7 @@ export class CommonResourcesConstruct extends Construct {
     });
 
     this.s3LoggingBucket = new Bucket(this, 'LogBucket', {
+      objectOwnership: ObjectOwnership.OBJECT_WRITER,
       accessControl: BucketAccessControl.LOG_DELIVERY_WRITE,
       blockPublicAccess: BlockPublicAccess.BLOCK_ALL,
       encryption: BucketEncryption.S3_MANAGED,
