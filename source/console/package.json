@@ -1,6 +1,6 @@
 {
   "name": "iot-device-simulator-console",
-  "version": "3.0.1",
+  "version": "3.0.2",
   "private": true,
   "dependencies": {
     "@aws-amplify/api": "^4.0.6",
@@ -38,7 +38,8 @@
   "overrides": {
     "css-select@2.1.0": {
       "nth-check": "2.1.1"
-    }
+    },
+    "fast-xml-parser": "4.2.4"
   },
   "scripts": {
     "start": "react-scripts start",

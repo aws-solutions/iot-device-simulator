@@ -31,7 +31,7 @@ For more information and a detailed deployment guide, visit the [IoT Device Simu
 In addition to the AWS Solutions Constructs, the solution uses AWS CDK directly to create infrastructure resources.
 # Customizing the Solution
 ## Prerequisites for Customization
-- Node.js 14.x or later
+- Node.js 18.x or later
 
 ### 1. Clone the repository
 ```bash
@@ -47,6 +47,7 @@ export DIST_BUCKET_PREFIX=my-bucket-name # bucket where customized code will res
 export SOLUTION_NAME=my-solution-name # the solution name
 export VERSION=my-version # version number for the customized code
 ```
+_Note:_ When you define `DIST_BUCKET_PREFIX`, a randomized value is recommended. You will need to create an S3 bucket where the name is `<DIST_BUCKET_PREFIX>-<REGION>`. The solution's CloudFormation template will expect the source code to be located in a bucket matching that name
 
 ## Unit Test
 After making changes, run unit tests to make sure added customization passes the tests:
@@ -64,13 +65,32 @@ chmod +x build-s3-dist.sh
 ```
 
 ## Deploy
-* Deploy the distributable to the Amazon S3 bucket in your account. Make sure you are uploading the distributable to the `<DIST_BUCKET_PREFIX>-<REGION>` bucket.
-* Get the link of the solution template uploaded to your Amazon S3 bucket.
-* Deploy the solution to your account by launching a new AWS CloudFormation stack using the link of the solution template in Amazon S3.
-
-### 3. Deploy the solution
+- Deploy the distributable to the Amazon S3 bucket in your account. Make sure you are uploading all files and directories under `deployment/global-s3-assets` and `deployment/regional-s3-assets` to `<SOLUTION_NAME>/<VERSION>` folder in the `<DIST_BUCKET_PREFIX>-<REGION>` bucket (e.g. `s3://<DIST_BUCKET_PREFIX>-<REGION>/<SOLUTION_NAME>/<VERSION>/`).
+  CLI based S3 command to sync the buckets is:
+  ```bash
+  aws s3 sync $MAIN_DIRECTORY/deployment/global-s3-assets/ s3://${DIST_BUCKET_PREFIX}-${REGION}/${SOLUTION_NAME}/${VERSION}/
+  aws s3 sync $MAIN_DIRECTORY/deployment/regional-s3-assets/ s3://${DIST_BUCKET_PREFIX}-${REGION}/${SOLUTION_NAME}/${VERSION}/
+  ```
 - Get the link of the `iot-device-simulator.template` uploaded to your Amazon S3 bucket.
 - Deploy the IoT Device Simulator solution to your account by launching a new AWS CloudFormation stack using the S3 link of the `iot-device-simulator.template`.
+
+CLI based CloudFormation deployment:
+
+```bash
+export INITIAL_USER=name@example.com # The email used to sign in web interface.
+export CF_STACK_NAME=iot # name of the cloudformation stack
+
+aws cloudformation create-stack \
+   --profile ${AWS_PROFILE:-default} \
+   --region ${REGION} \
+   --template-url https://${DIST_BUCKET_PREFIX}-${REGION}.s3.amazonaws.com/${SOLUTION_NAME}/${VERSION}/iot-device-simulator.template \
+   --stack-name ${CF_STACK_NAME} \
+   --capabilities CAPABILITY_IAM CAPABILITY_NAMED_IAM CAPABILITY_AUTO_EXPAND \
+   --parameters \
+        ParameterKey=UserEmail,ParameterValue=${INITIAL_USER}
+
+```
+
 
 # Collection of operational metrics
 This solution collects anonymous operational metrics to help AWS improve the quality and features of the solution. For more information, including how to disable this capability, please see the [implementation guide](https://docs.aws.amazon.com/solutions/latest/iot-device-simulator/operational-metrics.html).
