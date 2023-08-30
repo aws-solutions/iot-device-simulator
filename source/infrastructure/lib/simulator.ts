@@ -1,27 +1,20 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { addCfnSuppressRules } from "@aws-solutions-constructs/core";
 import { LambdaToStepfunctions } from "@aws-solutions-constructs/aws-lambda-stepfunctions";
-import { Effect, Policy, PolicyDocument, PolicyStatement, Role, ServicePrincipal } from "aws-cdk-lib/aws-iam";
+import { addCfnSuppressRules } from "@aws-solutions-constructs/core";
+import { ArnFormat, Aws, Duration, RemovalPolicy, Stack } from "aws-cdk-lib";
 import { Table } from "aws-cdk-lib/aws-dynamodb";
-import { Bucket, IBucket } from "aws-cdk-lib/aws-s3";
-import { Construct } from "constructs";
+import { Effect, Policy, PolicyDocument, PolicyStatement, Role, ServicePrincipal } from "aws-cdk-lib/aws-iam";
 import { Code, Function as LambdaFunction, Runtime } from "aws-cdk-lib/aws-lambda";
-import {
-    Chain,
-    Choice,
-    Condition,
-    JsonPath,
-    LogLevel,
-    Map as SFMap,
-    StateMachine,
-    Succeed,
-    TaskInput
-} from "aws-cdk-lib/aws-stepfunctions";
-import { ArnFormat, Aws, Duration, Stack } from "aws-cdk-lib";
-import { DynamoAttributeValue, DynamoGetItem, DynamoUpdateItem, LambdaInvoke } from "aws-cdk-lib/aws-stepfunctions-tasks";
 import { LogGroup, RetentionDays } from "aws-cdk-lib/aws-logs";
+import { Bucket, IBucket } from "aws-cdk-lib/aws-s3";
+import {
+    Chain, Choice, Condition, DefinitionBody, 
+    JsonPath, LogLevel, Map as SFMap, StateMachine, Succeed, TaskInput
+} from "aws-cdk-lib/aws-stepfunctions";
+import { DynamoAttributeValue, DynamoGetItem, DynamoUpdateItem, LambdaInvoke } from "aws-cdk-lib/aws-stepfunctions-tasks";
+import { Construct } from "constructs";
 
 /**
  * ConnectionBuilderConstruct props
@@ -130,7 +123,16 @@ export class SimulatorConstruct extends Construct {
         });
         this.simulatorLambdaFunction.addEnvironment('SIM_TABLE', props.simulationTable.tableName)
         props.routesBucket.grantRead(this.simulatorLambdaFunction.grantPrincipal);
-
+        const simulatorLambdaLogGroup = new LogGroup(this.simulatorLambdaFunction, 'EngineLambda', {
+            removalPolicy: RemovalPolicy.DESTROY,
+            logGroupName: `/aws/lambda/${Aws.STACK_NAME}-${this.simulatorLambdaFunction.functionName}-${props.uniqueSuffix}`,
+            retention: RetentionDays.THREE_MONTHS
+          });
+        addCfnSuppressRules(simulatorLambdaLogGroup, [{
+            id: 'W84',
+            reason: 'KMS encryption unnecessary for log group'
+        }]);
+        
         const getDeviceTypeMap = new SFMap(this, 'getDeviceTypeMap', {
             "itemsPath": "$.simulation.devices",
             "resultPath": "$.simulation.devices",
@@ -242,11 +244,21 @@ export class SimulatorConstruct extends Construct {
             timeout: Duration.minutes(1),
             role: microservicesRole
         });
+        const microservicesLambdaLogGroup = new LogGroup(this.microservicesLambdaFunction, 'HelperLambda', {
+            removalPolicy: RemovalPolicy.DESTROY,
+            logGroupName: `/aws/lambda/${Aws.STACK_NAME}-${this.microservicesLambdaFunction.functionName}-${props.uniqueSuffix}`,
+            retention: RetentionDays.THREE_MONTHS
+          });
+        addCfnSuppressRules(microservicesLambdaLogGroup, [{
+            id: 'W84',
+            reason: 'KMS encryption unnecessary for log group'
+        }]);
 
         const microservicesToStepfunctions = new LambdaToStepfunctions(this, "StepFunctions", {
             existingLambdaObj: this.microservicesLambdaFunction,
             stateMachineProps: {
-                definition: definition,
+                definitionBody: DefinitionBody.fromChainable(definition),
+                tracingEnabled: true,
                 logs: {
                     destination: simulatorLogGroup,
                     level: LogLevel.ALL,
@@ -265,6 +277,6 @@ export class SimulatorConstruct extends Construct {
                 id: 'W12',
                 reason: 'CloudWatch logs actions do not support resource level permissions'
             }
-        ]);
+        ]);      
     }
 }

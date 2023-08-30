@@ -1,5 +1,10 @@
 IoT Device Simulator
 Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+Licensed under the Apache License Version 2.0 (the "License"). You may not use this file except
+in compliance with the License. A copy of the License is located at http://www.apache.org/licenses/
+or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, express or implied. See the License for the
+specific language governing permissions and limitations under the License.
 
 **********************
 THIRD PARTY COMPONENTS
@@ -23,12 +28,21 @@ This software includes third party software subject to the following copyrights:
 @aws-cdk/aws-location under the Apache License 2.0
 @aws-cdk/aws-logs under the Apache License 2.0
 @aws-cdk/aws-s3 under the Apache License 2.0
+@aws-cdk/aws-servicecatalogappregistry-alpha under the Apache License 2.0
 @aws-cdk/aws-stepfunctions under the Apache License 2.0
 @aws-cdk/aws-stepfunctions-tasks under the Apache License 2.0
 @aws-cdk/core under the Apache License 2.0
+@aws-sdk/client-iot under the Apache License 2.0
+@aws-sdk/client-s3 under the Apache License 2.0
+@aws-sdk/client-dynamodb under the Apache License 2.0
+@aws-sdk/client-sfn under the Apache License 2.0
+@aws-sdk/client-iot-data-plane under the Apache License 2.0
+@aws-sdk/lib-dynamodb under the Apache License 2.0
+@aws-sdk/types under the Apache License 2.0
+@aws-sdk/util-dynamodb under the Apache License 2.0
 @aws-solutions-constructs/aws-cloudfront-s3 under the Apache License 2.0
 @aws-solutions-constructs/aws-lambda-stepfunctions under the Apache License 2.0
-@maplibre/maplibre-gl-geocoder under the ISC License
+@smithy/util-stream under the Apache License 2.0
 @testing-library/jest-dom under the Massachusetts Institute of Technology (MIT) License
 @testing-library/react under the Massachusetts Institute of Technology (MIT) License
 @testing-library/user-event under the Massachusetts Institute of Technology (MIT) License
@@ -40,9 +54,13 @@ This software includes third party software subject to the following copyrights:
 @types/react-router-dom under the Massachusetts Institute of Technology (MIT) License
 axios under the Massachusetts Institute of Technology (MIT) License
 aws-cdk under the Apache License 2.0
+aws-cdk-lib under the Apache License 2.0
 aws-sdk under the Apache License 2.0
+aws-sdk-client-mock under the Massachusetts Institute of Technology (MIT) License
+aws-sdk-client-mock-jest under the Massachusetts Institute of Technology (MIT) License
 bootstrap under the Massachusetts Institute of Technology (MIT) License
 bootstrap-icons under the Massachusetts Institute of Technology (MIT) License
+cdk-nag under the Apache License 2.0
 faker under the Massachusetts Institute of Technology (MIT) license
 jest under the Massachusetts Institute of Technology (MIT) License
 maplibre-gl under the BSD 3-Clause license

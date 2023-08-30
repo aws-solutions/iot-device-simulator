@@ -137,28 +137,7 @@ export function validateFileContents(contents: IDeviceType) {
   for (const key in contents) {
     let errors: IErrors<IDeviceType> = {};
     try {
-      switch (key) {
-        case 'name':
-        case 'topic':
-          if (typeof contents[key] !== "string") {
-            throw Error(`${key} ${I18n.get('must.be.string')}`);
-          }
-          errors = validateField(key, contents[key]);
-          break;
-        case 'payload':
-          if (contents[key].length === 0) {
-            throw Error(`${key} ${I18n.get('not.empty')}`)
-          } else if (!Array.isArray(contents[key])) {
-            throw Error(`${key} ${I18n.get('must.be.array')}`)
-          }
-          validatePayload(contents[key])
-          break;
-        default:
-          throw Error(`${key}\n${I18n.get('unknown.field')}: ${key}`);
-      }
-      if (Object.keys(errors).length > 0) {
-        throw Error(errors[key]);
-      }
+      checkContents(key, contents, errors);
     } catch (err) {
       if(err instanceof Error) {
         let trace = I18n.get('trace');
@@ -170,6 +149,32 @@ export function validateFileContents(contents: IDeviceType) {
     }
   }
 }
+function checkContents(key: string, contents: IDeviceType, errors: IErrors<IDeviceType>) {
+  switch (key) {
+    case 'name':
+    case 'topic':
+      if (typeof contents[key] !== "string") {
+        throw Error(`${key} ${I18n.get('must.be.string')}`);
+      }
+      errors = validateField(key, contents[key]);
+      break;
+    case 'payload':
+      if (contents[key].length === 0) {
+        throw Error(`${key} ${I18n.get('not.empty')}`);
+      } else if (!Array.isArray(contents[key])) {
+        throw Error(`${key} ${I18n.get('must.be.array')}`);
+      }
+      validatePayload(contents[key]);
+      break;
+    default:
+      throw Error(`${key}\n${I18n.get('unknown.field')}: ${key}`);
+  }
+  if (Object.keys(errors).length > 0) {
+    throw Error(errors[key]);
+  }
+  return errors;
+}
+
 /**
  * Checks if Exported file contains valid payload attribute fields
  * @param payload 
@@ -195,41 +200,48 @@ export function validatePayload(payload: IAttribute[]) {
         throw Error(`\n${msgString}: ${I18n.get('missing.field')} 'type'`)
       } else {
         error = validateField('type', payload[index].type)
-        if (Object.keys(validateField('type', payload[index].type)).length > 0) {
+        if (Object.keys(error).length > 0) {
           throw Error(`type\n${msgString}: ${error['type']}`);
         }
       }
-
-      //get attribute fields that should exist
-      let attrFields = getAttrFields(payload[index].type) as Array<keyof IAttribute>;
-      //If returned no fields, not a valid attribute
-      if (attrFields.length === 0) {
-        throw Error(`\n${msgString}: ${payload[index].type} ${I18n.get('not.valid')}`);
-      }
-
-      attrFields.forEach((field: keyof IAttribute) => {
-        //Check if field exists
-        if (!payloadFields.includes(field)) {
-          //If field is optional, skip iteration
-          if (!('default charSet length'.includes(field))) {
-            throw Error(`\n${msgString}: ${field} ${I18n.get('is.required')}`);
-          }
-        }
-        //if object, recursively check fields
-        if (payload[index].payload) {
-          validatePayload(payload[index].payload!);
-        }
-        //Validate fields
-        let errors: IErrors<IAttribute> = validateField(field, payload[index][field]);
-        if (Object.keys(errors).length > 0) {
-          throw Error(`${field}\n${msgString}: ${errors[field]}`);
-        }
-      })
+      checkAttributeFields(payload, index, msgString, payloadFields);
     }
   } catch (err) {
-    if(err instanceof Error){
-      throw new Error(`payload[${index}].${err.message}`);
+    handleError(err, index);
+  }
+}
+
+function checkAttributeFields(payload: IAttribute[], index: number, msgString: any, payloadFields: string[]) {
+  //get attribute fields that should exist
+  let attrFields = getAttrFields(payload[index].type) as Array<keyof IAttribute>;
+  //If returned no fields, not a valid attribute
+  if (attrFields.length === 0) {
+    throw Error(`\n${msgString}: ${payload[index].type} ${I18n.get('not.valid')}`);
+  }
+
+  attrFields.forEach((field: keyof IAttribute) => {
+    //Check if field exists
+    if (!payloadFields.includes(field)) {
+      //If field is optional, skip iteration
+      if (!('default charSet length'.includes(field))) {
+        throw Error(`\n${msgString}: ${field} ${I18n.get('is.required')}`);
+      }
     }
+    //if object, recursively check fields
+    if (payload[index].payload) {
+      validatePayload(payload[index].payload!);
+    }
+    //Validate fields
+    let errors: IErrors<IAttribute> = validateField(field, payload[index][field]);
+    if (Object.keys(errors).length > 0) {
+      throw Error(`${field}\n${msgString}: ${errors[field]}`);
+    }
+  });
+}
+
+function handleError(err: unknown, index: number) {
+  if (err instanceof Error) {
+    throw new Error(`payload[${index}].${err.message}`);
   }
 }
 

@@ -1,90 +1,109 @@
-
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import Amplify, { I18n } from '@aws-amplify/core';
-import { withAuthenticator } from '@aws-amplify/ui-react';
-import { AuthState, onAuthUIStateChange } from '@aws-amplify/ui-react/node_modules/@aws-amplify/ui-components';
-import { Geo } from '@aws-amplify/geo';
-import { Auth } from '@aws-amplify/auth';
-import { BrowserRouter, Redirect, Route, Switch } from 'react-router-dom';
-import Simulations from './views/Simulations';
-import DeviceTypeCreate from './views/DeviceTypeCreate';
-import DeviceTypes from './views/DeviceTypes';
-import Header from './components/Shared/Header';
-import PageNotFound from './views/PageNotFound';
-import SimulationCreate from './views/SimulationCreate';
-import SimulationDetails from './views/SimulationDetails';
-import { AWSIoTProvider, PubSub } from '@aws-amplify/pubsub';
-import AWS from 'aws-sdk';
+import { Auth } from "@aws-amplify/auth";
+import { Amplify, I18n } from "@aws-amplify/core";
+import { Geo } from "@aws-amplify/geo";
+import { AWSIoTProvider, PubSub } from "@aws-amplify/pubsub";
+import { useAuthenticator, withAuthenticator } from "@aws-amplify/ui-react";
+import "@aws-amplify/ui-react/styles.css";
+import { AttachPolicyCommand, IoTClient as Iot } from "@aws-sdk/client-iot";
+import { useEffect } from "react";
+import { BrowserRouter, Redirect, Route, Switch } from "react-router-dom";
+import Header from "./components/Shared/Header";
+import DeviceTypeCreate from "./views/DeviceTypeCreate";
+import DeviceTypes from "./views/DeviceTypes";
+import PageNotFound from "./views/PageNotFound";
+import SimulationCreate from "./views/SimulationCreate";
+import SimulationDetails from "./views/SimulationDetails";
+import Simulations from "./views/Simulations";
 
 // Amplify configuration
-declare var config: any;
-Amplify.addPluggable(new AWSIoTProvider({
-  aws_pubsub_region: config.aws_project_region,
-  aws_pubsub_endpoint: 'wss://' + config.aws_iot_endpoint + '/mqtt'
-}));
+declare let config: any;
+Amplify.addPluggable(
+	new AWSIoTProvider({
+		aws_pubsub_region: config.aws_project_region,
+		aws_pubsub_endpoint: "wss://" + config.aws_iot_endpoint + "/mqtt",
+	})
+);
 PubSub.configure(config);
 Amplify.configure(config);
 Geo.configure(config);
-
-/**
- * Need to attach IoT Policy to Identity in order to subscribe.
- */
-onAuthUIStateChange(async (nextAuthState) => {
-  if (nextAuthState === AuthState.SignedIn) {
-    const credentials = await Auth.currentCredentials();
-    const identityId = credentials.identityId;
-    AWS.config.update({
-      region: config.aws_project_region,
-      credentials: Auth.essentialCredentials(credentials)
-    });
-
-    const params = {
-      policyName: config.aws_iot_policy_name,
-      principal: identityId
-    }
-
-    try {
-      await new AWS.Iot().attachPrincipalPolicy(params).promise();
-    } catch (error) {
-      console.error('Error occurred while attaching principal policy', error);
-    }
-  }
-});
-
 
 /**
  * The default application
  * @returns Amplify Authenticator with Main and Footer
  */
 function App(): JSX.Element {
+	const { authStatus } = useAuthenticator((context) => [context.authStatus]);
 
-  return (
-
-    <div className="app-wrap">
-      <Header />
-      <BrowserRouter>
-        <Switch>
-          <Route
-            exact
-            path="/"
-            render={() => {
-              return (
-                <Redirect to="/simulations"></Redirect>
-              )
-            }}
-          />
-          <Route exact path="/simulations" render={() => <Simulations region={config.region} title={I18n.get("simulations")} />} />
-          <Route exact path="/simulations/create" render={() => <SimulationCreate region={config.region} title={I18n.get("simulation.creation")}></SimulationCreate>} />
-          <Route exact path="/simulations/:simId" render={(props) => <SimulationDetails region={config.region} title={I18n.get("simulation.details")} />} />
-          <Route exact path="/device-types" render={() => <DeviceTypes region={config.region} title={I18n.get("device.types")} />} />
-          <Route exact path="/device-types/:typeId?" render={(props) => <DeviceTypeCreate {...props} region={config.region} title={I18n.get("device.type.creation")} />} />
-          <Route render={() => <PageNotFound />} />
-        </Switch>
-      </BrowserRouter>
-    </div>
-  );
+	useEffect(() => {
+		if (authStatus == "authenticated") {
+			Auth.currentCredentials().then(async (credentials) => {
+				const identityId = credentials.identityId;
+				const awsConfig = {
+					region: config.aws_project_region,
+					credentials: Auth.essentialCredentials(credentials),
+				};
+				const iot = new Iot(awsConfig);
+				const params = {
+					policyName: config.aws_iot_policy_name,
+					target: identityId,
+				};
+				try {
+					await iot.send(new AttachPolicyCommand(params));
+				} catch (error) {
+					console.error("Error occurred while attaching principal policy", error);
+				}
+			});
+		}
+	}, [authStatus]);
+	return (
+		<div className='app-wrap'>
+			<Header />
+			<BrowserRouter>
+				<Switch>
+					<Route
+						exact
+						path='/'
+						render={() => {
+							return <Redirect to='/simulations'></Redirect>;
+						}}
+					/>
+					<Route
+						exact
+						path='/simulations'
+						render={() => <Simulations region={config.region} title={I18n.get("simulations")} />}
+					/>
+					<Route
+						exact
+						path='/simulations/create'
+						render={() => (
+							<SimulationCreate region={config.region} title={I18n.get("simulation.creation")}></SimulationCreate>
+						)}
+					/>
+					<Route
+						exact
+						path='/simulations/:simId'
+						render={(props) => <SimulationDetails region={config.region} title={I18n.get("simulation.details")} />}
+					/>
+					<Route
+						exact
+						path='/device-types'
+						render={() => <DeviceTypes region={config.region} title={I18n.get("device.types")} />}
+					/>
+					<Route
+						exact
+						path='/device-types/:typeId?'
+						render={(props) => (
+							<DeviceTypeCreate {...props} region={config.region} title={I18n.get("device.type.creation")} />
+						)}
+					/>
+					<Route render={() => <PageNotFound />} />
+				</Switch>
+			</BrowserRouter>
+		</div>
+	);
 }
 
 export default withAuthenticator(App);

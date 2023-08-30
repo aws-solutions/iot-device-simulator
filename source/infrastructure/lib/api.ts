@@ -3,12 +3,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { addCfnSuppressRules } from "@aws-solutions-constructs/core";
-import { Policy, ServicePrincipal } from "aws-cdk-lib/aws-iam";
-import { Table } from "aws-cdk-lib/aws-dynamodb";
-import { Function as LambdaFunction } from "aws-cdk-lib/aws-lambda";
-import { IBucket } from "aws-cdk-lib/aws-s3";
-import { Construct } from "constructs";
-import { LogGroup, RetentionDays } from "aws-cdk-lib/aws-logs";
 import { Aws, RemovalPolicy } from "aws-cdk-lib";
 import {
   AccessLogFormat,
@@ -26,6 +20,12 @@ import {
   RestApi,
   Stage
 } from "aws-cdk-lib/aws-apigateway";
+import { Table } from "aws-cdk-lib/aws-dynamodb";
+import { Policy, ServicePrincipal } from "aws-cdk-lib/aws-iam";
+import { Function as LambdaFunction } from "aws-cdk-lib/aws-lambda";
+import { LogGroup, RetentionDays } from "aws-cdk-lib/aws-logs";
+import { IBucket } from "aws-cdk-lib/aws-s3";
+import { Construct } from "constructs";
 
 /**
  * ApiConstructProps props

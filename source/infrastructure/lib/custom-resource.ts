@@ -1,12 +1,14 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { addCfnSuppressRules } from "@aws-solutions-constructs/core";
+import { ArnFormat, Aws, CustomResource, Duration, RemovalPolicy, Stack } from "aws-cdk-lib";
 import { CfnPolicy, Effect, Policy, PolicyDocument, PolicyStatement, Role, ServicePrincipal } from "aws-cdk-lib/aws-iam";
 import { CfnFunction, Code, Function as LambdaFunction, Runtime } from "aws-cdk-lib/aws-lambda";
+import { LogGroup, RetentionDays } from "aws-cdk-lib/aws-logs";
 import { IBucket } from "aws-cdk-lib/aws-s3";
-import { addCfnSuppressRules } from "@aws-solutions-constructs/core";
 import { Construct } from "constructs";
-import { ArnFormat, Aws, CustomResource, Duration, Stack } from "aws-cdk-lib";
+
 
 /**
  * CustomResourcesConstruct props
@@ -117,7 +119,15 @@ export class CustomResourcesConstruct extends Construct {
     this.uniqueSuffix = customIds.getAtt('UNIQUE_SUFFIX').toString();
     this.reducedStackName = customIds.getAtt('REDUCED_STACK_NAME').toString();
 
-
+    const helperLambdaLogGroup = new LogGroup(this.helperLambda, 'HelperLambda', {
+      removalPolicy: RemovalPolicy.DESTROY,
+      logGroupName: `/aws/lambda/${Aws.STACK_NAME}-${this.helperLambda.functionName}-${this.uniqueSuffix}`,
+      retention: RetentionDays.THREE_MONTHS
+    });
+    addCfnSuppressRules(helperLambdaLogGroup, [{
+      id: 'W84',
+      reason: 'KMS encryption unnecessary for log group'
+    }]);
     const customIotEndpoint = new CustomResource(this, 'EndpointAddress', {
       serviceToken: this.helperLambda.functionArn,
       properties: {
@@ -236,7 +246,6 @@ export class CustomResourcesConstruct extends Construct {
     });
 
     addCfnSuppressRules(iotPolicy, [{ id: 'W12', reason: 'To connect IoT and attach IoT policy to Cognito identity cannot speficy the specific resources.' }])
-
     this.helperLambda.role!.attachInlinePolicy(iotPolicy);
 
     new CustomResource(this, 'DetachIoTPolicy', { // NOSONAR: typescript:S1848

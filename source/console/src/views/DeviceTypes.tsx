@@ -1,21 +1,21 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { I18n, Logger } from "@aws-amplify/core";
 import { API } from '@aws-amplify/api';
-import { API_NAME } from '../util/Utils';
+import { I18n, Logger } from "@aws-amplify/core";
 import { useEffect, useState } from 'react';
+import Alert from 'react-bootstrap/Alert';
+import Button from 'react-bootstrap/Button';
+import Card from 'react-bootstrap/Card';
+import Col from 'react-bootstrap/Col';
+import Row from 'react-bootstrap/Row';
+import Table from 'react-bootstrap/Table';
 import { Link } from 'react-router-dom';
-import PageTitleBar from '../components/Shared/PageTitleBar';
 import DeleteConfirm from '../components/Shared/DeleteConfirmation';
 import Footer from '../components/Shared/Footer';
-import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
-import Card from 'react-bootstrap/Card';
-import Table from 'react-bootstrap/Table';
-import Button from 'react-bootstrap/Button';
-import Alert from 'react-bootstrap/Alert';
 import { IDeviceType, IPageProps } from '../components/Shared/Interfaces';
+import PageTitleBar from '../components/Shared/PageTitleBar';
+import { API_NAME } from '../util/Utils';
 
 
 export default function DeviceTypes(props: IPageProps): JSX.Element {
@@ -23,6 +23,9 @@ export default function DeviceTypes(props: IPageProps): JSX.Element {
     const [deviceTypes, setDeviceTypes] = useState<IDeviceType[]>([]);
     const [showAlert, setShowAlert] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [deleteDeviceId, setDeleteDeviceId] = useState("");
+    const [deleteDeviceName, setDeleteDeviceName] = useState("");
+    const [deleteDeviceIndex, setDeleteDeviceIndex] = useState(-1);
 
     /**
      * retrieves device types and sets to state
@@ -52,6 +55,20 @@ export default function DeviceTypes(props: IPageProps): JSX.Element {
             logger.error(I18n.get("device.type.delete.error"), err);
             throw err
         }
+    }
+
+    const handleDeleteClick = async (typeId: string, name: string, index: number) => {
+        setShowDeleteModal(true);
+        setDeleteDeviceId(typeId);
+        setDeleteDeviceName(name);
+        setDeleteDeviceIndex(index);
+    }
+
+    const resetDeleteModalValues = async () => {
+        setShowDeleteModal(false);
+        setDeleteDeviceId("");
+        setDeleteDeviceName("");
+        setDeleteDeviceIndex(-1);
     }
 
     /** 
@@ -94,18 +111,10 @@ export default function DeviceTypes(props: IPageProps): JSX.Element {
                         <Button
                             className="button-theme-alt"
                             size="sm"
-                            onClick={() => { setShowDeleteModal(true) }}
+                            onClick={() => { handleDeleteClick(dtype.typeId, dtype.name, i) }}
                         >
                             <i className="bi bi-trash-fill" /> {I18n.get("delete")}
                         </Button>
-                        <DeleteConfirm
-                            id={dtype.typeId}
-                            name={dtype.name}
-                            delete={handleDelete}
-                            showModal={setShowDeleteModal}
-                            show={showDeleteModal}
-                            index={i}
-                        />
                     </td>
                 </tr>
 
@@ -173,6 +182,14 @@ export default function DeviceTypes(props: IPageProps): JSX.Element {
                                     {displayDeviceTypes()}
                                 </tbody>
                             </Table>
+                            <DeleteConfirm
+                                id={deleteDeviceId}
+                                name={deleteDeviceName}
+                                delete={handleDelete}
+                                resetModalValues={resetDeleteModalValues}
+                                show={showDeleteModal}
+                                index={deleteDeviceIndex}
+                            />
                             {emptyDeviceTypeAlert()}
                         </Card.Body>
                     </Card>
