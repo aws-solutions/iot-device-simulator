@@ -1,11 +1,10 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { RemovalPolicy } from "aws-cdk-lib";
+import { AttributeType, BillingMode, Table, TableEncryption } from "aws-cdk-lib/aws-dynamodb";
 import { BlockPublicAccess, Bucket, BucketEncryption } from "aws-cdk-lib/aws-s3";
 import { Construct } from "constructs";
-import { AttributeType, BillingMode, Table, TableEncryption } from "aws-cdk-lib/aws-dynamodb";
-import { RemovalPolicy } from "aws-cdk-lib";
-import { AnyPrincipal, Effect, PolicyStatement } from "aws-cdk-lib/aws-iam";
 
 /**,
  * @interface StorageContructProps
@@ -49,25 +48,7 @@ export class StorageContruct extends Construct {
       serverAccessLogsPrefix: 'routes-bucket-access/',
       encryption: BucketEncryption.S3_MANAGED,
       blockPublicAccess: BlockPublicAccess.BLOCK_ALL,
+      enforceSSL: true
     });
-
-    this.routesBucket.addToResourcePolicy(
-      new PolicyStatement({
-        sid: 'HttpsOnly',
-        resources: [
-          `${this.routesBucket.bucketArn}/*`,
-          `${this.routesBucket.bucketArn}`
-        ],
-        actions: ['*'],
-        principals: [new AnyPrincipal()],
-        effect: Effect.DENY,
-        conditions:
-        {
-          Bool: {
-            'aws:SecureTransport': 'false'
-          }
-        }
-      })
-    );
   }
 }

@@ -1,26 +1,31 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { I18n, Logger } from '@aws-amplify/core';
 import { API } from '@aws-amplify/api';
-import { API_NAME } from '../util/Utils';
-import { useState, useEffect, Fragment } from 'react';
-import PageTitleBar from '../components/Shared/PageTitleBar';
-import Footer from '../components/Shared/Footer';
-import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
-import Card from 'react-bootstrap/Card';
-import Button from 'react-bootstrap/Button';
-import Table from 'react-bootstrap/Table';
-import Form from 'react-bootstrap/Form';
+import { I18n, Logger } from '@aws-amplify/core';
+import { Fragment, useEffect, useState } from 'react';
 import Alert from 'react-bootstrap/Alert';
-import { ISimulation, IPageProps } from '../components/Shared/Interfaces';
+import Button from 'react-bootstrap/Button';
+import Card from 'react-bootstrap/Card';
+import Col from 'react-bootstrap/Col';
+import Form from 'react-bootstrap/Form';
+import Row from 'react-bootstrap/Row';
+import Table from 'react-bootstrap/Table';
+import DeleteConfirm from '../components/Shared/DeleteConfirmation';
+import Footer from '../components/Shared/Footer';
+import { IPageProps, ISimulation } from '../components/Shared/Interfaces';
+import PageTitleBar from '../components/Shared/PageTitleBar';
 import TableData from '../components/Simulations/TableData';
+import { API_NAME } from '../util/Utils';
 
 export default function Simulations(props: IPageProps): JSX.Element {
     const logger = new Logger("Simulations");
     const [simulations, setSimulations] = useState<ISimulation[]>([]);
     const [showAlert, setShowAlert] = useState(false);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [deleteSimulationId, setDeleteSimulationId] = useState("");
+    const [deleteSimulationName, setDeleteSimulationName] = useState("");
+    const [deleteSimulationIndex, setDeleteSimulationIndex] = useState(-1);
 
     /**
      * get simulations from ddb
@@ -94,7 +99,7 @@ export default function Simulations(props: IPageProps): JSX.Element {
             }
             try {
                 await API.put(API_NAME, `/simulation`, { body: body });
-                setSimulations(simulations);
+                setSimulations(sims);
             } catch (err) {
                 logger.error(I18n.get("simulation.start.error"), err);
                 throw err;
@@ -120,7 +125,7 @@ export default function Simulations(props: IPageProps): JSX.Element {
             }
             try {
                 await API.put(API_NAME, `/simulation`, { body: body });
-                setSimulations(simulations);
+                setSimulations(sims);
             } catch (err) {
                 logger.error(I18n.get("simulation.stop.error"), err);
                 throw err;
@@ -180,11 +185,41 @@ export default function Simulations(props: IPageProps): JSX.Element {
                 <div>
                     <a href='/device-types/create'>{I18n.get('create.device.type')}</a>&nbsp;{I18n.get('to.get.started')}.<br />
                     {I18n.get('if.device.type.created')},&nbsp;
-                        <a href='/simulations/create'>{I18n.get('create.simulation').toLowerCase()}</a>&nbsp;
-                        {I18n.get("begin.simulating.devices")}.
+                    <a href='/simulations/create'>{I18n.get('create.simulation').toLowerCase()}</a>&nbsp;
+                    {I18n.get("begin.simulating.devices")}.
                 </div>
             </Alert>
         )
+    }
+
+    /**
+    * deletes the given simulation from ddb and reloads the page
+    * @param simId 
+    * @param index
+    */
+    const handleDelete = async (simId: string, index: number) => {
+        try {
+            await API.del(API_NAME, `/simulation/${simId}`, {});
+            simulations.splice(index, 1);
+            setSimulations([...simulations]);
+        } catch (err) {
+            logger.error(I18n.get("simulation.delete.error"), err);
+            throw err;
+        }
+    }
+
+    const enableDeleteModal = async (simulationId: string, name: string, index: number) => {
+        setShowDeleteModal(true);
+        setDeleteSimulationId(simulationId);
+        setDeleteSimulationName(name);
+        setDeleteSimulationIndex(index);
+    }
+
+    const resetDeleteModalValues = async () => {
+        setShowDeleteModal(false);
+        setDeleteSimulationId("");
+        setDeleteSimulationName("");
+        setDeleteSimulationIndex(-1);
     }
 
     return (
@@ -232,10 +267,19 @@ export default function Simulations(props: IPageProps): JSX.Element {
                                         simulations={simulations}
                                         handleCheckboxSelect={handleCheckboxSelect}
                                         setSimulations={setSimulations}
+                                        handleDeleteButtonClick={enableDeleteModal}
                                     /> :
                                     ""
                                 }
                             </Table>
+                            <DeleteConfirm
+                                id={deleteSimulationId}
+                                name={deleteSimulationName}
+                                delete={handleDelete}
+                                resetModalValues={resetDeleteModalValues}
+                                show={showDeleteModal}
+                                index={deleteSimulationIndex}
+                            />
                             {emptySimAlert()}
                         </Card.Body>
                     </Card>

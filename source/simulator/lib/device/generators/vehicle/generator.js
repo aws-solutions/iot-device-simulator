@@ -70,10 +70,7 @@ class Generator {
                     } else {
                         value = snapshot[attribute.name];
                     }
-                    if (attribute.precision) {
-                        let rounding = Math.round(Math.log10(1 / attribute.precision));
-                        value = Number(Number(value).toFixed(rounding));
-                    }
+                    value = this.calculateValue(attribute, value);
 
                     _message.payload[attribute.name] = value;
                 }
@@ -86,6 +83,14 @@ class Generator {
 
             this.messages.push(_message);
         }
+    }
+
+    calculateValue(attribute, value) {
+        if (attribute.precision) {
+            let rounding = Math.round(Math.log10(1 / attribute.precision));
+            value = Number(Number(value).toFixed(rounding));
+        }
+        return value;
     }
 
     /**

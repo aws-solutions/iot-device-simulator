@@ -60,7 +60,8 @@ export class CommonResourcesConstruct extends Construct {
       accessControl: BucketAccessControl.LOG_DELIVERY_WRITE,
       blockPublicAccess: BlockPublicAccess.BLOCK_ALL,
       encryption: BucketEncryption.S3_MANAGED,
-      removalPolicy: RemovalPolicy.RETAIN
+      removalPolicy: RemovalPolicy.RETAIN,
+      enforceSSL: true
     });
 
     addCfnSuppressRules(this.s3LoggingBucket, [

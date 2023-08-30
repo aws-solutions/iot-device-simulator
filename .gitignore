@@ -22,7 +22,14 @@
 **/yarn.lock
 **/aws_config.js
 **/coverage
+lcov.info
+clover.xml
+coverage-final.json
 
 # System Files
 **/.DS_Store
 **/.vscode
+
+# CDK asset staging directory
+.cdk.staging
+cdk.out

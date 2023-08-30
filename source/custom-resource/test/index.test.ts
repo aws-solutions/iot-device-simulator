@@ -1,25 +1,18 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { CustomResourceTypes } from '../interfaces';
 import {
-  CopyObjectCommand,
-  GetObjectCommand,
-  PutObjectCommand,
-  S3Client
-} from "@aws-sdk/client-s3";
-import {
-  DescribeEndpointCommand,
-  DescribeEndpointCommandInput,
-  DetachPolicyCommand,
-  DetachPolicyCommandInput,
-  IoTClient,
-  ListTargetsForPolicyCommand
+  DescribeEndpointCommand, DetachPolicyCommand,
+  IoTClient, ListTargetsForPolicyCommand
 } from "@aws-sdk/client-iot";
+import {
+  CopyObjectCommand, GetObjectCommand, PutObjectCommand, S3Client
+} from "@aws-sdk/client-s3";
+import { sdkStreamMixin } from '@smithy/util-stream';
 import { mockClient } from "aws-sdk-client-mock";
-import { sdkStreamMixin } from '@aws-sdk/util-stream-node';
-import { Readable } from "stream";
 import 'aws-sdk-client-mock-jest';
+import { Readable } from "stream";
+import { CustomResourceTypes } from '../interfaces';
 
 // Mock AWS
 const s3Mock = mockClient(S3Client);
