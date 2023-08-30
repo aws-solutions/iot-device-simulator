@@ -3,9 +3,7 @@
 
 import { CloudFrontToS3 } from "@aws-solutions-constructs/aws-cloudfront-s3";
 import { addCfnSuppressRules } from "@aws-solutions-constructs/core";
-import { Construct } from "constructs";
-import { Bucket, IBucket } from "aws-cdk-lib/aws-s3";
-import { CfnPolicy } from "aws-cdk-lib/aws-iot";
+import { ArnFormat, Aws, Duration, RemovalPolicy, Stack } from "aws-cdk-lib";
 import {
   CfnIdentityPool,
   CfnIdentityPoolRoleAttachment,
@@ -14,8 +12,11 @@ import {
   UserPool,
   UserPoolClient
 } from "aws-cdk-lib/aws-cognito";
-import { ArnFormat, Aws, Duration, RemovalPolicy, Stack } from "aws-cdk-lib";
 import { Effect, FederatedPrincipal, PolicyDocument, PolicyStatement, Role } from "aws-cdk-lib/aws-iam";
+import { CfnPolicy } from "aws-cdk-lib/aws-iot";
+import { Bucket, IBucket } from "aws-cdk-lib/aws-s3";
+import { NagSuppressions } from 'cdk-nag';
+import { Construct } from "constructs";
 
 /**
  * UiConstructProps props
@@ -77,6 +78,15 @@ export class ConsoleConstruct extends Construct {
     });
     this.cloudFrontDomainName = consoleCloudfrontDist.cloudFrontWebDistribution.domainName;
     this.consoleBucket = consoleCloudfrontDist.s3BucketInterface;
+    NagSuppressions.addResourceSuppressions(
+      consoleCloudfrontDist,
+      [
+          { id: "AwsSolutions-CFR1", reason: "The solution does not control geo restriction." },
+          { id: "AwsSolutions-CFR2", reason: "No need to enable WAF." },
+          { id: "AwsSolutions-CFR4", reason: "No control on the solution side as it is using the CloudFront default certificate." }
+      ],
+      true
+  );
 
     const userPool = new UserPool(this, 'UserPool', {
       passwordPolicy: {
@@ -108,6 +118,16 @@ export class ConsoleConstruct extends Construct {
     });
     (userPool.node.defaultChild as CfnUserPool).userPoolAddOns = { advancedSecurityMode: 'ENFORCED' };
     this.userPoolId = userPool.userPoolId;
+    NagSuppressions.addResourceSuppressions(
+      userPool,
+      [
+          {
+              id: "AwsSolutions-COG2",
+              reason: "MFA not required for this version of the solution"
+          }
+      ],
+      true
+  );
 
     const userPoolClient = new UserPoolClient(this, 'UserPoolClient', {
       generateSecret: false,
@@ -213,7 +233,7 @@ export class ConsoleConstruct extends Construct {
             new PolicyStatement({
               effect: Effect.ALLOW,
               actions: [
-                "iot:AttachPrincipalPolicy"
+                "iot:AttachPolicy"
               ],
               resources: ['*']
             }),
@@ -237,7 +257,7 @@ export class ConsoleConstruct extends Construct {
       }
     });
     addCfnSuppressRules(authenticatedRole, [
-      { id: 'W11', reason: 'iot:AttachPrincipalPolicy does not allow for resource specification' }
+      { id: 'W11', reason: 'iot:AttachPolicy does not allow for resource specification' }
     ]);
 
     new CfnIdentityPoolRoleAttachment(this, 'IdentityPoolRoleAttachement', { // NOSONAR: typescript:S1848

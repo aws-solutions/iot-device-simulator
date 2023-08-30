@@ -1,10 +1,10 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import "@aws-cdk/assert/jest";
-import { SynthUtils } from "@aws-cdk/assert";
-import { CommonResourcesConstruct}  from "../lib/common-resources";
+
 import { Stack } from "aws-cdk-lib";
+import { Template } from 'aws-cdk-lib/assertions';
+import { CommonResourcesConstruct } from "../lib/common-resources";
 
 test('IoT Device Simulator CommonResourceConstruct Test', () => {
     const stack = new Stack();
@@ -13,5 +13,35 @@ test('IoT Device Simulator CommonResourceConstruct Test', () => {
         sourceCodeBucket: "test-bucket"
     });
 
-    expect(SynthUtils.toCloudFormation(stack)).toMatchSnapshot();
+    const template =  Template.fromStack(stack);
+    template.resourceCountIs('AWS::S3::Bucket', 1);
+    template.hasResource('AWS::S3::Bucket', {
+        Type:'AWS::S3::Bucket',
+        Properties : {
+            'AccessControl': 'LogDeliveryWrite',
+            'BucketEncryption': {
+              'ServerSideEncryptionConfiguration': [
+                {
+                  'ServerSideEncryptionByDefault': {
+                    'SSEAlgorithm': 'AES256',
+                  },
+                },
+              ],
+            },
+            'OwnershipControls': {
+              'Rules': [
+                {
+                  'ObjectOwnership': 'ObjectWriter'
+                },
+              ],
+            },
+            'PublicAccessBlockConfiguration': {
+              'BlockPublicAcls': true,
+              'BlockPublicPolicy': true,
+              'IgnorePublicAcls': true,
+              'RestrictPublicBuckets': true,
+            },
+        },
+        UpdateReplacePolicy: 'Retain'
+    });
 });

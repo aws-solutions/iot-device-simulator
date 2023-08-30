@@ -2,43 +2,29 @@
 // SPDX-License-Identifier: Apache-2.0
 
 
+import { I18n } from '@aws-amplify/core';
 import { useState } from 'react';
-import { I18n, Logger } from '@aws-amplify/core';
-import { API } from '@aws-amplify/api'
-import { ISimulation } from '../Shared/Interfaces';
-import DeleteConfirm from '../Shared/DeleteConfirmation';
-import { API_NAME } from '../../util/Utils';
-import { Link } from 'react-router-dom';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
 import Table from 'react-bootstrap/Table';
+import { Link } from 'react-router-dom';
+import { ISimulation } from '../Shared/Interfaces';
 
 interface IProps {
     simulations: ISimulation[],
     handleCheckboxSelect: Function,
-    setSimulations: Function
+    setSimulations: Function,
+    handleDeleteButtonClick: Function
 }
 
 export default function TableData(props: IProps): JSX.Element {
-    const logger = new Logger("Simulation Table Data");
     const [showDevices, setShowDevices] = useState(-1);
-    const [showDeleteModal, setShowDeleteModal] = useState(false);
 
-    /**
-     * deletes the given simulation from ddb and reloads the page
-     * @param simId 
-     */
-    const handleDelete = async (simId: string, index: number) => {
-        try {
-            await API.del(API_NAME, `/simulation/${simId}`, {});
-            props.simulations.splice(index, 1);
-            props.setSimulations([...props.simulations]);
-        } catch (err) {
-            logger.error(I18n.get("simulation.delete.error"), err);
-            throw err;
-        }
-    }
+
+
+
+
 
     return (
         <tbody>
@@ -58,7 +44,7 @@ export default function TableData(props: IProps): JSX.Element {
                     <td>
 
                         &nbsp;
-                    <Button
+                        <Button
                             className="button-theme button-rounded"
                             size="sm"
                             onClick={() => { setShowDevices(i) }}
@@ -109,18 +95,10 @@ export default function TableData(props: IProps): JSX.Element {
                         <Button
                             size="sm"
                             className="button-theme-alt"
-                            onClick={() => { setShowDeleteModal(true) }}
+                            onClick={() => { props.handleDeleteButtonClick(sim.simId, sim.name, i) }}
                         >
                             <i className="bi bi-trash-fill" /> {I18n.get("delete")}
                         </Button>
-                        <DeleteConfirm
-                            id={sim.simId}
-                            name={sim.name}
-                            delete={handleDelete}
-                            showModal={setShowDeleteModal}
-                            show={showDeleteModal}
-                            index={i}
-                        />
                     </td>
                 </tr>
             ))

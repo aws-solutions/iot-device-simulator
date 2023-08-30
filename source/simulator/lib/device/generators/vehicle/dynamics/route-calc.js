@@ -38,7 +38,7 @@ class RouteCalc extends DataCalc {
         this._curThrottlePosition = this._getRandomStartSpeed(params.route.profile);
         this._throttlePosition = this._curThrottlePosition;
         this._brakePosition = 0.0;
-        this._routeDuration = 0;
+        this._routeDuration = moment.duration(0);
         this._routeEnded = this.data.routeEnded;
         this._burndown = this.data.burndown;
         this._updateTriggers = false;
@@ -88,90 +88,7 @@ class RouteCalc extends DataCalc {
 
         if (!this._routeEnded) {
 
-            if (!this._burndown) {
-                let _milage = this.route.stages[this.currentStage].odometerStart +
-                    this.route.stages[this.currentStage].km;
-
-                if ((_milage) <= _odometer) {
-                    // met or suprassed milage for stage, move to next stage
-                    _moveStage = true;
-                }
-
-                // check for throttle adjustment
-                let _throttleTimeDelta = _currentTime.diff(this._lastThrottleCalc);
-                if (this._throttleAdjDuration <= _throttleTimeDelta) {
-                    this._curThrottlePosition = this._curThrottlePosition + this._getRandomThrottlePosition(this.route
-                        .profile);
-
-                    if (this._curThrottlePosition >= 100) {
-                        this._curThrottlePosition = 99;
-                    }
-
-                    if (this._curThrottlePosition < 0) {
-                        this._curThrottlePosition = 5;
-                    }
-
-                    this._brakePosition = 0.0;
-                    this._throttlePosition = this._curThrottlePosition;
-                    this._throttleAdjDuration = this._getRandomThrottleAdjPeriod();
-                    this._lastThrottleCalc = moment();
-                }
-
-                for (let randomTrigger of this._randomTriggers) {
-                    if (_odometer >= randomTrigger.km) {
-                        if (randomTrigger.type === 'brake' && !randomTrigger.triggered) {
-                            this._throttlePosition = 0.0;
-                            this._brakePosition = 100.0;
-                            randomTrigger.triggered = true;
-                        }
-
-                        if (randomTrigger.type === 'oiltemp' && !randomTrigger.triggered) {
-                            // update to inculde new triggers
-                            this._triggers = {
-                                highOilTemp: true
-                            };
-                            this._updateTriggers = true;
-                            randomTrigger.triggered = true;
-                        }
-                    }
-                }
-
-                if (_moveStage) {
-                    //transition to next stage in route
-                    this.currentStage++;
-                    if (this.currentStage < this.route.stages.length) {
-                        //initialize the new stage
-                        this.route.stages[this.currentStage].odometerStart = _odometer;
-                        this.latitude = this.route.stages[this.currentStage].start[1];
-                        this.longitude = this.route.stages[this.currentStage].start[0];
-                        this.lastCalc = moment();
-
-                        if (this.route.stages[this.currentStage].triggers) {
-                            // update to inculde new triggers
-                            this._triggers = this.route.stages[this.currentStage].triggers;
-                            this._updateTriggers = true;
-                        }
-                    } else {
-                        this._burndown = true;
-                        this.data.burndown = this._burndown;
-                        this._lastBurndownCalc = moment();
-                        this.burndownCalc = this._lastBurndownCalc.toISOString();
-                    }
-                }
-            } else {
-                //set end of route flag
-                this._throttlePosition = 0.0;
-                this._brakePosition = 100.0;
-                let endTimeDelta = _currentTime.diff(this._lastBurndownCalc);
-                if (endTimeDelta >= 20000) {
-                    this._routeEnded = true;
-                    this.data.routeEnded = this._routeEnded;
-                    this._burndown = false;
-                    this.data.burndown = this._burndown;
-                    this.latitude = this.route.stages[this.currentStage - 1].end[1];
-                    this.longitude = this.route.stages[this.currentStage - 1].end[0];
-                }
-            }
+            _moveStage = this._iterateMoveStage(_odometer, _moveStage, _currentTime);
 
             if (this._routeEnded) {
                 let _routeDelta = moment.duration(_currentTime.diff(this.route.stages[0].routeStart));
@@ -198,6 +115,106 @@ class RouteCalc extends DataCalc {
             }
         }
 
+    }
+
+    _iterateMoveStage(_odometer, _moveStage, _currentTime) {
+        if (!this._burndown) {
+            let _milage = this.route.stages[this.currentStage].odometerStart +
+                this.route.stages[this.currentStage].km;
+
+            if ((_milage) <= _odometer) {
+                // met or suprassed milage for stage, move to next stage
+                _moveStage = true;
+            }
+
+            // check for throttle adjustment
+            this._checkForThrottleAdjustment(_currentTime);
+
+            this._updateRandomTriger(_odometer);
+
+            if (_moveStage) {
+                //transition to next stage in route
+                this.currentStage++;
+                this._transitionNextStage(_odometer);
+            }
+        } else {
+            //set end of route flag
+            this._throttlePosition = 0.0;
+            this._brakePosition = 100.0;
+            let endTimeDelta = _currentTime.diff(this._lastBurndownCalc);
+            if (endTimeDelta >= 20000) {
+                this._routeEnded = true;
+                this.data.routeEnded = this._routeEnded;
+                this._burndown = false;
+                this.data.burndown = this._burndown;
+                this.latitude = this.route.stages[this.currentStage - 1].end[1];
+                this.longitude = this.route.stages[this.currentStage - 1].end[0];
+            }
+        }
+        return _moveStage;
+    }
+
+    _updateRandomTriger(_odometer) {
+        for (let randomTrigger of this._randomTriggers) {
+            if (_odometer >= randomTrigger.km) {
+                if (randomTrigger.type === 'brake' && !randomTrigger.triggered) {
+                    this._throttlePosition = 0.0;
+                    this._brakePosition = 100.0;
+                    randomTrigger.triggered = true;
+                }
+
+                if (randomTrigger.type === 'oiltemp' && !randomTrigger.triggered) {
+                    // update to inculde new triggers
+                    this._triggers = {
+                        highOilTemp: true
+                    };
+                    this._updateTriggers = true;
+                    randomTrigger.triggered = true;
+                }
+            }
+        }
+    }
+
+    _transitionNextStage(_odometer) {
+        if (this.currentStage < this.route.stages.length) {
+            //initialize the new stage
+            this.route.stages[this.currentStage].odometerStart = _odometer;
+            this.latitude = this.route.stages[this.currentStage].start[1];
+            this.longitude = this.route.stages[this.currentStage].start[0];
+            this.lastCalc = moment();
+
+            if (this.route.stages[this.currentStage].triggers) {
+                // update to inculde new triggers
+                this._triggers = this.route.stages[this.currentStage].triggers;
+                this._updateTriggers = true;
+            }
+        } else {
+            this._burndown = true;
+            this.data.burndown = this._burndown;
+            this._lastBurndownCalc = moment();
+            this.burndownCalc = this._lastBurndownCalc.toISOString();
+        }
+    }
+
+    _checkForThrottleAdjustment(_currentTime) {
+        let _throttleTimeDelta = _currentTime.diff(this._lastThrottleCalc);
+        if (this._throttleAdjDuration <= _throttleTimeDelta) {
+            this._curThrottlePosition = this._curThrottlePosition + this._getRandomThrottlePosition(this.route
+                .profile);
+
+            if (this._curThrottlePosition >= 100) {
+                this._curThrottlePosition = 99;
+            }
+
+            if (this._curThrottlePosition < 0) {
+                this._curThrottlePosition = 5;
+            }
+
+            this._brakePosition = 0.0;
+            this._throttlePosition = this._curThrottlePosition;
+            this._throttleAdjDuration = this._getRandomThrottleAdjPeriod();
+            this._lastThrottleCalc = moment();
+        }
     }
 
     _getRandomTriggers(route) {

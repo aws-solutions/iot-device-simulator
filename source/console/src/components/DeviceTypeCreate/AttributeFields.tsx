@@ -38,21 +38,7 @@ export default function AttributeFields(props: IProps): JSX.Element {
                 [I18n.get("false"), I18n.get("true")] :
                 [I18n.get("timestamp.tsformat.default"), I18n.get("timestamp.tsformat.unix")];
         } else {
-            formControlOptions.type = "number"
-            if (id === "long") {
-                formControlOptions.min = -180;
-                formControlOptions.max = 180;
-                formControlOptions.step = .000001;
-            } else if (id === "lat") {
-                formControlOptions.min = -90;
-                formControlOptions.max = 90;
-                formControlOptions.step = .000001;
-            } else if (id === 'precision') {
-                formControlOptions.step = .000001;
-            } else if (id === "length") {
-                formControlOptions.min = 1;
-                formControlOptions.max = 36;
-            }
+            formControlNumber(formControlOptions, id);
         }
         if (id !== 'default' && attrType !== 'id') {
             formControlOptions.required = true
@@ -109,3 +95,21 @@ export default function AttributeFields(props: IProps): JSX.Element {
         </Col>
     )
 }
+function formControlNumber(formControlOptions: FormControlProps & React.InputHTMLAttributes<Function>, id: string) {
+    formControlOptions.type = "number";
+    if (id === "long") {
+        formControlOptions.min = -180;
+        formControlOptions.max = 180;
+        formControlOptions.step = .000001;
+    } else if (id === "lat") {
+        formControlOptions.min = -90;
+        formControlOptions.max = 90;
+        formControlOptions.step = .000001;
+    } else if (id === 'precision') {
+        formControlOptions.step = .000001;
+    } else if (id === "length") {
+        formControlOptions.min = 1;
+        formControlOptions.max = 36;
+    }
+}
+

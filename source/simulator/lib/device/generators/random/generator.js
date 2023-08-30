@@ -82,6 +82,15 @@ class Generator {
             };
         }
         //generate value according to type
+        _value = this.generateValueByType(attribute, _value);
+        //increment current state for attribute
+        this.currentState[attribute.name] = {
+            cnt: this.currentState[attribute.name].cnt + 1
+        }
+        return (_value);
+    }
+
+    generateValueByType(attribute, _value) {
         switch (attribute.type) {
             case 'id': {
                 let length = attribute.length || 21;
@@ -97,7 +106,7 @@ class Generator {
             }
             case 'string': {
                 let { min, max } = attribute;
-                let length = faker.datatype.number({ min: min, max: max, precision: 1 })
+                let length = faker.datatype.number({ min: min, max: max, precision: 1 });
                 _value = faker.datatype.string(length);
                 if (attribute.static) {
                     this.staticValues[attribute.name] = _value;
@@ -137,7 +146,7 @@ class Generator {
                 const _center = {
                     latitude: attribute.lat,
                     longitude: attribute.long
-                }
+                };
                 _value = randomLocation.randomCirclePoint(_center, attribute.radius);
                 break;
             }
@@ -158,11 +167,7 @@ class Generator {
                 break;
             }
         }
-        //increment current state for attribute
-        this.currentState[attribute.name] = {
-            cnt: this.currentState[attribute.name].cnt + 1
-        }
-        return (_value);
+        return _value;
     }
 
     /**

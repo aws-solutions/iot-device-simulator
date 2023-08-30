@@ -20,6 +20,8 @@ Often times, teams constantly have the need to quickly replicate the behavior of
 
 For more information and a detailed deployment guide, visit the [IoT Device Simulator](https://aws.amazon.com/solutions/implementations/iot-device-simulator/) solution page.
 
+**Note**: This solution is designed to simulate device data for testing. It is not recommended for use in production environments.
+
 # Architecture Diagram
 ![Architecture Diagram](./architecture.png)
 
@@ -49,6 +51,11 @@ export VERSION=my-version # version number for the customized code
 ```
 _Note:_ When you define `DIST_BUCKET_PREFIX`, a randomized value is recommended. You will need to create an S3 bucket where the name is `<DIST_BUCKET_PREFIX>-<REGION>`. The solution's CloudFormation template will expect the source code to be located in a bucket matching that name
 
+When creating and using buckets it is recommeded to:
+  - Use randomized names or uuid as part of your bucket naming strategy.
+  - Ensure buckets are not public.
+  - Verify bucket ownership prior to uploading templates or code artifacts.
+
 ## Unit Test
 After making changes, run unit tests to make sure added customization passes the tests:
 ```bash
@@ -65,6 +72,7 @@ chmod +x build-s3-dist.sh
 ```
 
 ## Deploy
+
 - Deploy the distributable to the Amazon S3 bucket in your account. Make sure you are uploading all files and directories under `deployment/global-s3-assets` and `deployment/regional-s3-assets` to `<SOLUTION_NAME>/<VERSION>` folder in the `<DIST_BUCKET_PREFIX>-<REGION>` bucket (e.g. `s3://<DIST_BUCKET_PREFIX>-<REGION>/<SOLUTION_NAME>/<VERSION>/`).
   CLI based S3 command to sync the buckets is:
   ```bash

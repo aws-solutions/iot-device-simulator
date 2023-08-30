@@ -190,7 +190,6 @@ export default function DeviceTypeCreate(props: IProps): JSX.Element {
         if (attr.default) {
             return attr.default;
         }
-
         if (attr.type === 'string') {
             if (attr.default) {
                 return attr.default;
@@ -216,13 +215,7 @@ export default function DeviceTypeCreate(props: IProps): JSX.Element {
         } else if (attr.type === 'pickOne') {
             if (attr.arr) return attr.arr[0];
         } else if (attr.type === 'object') {
-            let _s: any = {};
-            if (attr.payload) {
-                for (let attribute of attr.payload) {
-                    _s[attribute.name] = generateSampleData(attribute);
-                }
-            }
-            return _s;
+            return generateTypeObjectSampleData(attr, generateSampleData);
         }
     }
 
@@ -473,4 +466,14 @@ export default function DeviceTypeCreate(props: IProps): JSX.Element {
             <Footer pageTitle={props.title} />
         </div>
     );
+}
+
+function generateTypeObjectSampleData(attr: IAttribute, generateSampleData: (attr: IAttribute) => any) {
+    let _s: any = {};
+    if (attr.payload) {
+        for (let attribute of attr.payload) {
+            _s[attribute.name] = generateSampleData(attribute);
+        }
+    }
+    return _s;
 }

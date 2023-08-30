@@ -2,14 +2,14 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { I18n } from '@aws-amplify/core';
-import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
+import Modal from 'react-bootstrap/Modal';
 
 interface IDeleteConfirmProps {
     id: string;
     name: string;
     delete: (id: string, index: number) => void;
-    showModal: React.Dispatch<React.SetStateAction<boolean>>;
+    resetModalValues: Function;
     show: boolean;
     index: number;
 }
@@ -23,11 +23,11 @@ export default function DeleteConfirm(props: IDeleteConfirmProps): JSX.Element {
      */
     const deleteItem = (id: string, index: number) => {
         props.delete(id, index);
-        props.showModal(false);
+        props.resetModalValues();
     }
 
     return (
-        <Modal show={props.show} onHide={() => { props.showModal(false) }}>
+        <Modal show={props.show} onHide={() => { props.resetModalValues() }}>
             <Modal.Header closeButton>
                 <Modal.Title>
                     {I18n.get('confirm.delete.title')}
@@ -41,7 +41,7 @@ export default function DeleteConfirm(props: IDeleteConfirmProps): JSX.Element {
                 <Button
                     size="sm"
                     variant='secondary'
-                    onClick={() => { props.showModal(false) }}
+                    onClick={() => { props.resetModalValues() }}
                 >{I18n.get('cancel')}</Button>
                 <Button
                     size="sm"

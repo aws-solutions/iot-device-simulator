@@ -1,45 +1,48 @@
 {
   "name": "iot-device-simulator-console",
-  "version": "3.0.2",
+  "description": "IoT Device Simulator UI Console",
+  "license": "Apache-2.0",
+  "author": {
+    "name": "Amazon Web Services",
+    "url": "https://aws.amazon.com/solutions"
+  },
+  "version": "3.0.3",
   "private": true,
   "dependencies": {
-    "@aws-amplify/api": "^4.0.6",
-    "@aws-amplify/auth": "^4.1.2",
-    "@aws-amplify/core": "^4.3.0",
-    "@aws-amplify/geo": "^1.0.0",
-    "@aws-amplify/interactions": "^4.0.6",
-    "@aws-amplify/storage": "^4.3.1",
-    "@aws-amplify/ui-react": "^1.2.26",
-    "@maplibre/maplibre-gl-geocoder": "^1.5.0",
-    "@testing-library/jest-dom": "^5.11.4",
+    "@aws-amplify/api": "^5.4.2",
+    "@aws-amplify/auth": "^5.6.2",
+    "@aws-amplify/core": "^5.8.2",
+    "@aws-amplify/geo": "^2.3.2",
+    "@aws-amplify/interactions": "^5.2.8",
+    "@aws-amplify/storage": "^5.9.2",
+    "@aws-amplify/ui-react": "^5.1.1",
+    "@aws-sdk/client-iot": "^3.391.0",
+    "@testing-library/jest-dom": "^6.0.1",
     "@testing-library/react": "^12.1.2",
-    "@testing-library/user-event": "^13.3.0",
-    "@types/jest": "^27.0.2",
-    "@types/node": "^16.11.0",
-    "@types/react": "^17.0.30",
-    "@types/react-dom": "^17.0.0",
+    "@testing-library/user-event": "^14.4.3",
+    "@types/jest": "^29.5.3",
+    "@types/node": "^20.5.0",
+    "@types/react": "^18.2.20",
+    "@types/react-dom": "^18.2.7",
     "@types/react-router-dom": "^5.3.3",
-    "aws-sdk": "^2.1354.0",
     "bootstrap": "^4.6.0",
     "bootstrap-icons": "^1.6.0",
-    "maplibre-gl": "^2.4.0",
-    "maplibre-gl-js-amplify": "^3.0.5",
-    "moment": "^2.29.1",
+    "maplibre-gl-js-amplify": "^3.1.0",
+    "moment": "^2.29.4",
     "react": "~16.14.0",
     "react-bootstrap": "^1.6.4",
     "react-dom": "~16.14.0",
     "react-router-dom": "~5.3.4",
     "typescript": "^4.4.4",
-    "web-vitals": "^2.1.2"
+    "web-vitals": "^3.4.0"
   },
   "devDependencies": {
     "react-scripts": "^5.0.1"
   },
   "overrides": {
     "css-select@2.1.0": {
-      "nth-check": "2.1.1"
-    },
-    "fast-xml-parser": "4.2.4"
+      "nth-check": "~2.1.1"
+    }
   },
   "scripts": {
     "start": "react-scripts start",
@@ -58,9 +61,8 @@
   },
   "browserslist": {
     "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
+      "defaults",
+      "not ie 11"
     ],
     "development": [
       "last 1 chrome version",

@@ -3,7 +3,22 @@ All notable changes to this project will be documented in this file.
  
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), 
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). 
+## [3.0.3] - 2023-08-17
+### Changed
+- Updated AWS Amplify 4 to 5 and UI login page
+- Migrated AWS SDK for JavaScript V2 to V3
+- Updated outdated libraries
+- Improvement to service API metrics collection
 
+### Fixed
+- Simulations map not working
+- Fix Device Type and simulation deletion UI issue  (GitHub [issue #29](https://github.com/aws-solutions/iot-device-simulator/issues/29))
+
+### Removed
+- CDK Bootstrap requirement for provisioning the CloudFormation stack
+
+### Security
+- Addressed security vulnerabilities found in npm packages
 
 ## [3.0.2] - 2023-06-12
 ### Changed

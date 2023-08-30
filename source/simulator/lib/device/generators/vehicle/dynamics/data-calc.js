@@ -27,7 +27,7 @@ class DataCalc {
      * @param {*} data 
      */
     iterate(data) {
-
+        //This is intentional abstract function to be implemented in classes that extend data-calc
     }
 
 }

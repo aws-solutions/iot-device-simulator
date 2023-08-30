@@ -249,7 +249,7 @@ describe('Generator', function() {
                     arr: ["one", "two", "three", "four", "five"],
                     static: true
                 };
-                const result = generator._processSpecAttribute(attribute);
+                generator._processSpecAttribute(attribute);
                 expect(generator.staticValues).toHaveProperty('pickOne');
             })
         })
