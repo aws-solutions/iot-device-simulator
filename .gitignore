@@ -1,0 +1,35 @@
+# compiled output
+**/dist
+**/build
+**/open-source
+**/.zip
+**/tmp
+**/out-tsc
+**/global-s3-assets
+**/regional-s3-assets
+
+# dependencies
+**/node_modules
+
+# e2e
+**/e2e/*.js
+**/e2e/*.map
+
+# misc
+**/npm-debug.log
+**/testem.log
+**/.vscode/settings.json
+**/yarn.lock
+**/aws_config.js
+**/coverage
+lcov.info
+clover.xml
+coverage-final.json
+
+# System Files
+**/.DS_Store
+**/.vscode
+
+# CDK asset staging directory
+.cdk.staging
+cdk.out
