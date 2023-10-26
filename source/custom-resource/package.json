@@ -1,6 +1,6 @@
 {
   "name": "iot-device-simulator-custom-resource",
-  "version": "3.0.3",
+  "version": "3.0.4",
   "description": "custom resource lambda for iot-device-simulator",
   "author": {
     "name": "Amazon Web Services",
