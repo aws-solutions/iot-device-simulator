@@ -1,6 +1,6 @@
 {
   "name": "iot-device-simulator-infrastructure",
-  "version": "3.0.4",
+  "version": "3.0.5",
   "description": "IoT Device Simulator Infrastructure",
   "license": "Apache-2.0",
   "author": {
@@ -31,7 +31,7 @@
     "@aws-solutions-constructs/aws-cloudfront-s3": "~2.42.0",
     "@aws-solutions-constructs/aws-lambda-stepfunctions": "~2.42.0",
     "aws-cdk-lib": "~2.92.0",
-    "cdk-nag": "^2.27.104",
+    "cdk-nag": "2.27.104",
     "constructs": "~10.2.69"
   },
   "engines": {
