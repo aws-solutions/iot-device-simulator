@@ -29,7 +29,7 @@ class LambdaFunctionAspect implements IAspect {
 const app = new App();
 const stack = new IDSStack(app, "IDSStack", {
 	description:
-		"(SO0041) - The AWS cloud formation template for the deployment of SOLUTION_NAME_PLACEHOLDER. Version VERSION_PLACEHOLDER.",
+		"(SO0041) - The AWS cloud formation template for the deployment of SOLUTION_NAME_PLACEHOLDER. Version VERSION_PLACEHOLDER",
 	synthesizer: new DefaultStackSynthesizer({
 		generateBootstrapVersionRule: false,
 	}),
