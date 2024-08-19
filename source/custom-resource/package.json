@@ -1,6 +1,6 @@
 {
   "name": "iot-device-simulator-custom-resource",
-  "version": "3.0.7",
+  "version": "3.0.8",
   "description": "custom resource lambda for iot-device-simulator",
   "author": {
     "name": "Amazon Web Services",
@@ -30,7 +30,7 @@
   "dependencies": {
     "@aws-sdk/client-iot": "^3.391.0",
     "@aws-sdk/client-s3": "^3.391.0",
-    "axios": "^1.4.0",
+    "axios": "^1.7.4",
     "uuid": "^9.0.0"
   },
   "engines": {

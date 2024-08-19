@@ -6,15 +6,15 @@
     "name": "Amazon Web Services",
     "url": "https://aws.amazon.com/solutions"
   },
-  "version": "3.0.7",
+  "version": "3.0.8",
   "private": true,
   "dependencies": {
-    "@aws-amplify/api": "^5.4.2",
-    "@aws-amplify/auth": "^5.6.2",
-    "@aws-amplify/core": "^5.8.2",
-    "@aws-amplify/geo": "^2.3.2",
-    "@aws-amplify/interactions": "^5.2.8",
-    "@aws-amplify/storage": "^5.9.2",
+    "@aws-amplify/api": "^5.4.13",
+    "@aws-amplify/auth": "^5.6.13",
+    "@aws-amplify/core": "^5.8.13",
+    "@aws-amplify/geo": "^2.3.13",
+    "@aws-amplify/interactions": "^5.2.19",
+    "@aws-amplify/storage": "^5.9.14",
     "@aws-amplify/ui-react": "^5.1.1",
     "@aws-sdk/client-iot": "^3.391.0",
     "@testing-library/jest-dom": "^6.0.1",
@@ -38,6 +38,9 @@
   },
   "devDependencies": {
     "react-scripts": "^5.0.1"
+  },
+  "resolutions": {
+    "axios": "^1.7.4"
   },
   "overrides": {
     "css-select@2.1.0": {
