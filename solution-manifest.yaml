@@ -1,6 +1,6 @@
 id: SO0041
 name: iot-device-simulator
-version: v3.0.8
+version: v3.0.9
 cloudformation_templates:
   - template: iot-device-simulator.template
 build_environment:
